@@ -11,7 +11,7 @@ Authors@R:
              role="ctb",
              comment = c(ORCID = "0000-0000-0000-0000")))
 Description: 
-    A framework for conducting reproducible psychometric experiments to explore 
+    A toolbox for conducting reproducible psychometric experiments to explore 
     how structural modifications in item-based measurements affect outcome 
     metrics. The core function 'dropit()' systematically removes items from 
     questionnaire data to examine their impact on Cronbach’s alpha or 
