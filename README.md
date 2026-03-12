@@ -17,11 +17,11 @@ pak::pak("sbissantz/dropit")
 
 Alternatively, using **remotes**:
 
-### Contributing
-
 ```r
 install.packages("remotes")
 remotes::install_github("sbissantz/dropit")
 ```
+
+### Contributing
 
 Contributions, suggestions, and bug reports are welcome. Please open an issue or submit a pull request on GitHub.
