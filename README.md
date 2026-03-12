@@ -6,7 +6,7 @@
 
 ### Installation
 
-The `dropit` package is not yet available on CRAN. You can install the development version from GitHub.
+The `dropit` package is not available on CRAN. You can install the development version from GitHub.
 
 Using **pak** (recommended):
 
