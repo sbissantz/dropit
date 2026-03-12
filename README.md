@@ -19,7 +19,7 @@ Alternatively, using **remotes**:
 
 ```r
 install.packages("remotes")
-remotes::install_github("sbissantz/dropit")
+remotes::install_github("sbissantz/dropit") 
 ```
 
 ### Contributing
