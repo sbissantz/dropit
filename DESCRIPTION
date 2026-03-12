@@ -41,3 +41,4 @@ Remotes:
 VignetteBuilder: knitr
 LazyData: true
 Config/testthat/edition: 3
+URL: https://sbissantz.github.io/dropit/
