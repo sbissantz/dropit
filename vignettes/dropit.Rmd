@@ -1,0 +1,97 @@
+---
+title: "Tools for Reproducible Psychometric Experimentation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{drop}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+library(dropit)
+library(psych)
+```
+
+We will use the BFI data from the `psych` package to illustrate the `dropit()` function for item dropping based on Cronbach's alpha.
+
+```{r}
+# Load BFI data
+dta <- psych::bfi
+
+# Get the position of (non) BFI items
+xcld <- c("gender", "education", "age") 
+xcld_pat <- colnames(dta) %in% xcld
+
+# Store the data in a matrix
+bfi <- as.matrix(dta[, !xcld_pat])
+
+# Numer of respondents
+N <- nrow(bfi)
+
+# Number of items
+I <- ncol(bfi)
+
+# Labels
+rownames(bfi) <- paste0("p",seq(N))
+
+# Number of dimensions
+D <- 5
+```
+
+# Assignment
+
+The Q-matrix is a binary matrix that specifies the mapping of an item to its respective latent construct(s). Here, it helps us define which BFI items belong to which domain. A nice feature of this representation is that it allows easy computation of sum scores for each domain by matrix multiplication. 
+
+```{r}
+Q <- matrix(0, nrow = I, ncol = D) 
+rownames(Q) <- colnames(bfi)
+colnames(Q) <- c("a", "c", "e", "n", "o")
+
+Q[1:5, "a"] <- 1 # Extraversion
+Q[6:10, "c"] <- 1 # Agreeableness
+Q[11:15, "e"] <- 1 # Conscientiousness
+Q[16:20, "n"] <- 1 # Neuroticism
+Q[21:25, "o"] <- 1 # Openness
+
+# Sumscores (original)
+bfi %*% Q |> head()
+```
+
+# Extraversion
+
+For now, let's focus on the Extraversion items:
+
+```{r}
+# Extraversion items
+extra <- bfi[,Q[,"e"] == 1]
+extra |> head()
+```
+
+# Drop it
+
+What happens, when we greadily drop, say the 2 worst-performing items from the extraversion scale based on their alpha values? The `dropit()` function allows us to explore that question.
+
+```{r}
+drop2ga <- dropit(
+  extra,
+  n_drop = 2L,
+  direction = "tail",
+  criterion = "alpha",
+  approach = "greedy",
+  output_type = "both",
+  alpha_metric = c("raw_alpha"),
+  alpha_args = list(check.keys = TRUE),
+  verbose = FALSE
+)
+drop2ga$names
+
+# Manifest correlation between sum scores
+cor(rowSums(extra), rowSums(drop2ga$subset), use = "pairwise.complete.obs")
+```

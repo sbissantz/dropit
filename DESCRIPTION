@@ -1,0 +1,43 @@
+Package: dropit
+Title: Tools for Reproducible Psychometric Experimentation
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Steven", family = "Bißantz", 
+             email = "steven.bissantz@gmail.com", 
+             role = c("aut", "cre"), 
+             comment = c(ORCID = "0000-0002-1109-786X")),
+      person(given = "Jan", family = "Killisch", 
+             email="jan.killisch@rptu.de", 
+             role="ctb",
+             comment = c(ORCID = "0000-0000-0000-0000")))
+Description: 
+    A framework for conducting reproducible psychometric experiments to explore 
+    how structural modifications in item-based measurements affect outcome 
+    metrics. The core function 'dropit()' systematically removes items from 
+    questionnaire data to examine their impact on Cronbach’s alpha or 
+    confirmatory factor analysis (CFA) loadings. All procedures are fully 
+    traceable, with strict input validation, detailed message handling, and 
+    informative console output to support transparent and iterative research 
+    workflows.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends: 
+    R (>= 4.5.1)
+Imports:
+    utils, 
+    stats, 
+    psych (>= 2.5.6),
+    lavaan (>= 0.6.1),
+    checkmate (>= 2.3.3)
+Suggests:
+    shiny,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Remotes:
+    sbissantz/dropit
+VignetteBuilder: knitr
+LazyData: true
+Config/testthat/edition: 3
