@@ -2,7 +2,7 @@
 
 ### Description
 
- The `dropit` package provides a toolbox for conducting reproducible psychometric experiments to explore how structural modifications in item-based measurements affect outcome metrics. The core function 'dropit()' systematically removes items from questionnaire data to examine their impact on Cronbach’s alpha or confirmatory factor analysis (CFA) loadings. All procedures are fully traceable, with strict input validation, detailed message handling, and informative console output to support transparent and iterative research workflows.
+ The `dropit` package provides a toolbox for conducting reproducible psychometric experiments to explore how structural modifications in item-based measurements affect outcome metrics. The core function `dropit()` systematically removes items from questionnaire data to examine their impact on Cronbach’s alpha or confirmatory factor analysis (CFA) loadings. All procedures are fully traceable, with strict input validation, detailed message handling, and informative console output to support transparent and iterative research workflows.
 
 ### Installation
 
