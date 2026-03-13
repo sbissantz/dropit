@@ -86,7 +86,7 @@ check_ignored <- function(usr_sup, ign_nms) {
   if (length(bad)) {
     message(sprintf(
       "Argument(s) %s not applicable and ignored.",
-      paste0(shQuote(bad), collapse = ", ")
+      paste0("'", bad, "'", collapse = ", ")
     ))
   }
 }
