@@ -293,8 +293,7 @@ dropit <- function(
           "lambda" = check_ignored(
             usr_spl,
             c("alpha_metric", "alpha_args")
-          ),
-          stop("Debug: Invalid criterion specified. Use 'alpha' or 'lambda'.")
+          )
         )
 
         ## ---- approach ----
