@@ -69,6 +69,9 @@
 #' @seealso [dropit()], [psych::alpha()], [lavaan::cfa()]
 #' @keywords internal
 NULL
+
+#' @rdname dropit-helpers
+#' @keywords internal
 naivedrop <- function(
   # core
   dta,

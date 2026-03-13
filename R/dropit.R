@@ -83,6 +83,16 @@
 #' [psych::alpha()], [lavaan::cfa()], [lavaan::inspect()],
 #' and the internal helpers documented at [miscutils].
 #'
+#' @examples
+#' dat <- data.frame(
+#'   i1 = c(1, 2, 3, 4, 5),
+#'   i2 = c(2, 2, 3, 4, 4),
+#'   i3 = c(1, 1, 2, 3, 4),
+#'   i4 = c(4, 3, 2, 1, 1)
+#' )
+#'
+#' dropit(dat, n_drop = 1, verbose = FALSE)
+#' 
 #' @export
 dropit <- function(
   # core
@@ -189,7 +199,7 @@ dropit <- function(
           all.missing = FALSE,
           min.rows = 2,
           min.cols = 2,
-          col.names = "unique",
+          col.names = "unique"
         )
         # short name
         dta <- data # assign after validation

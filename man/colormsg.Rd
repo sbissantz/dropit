@@ -26,9 +26,4 @@ colored text to the console.
 Prints a message to the console using ANSI color codes. Supports both
 standard 16-color and extended 256-color modes, as well as bold styling.
 }
-\examples{
-colormsg("Hello World!", color_code = 31)
-colormsg("Soft gray header", color_code = "38;5;245", bold = TRUE)
-
-}
 \keyword{internal}

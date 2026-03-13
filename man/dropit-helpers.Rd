@@ -2,12 +2,28 @@
 % Please edit documentation in R/droputils.R
 \name{dropit-helpers}
 \alias{dropit-helpers}
+\alias{naivedrop}
 \alias{greedydrop_lambda}
 \alias{greedydrop_alpha}
 \alias{oneshotdrop_lambda}
 \alias{oneshotdrop_alpha}
 \title{Internal Helper Functions for Item Dropping}
 \usage{
+naivedrop(
+  dta,
+  n_drp,
+  dir,
+  crt,
+  apr,
+  out,
+  alp_mtr,
+  alp_args,
+  mmt_mdl,
+  tgt_fct,
+  lam_mtr,
+  cfa_args
+)
+
 greedydrop_lambda(dta, n_drp, dir, out, mmt_mdl, tgt_fct, lam_mtr, cfa_args)
 
 greedydrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
@@ -26,8 +42,20 @@ columns = items).}
 \code{\link[utils:head]{utils::tail()}} / \code{\link[utils:head]{utils::head()}} to select the weakest or strongest
 items.}
 
+\item{crt}{Character string, \code{"alpha"} or \code{"lambda"},
+indicating the ranking criterion.}
+
+\item{apr}{Character string, \code{"oneshot"} or \code{"greedy"},
+selecting the removal strategy.}
+
 \item{out}{Character string, one of \code{"names"}, \code{"subset"}, or \code{"both"},
 determining the type of object returned.}
+
+\item{alp_mtr}{Character string naming the column of
+\code{psych::alpha$alpha.drop} used for ranking.}
+
+\item{alp_args}{Named list of additional arguments passed to
+\code{\link[psych:alpha]{psych::alpha()}}.}
 
 \item{mmt_mdl}{Character string of lavaan model syntax for the CFA.
 If \code{NULL}, a single-factor model is created automatically.}
@@ -42,18 +70,6 @@ to extract (e.g., \code{"std"}).}
 
 \item{cfa_args}{Named list of additional arguments passed to
 \code{\link[lavaan:cfa]{lavaan::cfa()}}.}
-
-\item{alp_mtr}{Character string naming the column of
-\code{psych::alpha$alpha.drop} used for ranking.}
-
-\item{alp_args}{Named list of additional arguments passed to
-\code{\link[psych:alpha]{psych::alpha()}}.}
-
-\item{crt}{Character string, \code{"alpha"} or \code{"lambda"},
-indicating the ranking criterion.}
-
-\item{apr}{Character string, \code{"oneshot"} or \code{"greedy"},
-selecting the removal strategy.}
 }
 \value{
 Depending on \code{out}:

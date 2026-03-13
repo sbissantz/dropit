@@ -7,10 +7,10 @@
 check_ignored(usr_sup, ign_nms)
 }
 \arguments{
-\item{user_supplied}{Character vector of argument names that were
+\item{usr_sup}{Character vector of argument names that were
 explicitly supplied by the user.}
 
-\item{ignored_names}{Character vector of argument names that are not
+\item{ign_nms}{Character vector of argument names that are not
 applicable in the current context.}
 }
 \value{
@@ -24,10 +24,5 @@ are not applicable to the current method (e.g., alpha vs. lambda mode).
 \details{
 This function prints an informative message rather than a warning,
 indicating that some arguments have been ignored intentionally.
-}
-\examples{
-check_ignored(c("alpha_args", "lambda_metric"), c("lambda_metric"))
-# Prints: Argument(s) 'lambda_metric' not applicable and ignored.
-
 }
 \keyword{internal}

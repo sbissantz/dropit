@@ -121,6 +121,17 @@ loadings.
 }
 }
 
+\examples{
+dat <- data.frame(
+  i1 = c(1, 2, 3, 4, 5),
+  i2 = c(2, 2, 3, 4, 4),
+  i3 = c(1, 1, 2, 3, 4),
+  i4 = c(4, 3, 2, 1, 1)
+)
+
+dropit(dat, n_drop = 1, verbose = FALSE)
+
+}
 \seealso{
 \code{\link[psych:alpha]{psych::alpha()}}, \code{\link[lavaan:cfa]{lavaan::cfa()}}, \code{\link[lavaan:lavInspect]{lavaan::inspect()}},
 and the internal helpers documented at \link{miscutils}.

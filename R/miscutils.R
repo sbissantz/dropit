@@ -41,10 +41,6 @@ NULL
 #' @return Invisibly returns `NULL`. Called for its side effect of printing
 #'   colored text to the console.
 #'
-#' @examples
-#' colormsg("Hello World!", color_code = 31)
-#' colormsg("Soft gray header", color_code = "38;5;245", bold = TRUE)
-#'
 #' @keywords internal
 colormsg <- function(txt, color_code = 32, bold = FALSE, newline = FALSE) {
   style_code <- if (bold) paste0("1;", color_code) else as.character(color_code)
@@ -62,10 +58,6 @@ colormsg <- function(txt, color_code = 32, bold = FALSE, newline = FALSE) {
 #'
 #' @return A character vector with newlines removed from the start and end.
 #'
-#' @examples
-#' trim_newlines("\n\nHello World!\n\n")
-#' # Returns "Hello World!"
-#'
 #' @keywords internal
 trim_newlines <- function(x) {
   gsub("(^\\n+|\\n+$)", "", x)
@@ -76,9 +68,9 @@ trim_newlines <- function(x) {
 #' Internal helper used to emit a message when user-specified arguments
 #' are not applicable to the current method (e.g., alpha vs. lambda mode).
 #'
-#' @param user_supplied Character vector of argument names that were
+#' @param usr_sup Character vector of argument names that were
 #'   explicitly supplied by the user.
-#' @param ignored_names Character vector of argument names that are not
+#' @param ign_nms Character vector of argument names that are not
 #'   applicable in the current context.
 #'
 #' @details
@@ -87,11 +79,7 @@ trim_newlines <- function(x) {
 #'
 #' @return Invisibly returns `NULL`. Called for its side effect of printing
 #'   a message.
-#'
-#' @examples
-#' check_ignored(c("alpha_args", "lambda_metric"), c("lambda_metric"))
-#' # Prints: Argument(s) 'lambda_metric' not applicable and ignored.
-#'
+#' 
 #' @keywords internal
 check_ignored <- function(usr_sup, ign_nms) {
   bad <- intersect(usr_sup, ign_nms)

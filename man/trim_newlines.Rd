@@ -17,9 +17,4 @@ Removes any leading and trailing newline (\verb{\\\\n}) characters from a
 character string. Useful for cleaning up collected messages or
 warnings before printing.
 }
-\examples{
-trim_newlines("\n\nHello World!\n\n")
-# Returns "Hello World!"
-
-}
 \keyword{internal}
