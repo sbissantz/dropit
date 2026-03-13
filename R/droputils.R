@@ -264,8 +264,8 @@ oneshotdrop_lambda <- function(
     list(model = mmt_mdl, data = dta),
     cfa_args
   )
-  fit <- do.call(lavaan::cfa, arg_ls)
-  fit_info <- lavaan::inspect(fit, lam_mtr)
+  fit <- do.call(lavaan_cfa_internal, arg_ls)
+  fit_info <- lavaan_inspect_internal(fit, lam_mtr)
   lam_mat <- fit_info[["lambda"]]
   if (is.null(lam_mat) || !is.matrix(lam_mat)) {
     stop(sprintf(
@@ -340,7 +340,7 @@ oneshotdrop_alpha <- function(
   arg_ls <- c(list(x = dta), alp_args)
   # call psych::alpha with constructed args list
   invisible(utils::capture.output(
-    alp <- do.call(psych::alpha, arg_ls)
+    alp <- do.call(psych_alpha_internal, arg_ls)
   ))
   # fix label issue with psych::alpha
   key_loc <- isTRUE(arg_ls[["check.keys"]]) 
@@ -375,4 +375,24 @@ oneshotdrop_alpha <- function(
       "Debug: Invalid output type specified. Use 'names', 'subset', or 'both'."
     )
   )
+}
+
+# internal wrappers for lavaan calls (makes testing easier)
+
+#' @keywords internal
+#' @noRd
+lavaan_cfa_internal <- function(...) {
+  lavaan::cfa(...)
+}
+
+#' @keywords internal
+#' @noRd
+lavaan_inspect_internal <- function(x, what) {
+  lavaan::inspect(x, what)
+}
+
+#' @keywords internal
+#' @noRd
+psych_alpha_internal <- function(...) {
+  psych::alpha(...)
 }
