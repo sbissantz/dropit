@@ -185,7 +185,7 @@ greedydrop_lambda <- function(
     ),
     # Should never reached if input validation works properly 
     stop(
-      "Debug: Invalid rtyp type specified. Use 'names', 'subset', or 'both'."
+      "Debug: Invalid output type specified. Use 'names', 'subset', or 'both'."
     )
   )
 }
@@ -266,7 +266,6 @@ oneshotdrop_lambda <- function(
   )
   fit <- do.call(lavaan::cfa, arg_ls)
   fit_info <- lavaan::inspect(fit, lam_mtr)
-  fit_nms <- names(fit_info) 
   lam_mat <- fit_info[["lambda"]]
   if (is.null(lam_mat) || !is.matrix(lam_mat)) {
     stop(sprintf(
@@ -274,7 +273,6 @@ oneshotdrop_lambda <- function(
       lam_mtr
     ))
   }
-  lam_mat <- fit_info[["lambda"]]
   # determine which factor to use
   if (is.null(tgt_fct)) {
     if (ncol(lam_mat) > 1) {
