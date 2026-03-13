@@ -90,3 +90,34 @@ check_ignored <- function(usr_sup, ign_nms) {
     ))
   }
 }
+
+#' Create Standard Test Dataset
+#'
+#' Generates a small synthetic dataset used in the package
+#' test suite. The dataset contains four item columns with simple numeric
+#' response patterns and is designed to be stable across runs so that
+#' psychometric procedures such as Cronbach’s alpha or CFA can be executed
+#' reliably in unit tests.
+#'
+#' The function returns a fresh `data.frame` each time it is called to avoid
+#' accidental mutation of shared test data between tests.
+#'
+#' @param n Integer scalar giving the number of rows (respondents) to generate.
+#'   Defaults to `6`.
+#'
+#' @return A `data.frame` with four item columns (`i1`–`i4`) and `n`
+#' rows representing synthetic item responses.
+#'
+#' @details
+#' This helper is intended for internal use only.
+#'
+#' @keywords internal
+#' @noRd
+make_test_data <- function(n = 6) {
+  data.frame(
+    "i1" = seq_len(n),
+    "i2" = seq_len(n) + 1,
+    "i3" = seq_len(n) %% 4 + 1,
+    "i4" = rev(seq_len(n))
+  )
+}
