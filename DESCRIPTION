@@ -9,7 +9,7 @@ Authors@R:
       person(given = "Jan", family = "Killisch", 
              email="jan.killisch@rptu.de", 
              role="ctb",
-             comment = c(ORCID = "0000-0000-0000-0000")))
+             comment = c(ORCID = "0009-0003-7123-1885")))
 Description: 
     A toolbox for conducting reproducible psychometric experiments to explore 
     how structural modifications in item-based measurements affect outcome 
