@@ -2,10 +2,6 @@
 # tests/testthat/test-oneshotdrop-lambda.R 
 # ==============================================================================
 
-library(psych)
-library(lavaan)
-library(testthat)
-
 # Agreeableness
 dta <- psych::bfi[, 1:5]  
 

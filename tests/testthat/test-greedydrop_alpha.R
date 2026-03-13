@@ -2,9 +2,6 @@
 # tests/testthat/test-greedydrop-alpha.R 
 # ==============================================================================
 
-library(psych)
-library(testthat)
-
 dta <- psych::bfi[, 1:5]
 
 test_that("greedydrop_alpha() returns manually debugged output", {

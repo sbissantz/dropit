@@ -2,9 +2,6 @@
 # tests/testthat/test-oneshotdrop-alpha.R
 # ==============================================================================
 
-library(psych)
-library(testthat)
-
 # Agreeableness
 dta <- psych::bfi[, 1:5]  
 

@@ -2,10 +2,6 @@
 # tests/testthat/test-dropit.R 
 # ==============================================================================
 
-library(testthat)
-library(psych)
-library(lavaan)
-
 # agreableness items 
 dta <- psych::bfi[, 1:5]
 

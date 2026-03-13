@@ -2,10 +2,6 @@
 # tests/testthat/test-greedydrop-lambda.R
 # ==============================================================================
 
-library(psych)
-library(lavaan)
-library(testthat)
-
 dta <- psych::bfi[, 1:5]
 
 test_that("greedydrop_lambda() returns manually debugged output", {
