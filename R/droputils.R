@@ -228,7 +228,7 @@ greedydrop_alpha <- function(
     ),
     # Should never reached if input validation works properly 
     stop(
-      "Debug: Invalid output_type specified. Use 'names', 'subset', or 'both'."
+      "Debug: Invalid output type specified. Use 'names', 'subset', or 'both'."
     )
   )
 }
