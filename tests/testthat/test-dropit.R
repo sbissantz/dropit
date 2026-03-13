@@ -11,7 +11,7 @@ dta <- psych::bfi[, 1:5]
 
 # ----------------------------------------------------------------------- 
 
-test_that("dropit() produces debugged results with 'partitions'", { 
+test_that("dropit() produces debugged results with 'partitions'", {
   # fake 'paritions' for testing
   dta_ptn <- psych::bfi[1:500, -(26:28)]
   ptn <- substr(colnames(dta_ptn), 1, 1)

@@ -187,3 +187,18 @@ test_that("oneshotdrop_alpha() throws error when 'out' is invalid", {
     alp_args = list(check.keys = TRUE)
   ))
 })
+
+test_that("oneshotdrop_alpha errors for invalid output type", {
+  dat <- make_test_data()
+  expect_error(
+    oneshotdrop_alpha(
+      dta = dat,
+      n_drp = 1,
+      dir = "tail",
+      out = "wrong",
+      alp_mtr = "raw_alpha",
+      alp_args = list()
+    ),
+    regexp = "Invalid output"
+  )
+})

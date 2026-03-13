@@ -174,3 +174,33 @@ test_that("greedydrop_lambda() works when no model provided (mmt_mdl = NULL)", {
   )
   expect_type(res, "character")
 })
+
+test_that("greedydrop_lambda errors for invalid output type", {
+  dat <- make_test_data()
+  fake_fit <- structure(list(), class = "fake_lavaan_fit")
+  fake_lambda <- matrix(c(0.2, 0.4, 0.8, 0.6), ncol = 1)
+  rownames(fake_lambda) <- colnames(dat)
+  colnames(fake_lambda) <- "F"
+  testthat::local_mocked_bindings(
+    lavaan_cfa_internal = function(...) fake_fit,
+    lavaan_inspect_internal = function(object, what) {
+      list(lambda = fake_lambda)
+    }
+  )
+  expect_message(
+    expect_error(
+      greedydrop_lambda(
+        dta = dat,
+        n_drp = 1,
+        dir = "tail",
+        out = "wrong",
+        mmt_mdl = NULL,
+        tgt_fct = NULL,
+        lam_mtr = "std",
+        cfa_args = list()
+      ),
+      regexp = "Invalid output"
+    ),
+    regexp = "No measurement model was specified"
+  )
+})

@@ -132,3 +132,18 @@ test_that("greedydrop_alpha() invalid 'dir' or 'out' throws clean error", {
     alp_args
   ))
 })
+
+test_that("greedydrop_alpha errors for invalid output type", {
+  dat <- make_test_data()
+  expect_error(
+    greedydrop_alpha(
+      dta = dat,
+      n_drp = 1,
+      dir = "tail",
+      out = "wrong",
+      alp_mtr = "raw_alpha",
+      alp_args = list()
+    ),
+    regexp = "Invalid output"
+  )
+})

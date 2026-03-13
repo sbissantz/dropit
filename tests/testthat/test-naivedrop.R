@@ -2,10 +2,6 @@
 # tests/testthat/test-naivedrop-alpha.R 
 # ==============================================================================
 
-library(psych)
-library(lavaan)
-library(testthat)
-
 dta <- psych::bfi[, 1:5]
 
 test_that("naivedrop() inherits debugged output from oneshotdrop_alpha()", {
@@ -191,7 +187,6 @@ test_that("naivedrop() invalid 'dir' throws error", {
   )
 })
 
-
 test_that("naivedrop() invalid 'crt' throws error", {
   expect_error(
     naivedrop(
@@ -269,4 +264,112 @@ test_that("naivedrop() always returns exactly n_drp items (when out='names')", {
       expect_length(res, 2)
     }
   }
+})
+
+test_that("naivedrop errors for invalid criterion", {
+  dat <- make_test_data()
+  expect_error(
+    naivedrop(
+      dta = dat,
+      n_drp = 1,
+      dir = "tail",
+      crt = "wrong",
+      apr = "oneshot",
+      out = "names",
+      alp_mtr = "raw_alpha",
+      alp_args = list(),
+      mmt_mdl = NULL,
+      tgt_fct = NULL,
+      lam_mtr = "std",
+      cfa_args = list()
+    )
+  )
+})
+
+test_that("naivedrop errors for invalid approach with alpha criterion", {
+  dat <- make_test_data()
+  expect_error(
+    naivedrop(
+      dta = dat,
+      n_drp = 1,
+      dir = "tail",
+      crt = "alpha",
+      apr = "wrong",   # invalid approach
+      out = "names",
+      alp_mtr = "raw_alpha",
+      alp_args = list(),
+      mmt_mdl = NULL,
+      tgt_fct = NULL,
+      lam_mtr = "std",
+      cfa_args = list()
+    ),
+    regexp = "Use 'oneshot' or 'greedy'"
+  )
+})
+
+test_that("naivedrop errors for invalid approach with lambda criterion", {
+  dat <- make_test_data()
+  expect_error(
+    naivedrop(
+      dta = dat,
+      n_drp = 1,
+      dir = "tail",
+      crt = "lambda",
+      apr = "wrong",   # invalid approach
+      out = "names",
+      alp_mtr = "raw_alpha",
+      alp_args = list(),
+      mmt_mdl = NULL,
+      tgt_fct = NULL,
+      lam_mtr = "std",
+      cfa_args = list()
+    ),
+    regexp = "Use 'oneshot' or 'greedy'"
+  )
+})
+
+test_that("dropit records warning when non-data.frame input is coerced", {
+  mat <- matrix(1:24, ncol = 4)
+  res <- dropit(
+    data = mat,
+    n_drop = 1,
+    direction = "tail",
+    criterion = "alpha",
+    approach = "oneshot",
+    output_type = "debug",
+    verbose = FALSE
+  )
+  expect_type(res, "list")
+  expect_true("warnings" %in% names(res))
+  expect_true(any(grepl("coerced to a data.frame", res$warnings)))
+})
+
+test_that("dropit errors when partition has too few columns", {
+  dat <- make_test_data()
+  part <- c("A","A","A","B")   # B has only 1 column
+  expect_error(
+    dropit(
+      data = dat,
+      partition = part,
+      n_drop = 2,
+      criterion = "alpha",
+      approach = "oneshot",
+      verbose = FALSE
+    ),
+    regexp = "Partition\\(s\\) have fewer columns"
+  )
+})
+
+test_that("dropit errors for invalid criterion", {
+  dat <- make_test_data()
+  expect_error(
+    dropit(
+      data = dat,
+      n_drop = 1,
+      criterion = "wrong",
+      approach = "oneshot",
+      verbose = FALSE
+    ),
+    regexp = "should be one of"
+  )
 })

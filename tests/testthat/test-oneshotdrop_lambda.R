@@ -252,3 +252,87 @@ test_that("oneshotdrop_lambda() errors cleanly on invalid 'out'", {
     )
   )
 })
+
+test_that("oneshotdrop_lambda errors when lambda matrix missing", {
+  dat <- make_test_data()
+  fake_fit <- structure(list(), class = "fake")
+  testthat::local_mocked_bindings(
+    lavaan_cfa_internal = function(...) fake_fit,
+    lavaan_inspect_internal = function(...) list()
+  )
+  expect_error(
+    oneshotdrop_lambda(
+      dta = dat,
+      n_drp = 1,
+      dir = "tail",
+      out = "names",
+      mmt_mdl = NULL,
+      tgt_fct = NULL,
+      lam_mtr = "std",
+      cfa_args = list()
+    ),
+    "No 'lambda' matrix found"
+  )
+})
+
+test_that("oneshotdrop_lambda errors when multiple factors present", {
+  dat <- make_test_data()
+  fake_fit <- structure(list(), class = "fake")
+  fake_lambda <- matrix(
+    c(0.8,0.1,
+      0.7,0.2,
+      0.6,0.3,
+      0.5,0.4),
+    nrow = 4,
+    byrow = TRUE
+  )
+  rownames(fake_lambda) <- colnames(dat)
+  colnames(fake_lambda) <- c("F1","F2")
+  testthat::local_mocked_bindings(
+    lavaan_cfa_internal = function(...) fake_fit,
+    lavaan_inspect_internal = function(...) list(lambda = fake_lambda)
+  )
+  expect_error(
+    oneshotdrop_lambda(
+      dta = dat,
+      n_drp = 1,
+      dir = "tail",
+      out = "names",
+      mmt_mdl = NULL,
+      tgt_fct = NULL,
+      lam_mtr = "std",
+      cfa_args = list()
+    ),
+    "multiple factors"
+  )
+})
+
+test_that("oneshotdrop_lambda errors for invalid output type", {
+  dat <- make_test_data()
+  fake_fit <- structure(list(), class = "fake_lavaan_fit")
+  fake_lambda <- matrix(c(0.2, 0.4, 0.8, 0.6), ncol = 1)
+  rownames(fake_lambda) <- colnames(dat)
+  colnames(fake_lambda) <- "F"
+  testthat::local_mocked_bindings(
+    lavaan_cfa_internal = function(...) fake_fit,
+    lavaan_inspect_internal = function(object, what) {
+      list(lambda = fake_lambda)
+    }
+  )
+  expect_message(
+    expect_error(
+      oneshotdrop_lambda(
+        dta = dat,
+        n_drp = 1,
+        dir = "tail",
+        out = "wrong",
+        mmt_mdl = NULL,
+        tgt_fct = NULL,
+        lam_mtr = "std",
+        cfa_args = list()
+      ),
+      regexp = "Invalid output"
+    ),
+    regexp = "No measurement model was specified"
+  )
+})

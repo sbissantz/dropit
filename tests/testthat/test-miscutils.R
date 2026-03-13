@@ -67,3 +67,47 @@ test_that("check_ignored prints message only when needed", {
   )
 
 })
+
+
+test_that("make_test_data returns the expected default dataset", {
+
+  dat <- make_test_data()
+
+  expect_s3_class(dat, "data.frame")
+  expect_equal(nrow(dat), 6)
+  expect_equal(ncol(dat), 4)
+  expect_named(dat, c("i1", "i2", "i3", "i4"))
+
+  expect_equal(dat$i1, 1:6)
+  expect_equal(dat$i2, 2:7)
+  expect_equal(dat$i3, c(2, 3, 4, 1, 2, 3))
+  expect_equal(dat$i4, 6:1)
+
+})
+
+test_that("make_test_data respects the n argument", {
+
+  dat <- make_test_data(4)
+
+  expect_s3_class(dat, "data.frame")
+  expect_equal(nrow(dat), 4)
+  expect_equal(ncol(dat), 4)
+  expect_named(dat, c("i1", "i2", "i3", "i4"))
+
+  expect_equal(dat$i1, 1:4)
+  expect_equal(dat$i2, 2:5)
+  expect_equal(dat$i3, c(2, 3, 4, 1))
+  expect_equal(dat$i4, 4:1)
+
+})
+
+test_that("make_test_data returns a fresh data frame on each call", {
+
+  dat1 <- make_test_data()
+  dat2 <- make_test_data()
+
+  dat1$i1[1] <- 999
+
+  expect_equal(dat2$i1[1], 1)
+
+})
