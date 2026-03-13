@@ -19,11 +19,3 @@ trim_newlines(x)
 ## Value
 
 A character vector with newlines removed from the start and end.
-
-## Examples
-
-``` r
-trim_newlines("\n\nHello World!\n\n")
-#> Error in trim_newlines("\n\nHello World!\n\n"): could not find function "trim_newlines"
-# Returns "Hello World!"
-```

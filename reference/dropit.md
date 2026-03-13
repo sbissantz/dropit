@@ -163,3 +163,17 @@ frame, or list depending on the specified output type. If
 [`lavaan::inspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html),
 and the internal helpers documented at
 [miscutils](https://sbissantz.github.io/dropit/reference/miscutils.md).
+
+## Examples
+
+``` r
+dat <- data.frame(
+  i1 = c(1, 2, 3, 4, 5),
+  i2 = c(2, 2, 3, 4, 4),
+  i3 = c(1, 1, 2, 3, 4),
+  i4 = c(4, 3, 2, 1, 1)
+)
+
+dropit(dat, n_drop = 1, verbose = FALSE)
+#> [1] "i1"
+```

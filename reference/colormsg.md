@@ -33,12 +33,3 @@ colormsg(txt, color_code = 32, bold = FALSE, newline = FALSE)
 
 Invisibly returns `NULL`. Called for its side effect of printing colored
 text to the console.
-
-## Examples
-
-``` r
-colormsg("Hello World!", color_code = 31)
-#> Error in colormsg("Hello World!", color_code = 31): could not find function "colormsg"
-colormsg("Soft gray header", color_code = "38;5;245", bold = TRUE)
-#> Error in colormsg("Soft gray header", color_code = "38;5;245", bold = TRUE): could not find function "colormsg"
-```

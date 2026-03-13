@@ -11,12 +11,12 @@ check_ignored(usr_sup, ign_nms)
 
 ## Arguments
 
-- user_supplied:
+- usr_sup:
 
   Character vector of argument names that were explicitly supplied by
   the user.
 
-- ignored_names:
+- ign_nms:
 
   Character vector of argument names that are not applicable in the
   current context.
@@ -30,11 +30,3 @@ message.
 
 This function prints an informative message rather than a warning,
 indicating that some arguments have been ignored intentionally.
-
-## Examples
-
-``` r
-check_ignored(c("alpha_args", "lambda_metric"), c("lambda_metric"))
-#> Error in check_ignored(c("alpha_args", "lambda_metric"), c("lambda_metric")): could not find function "check_ignored"
-# Prints: Argument(s) 'lambda_metric' not applicable and ignored.
-```

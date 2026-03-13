@@ -50,7 +50,22 @@ algorithm.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">greedydrop_lambda</span><span class="op">(</span><span class="va">dta</span>, <span class="va">n_drp</span>, <span class="va">dir</span>, <span class="va">out</span>, <span class="va">mmt_mdl</span>, <span class="va">tgt_fct</span>, <span class="va">lam_mtr</span>, <span class="va">cfa_args</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">naivedrop</span><span class="op">(</span></span>
+<span>  <span class="va">dta</span>,</span>
+<span>  <span class="va">n_drp</span>,</span>
+<span>  <span class="va">dir</span>,</span>
+<span>  <span class="va">crt</span>,</span>
+<span>  <span class="va">apr</span>,</span>
+<span>  <span class="va">out</span>,</span>
+<span>  <span class="va">alp_mtr</span>,</span>
+<span>  <span class="va">alp_args</span>,</span>
+<span>  <span class="va">mmt_mdl</span>,</span>
+<span>  <span class="va">tgt_fct</span>,</span>
+<span>  <span class="va">lam_mtr</span>,</span>
+<span>  <span class="va">cfa_args</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">greedydrop_lambda</span><span class="op">(</span><span class="va">dta</span>, <span class="va">n_drp</span>, <span class="va">dir</span>, <span class="va">out</span>, <span class="va">mmt_mdl</span>, <span class="va">tgt_fct</span>, <span class="va">lam_mtr</span>, <span class="va">cfa_args</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">greedydrop_alpha</span><span class="op">(</span><span class="va">dta</span>, <span class="va">n_drp</span>, <span class="va">dir</span>, <span class="va">out</span>, <span class="va">alp_mtr</span>, <span class="va">alp_args</span><span class="op">)</span></span>
 <span></span>
@@ -78,9 +93,29 @@ columns = items).</p></dd>
 items.</p></dd>
 
 
+<dt id="arg-crt">crt<a class="anchor" aria-label="anchor" href="#arg-crt"></a></dt>
+<dd><p>Character string, <code>"alpha"</code> or <code>"lambda"</code>,
+indicating the ranking criterion.</p></dd>
+
+
+<dt id="arg-apr">apr<a class="anchor" aria-label="anchor" href="#arg-apr"></a></dt>
+<dd><p>Character string, <code>"oneshot"</code> or <code>"greedy"</code>,
+selecting the removal strategy.</p></dd>
+
+
 <dt id="arg-out">out<a class="anchor" aria-label="anchor" href="#arg-out"></a></dt>
 <dd><p>Character string, one of <code>"names"</code>, <code>"subset"</code>, or <code>"both"</code>,
 determining the type of object returned.</p></dd>
+
+
+<dt id="arg-alp-mtr">alp_mtr<a class="anchor" aria-label="anchor" href="#arg-alp-mtr"></a></dt>
+<dd><p>Character string naming the column of
+<code>psych::alpha$alpha.drop</code> used for ranking.</p></dd>
+
+
+<dt id="arg-alp-args">alp_args<a class="anchor" aria-label="anchor" href="#arg-alp-args"></a></dt>
+<dd><p>Named list of additional arguments passed to
+<code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>.</p></dd>
 
 
 <dt id="arg-mmt-mdl">mmt_mdl<a class="anchor" aria-label="anchor" href="#arg-mmt-mdl"></a></dt>
@@ -103,26 +138,6 @@ to extract (e.g., <code>"std"</code>).</p></dd>
 <dt id="arg-cfa-args">cfa_args<a class="anchor" aria-label="anchor" href="#arg-cfa-args"></a></dt>
 <dd><p>Named list of additional arguments passed to
 <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>.</p></dd>
-
-
-<dt id="arg-alp-mtr">alp_mtr<a class="anchor" aria-label="anchor" href="#arg-alp-mtr"></a></dt>
-<dd><p>Character string naming the column of
-<code>psych::alpha$alpha.drop</code> used for ranking.</p></dd>
-
-
-<dt id="arg-alp-args">alp_args<a class="anchor" aria-label="anchor" href="#arg-alp-args"></a></dt>
-<dd><p>Named list of additional arguments passed to
-<code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>.</p></dd>
-
-
-<dt id="arg-crt">crt<a class="anchor" aria-label="anchor" href="#arg-crt"></a></dt>
-<dd><p>Character string, <code>"alpha"</code> or <code>"lambda"</code>,
-indicating the ranking criterion.</p></dd>
-
-
-<dt id="arg-apr">apr<a class="anchor" aria-label="anchor" href="#arg-apr"></a></dt>
-<dd><p>Character string, <code>"oneshot"</code> or <code>"greedy"</code>,
-selecting the removal strategy.</p></dd>
 
 </dl></div>
     <div class="section level2">

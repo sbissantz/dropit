@@ -48,12 +48,12 @@ are not applicable to the current method (e.g., alpha vs. lambda mode).</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-user-supplied">user_supplied<a class="anchor" aria-label="anchor" href="#arg-user-supplied"></a></dt>
+<dl><dt id="arg-usr-sup">usr_sup<a class="anchor" aria-label="anchor" href="#arg-usr-sup"></a></dt>
 <dd><p>Character vector of argument names that were
 explicitly supplied by the user.</p></dd>
 
 
-<dt id="arg-ignored-names">ignored_names<a class="anchor" aria-label="anchor" href="#arg-ignored-names"></a></dt>
+<dt id="arg-ign-nms">ign_nms<a class="anchor" aria-label="anchor" href="#arg-ign-nms"></a></dt>
 <dd><p>Character vector of argument names that are not
 applicable in the current context.</p></dd>
 
@@ -69,14 +69,6 @@ a message.</p>
 indicating that some arguments have been ignored intentionally.</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">check_ignored</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alpha_args"</span>, <span class="st">"lambda_metric"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lambda_metric"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in check_ignored(c("alpha_args", "lambda_metric"), c("lambda_metric")):</span> could not find function "check_ignored"</span>
-<span class="r-in"><span><span class="co"># Prints: Argument(s) 'lambda_metric' not applicable and ignored.</span></span></span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

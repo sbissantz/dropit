@@ -9,6 +9,21 @@ developers who may wish to extend or debug the algorithm.
 ## Usage
 
 ``` r
+naivedrop(
+  dta,
+  n_drp,
+  dir,
+  crt,
+  apr,
+  out,
+  alp_mtr,
+  alp_args,
+  mmt_mdl,
+  tgt_fct,
+  lam_mtr,
+  cfa_args
+)
+
 greedydrop_lambda(dta, n_drp, dir, out, mmt_mdl, tgt_fct, lam_mtr, cfa_args)
 
 greedydrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
@@ -36,10 +51,30 @@ oneshotdrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
   [`utils::head()`](https://rdrr.io/r/utils/head.html) to select the
   weakest or strongest items.
 
+- crt:
+
+  Character string, `"alpha"` or `"lambda"`, indicating the ranking
+  criterion.
+
+- apr:
+
+  Character string, `"oneshot"` or `"greedy"`, selecting the removal
+  strategy.
+
 - out:
 
   Character string, one of `"names"`, `"subset"`, or `"both"`,
   determining the type of object returned.
+
+- alp_mtr:
+
+  Character string naming the column of `psych::alpha$alpha.drop` used
+  for ranking.
+
+- alp_args:
+
+  Named list of additional arguments passed to
+  [`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html).
 
 - mmt_mdl:
 
@@ -62,26 +97,6 @@ oneshotdrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
 
   Named list of additional arguments passed to
   [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html).
-
-- alp_mtr:
-
-  Character string naming the column of `psych::alpha$alpha.drop` used
-  for ranking.
-
-- alp_args:
-
-  Named list of additional arguments passed to
-  [`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html).
-
-- crt:
-
-  Character string, `"alpha"` or `"lambda"`, indicating the ranking
-  criterion.
-
-- apr:
-
-  Character string, `"oneshot"` or `"greedy"`, selecting the removal
-  strategy.
 
 ## Value
 
