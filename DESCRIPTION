@@ -26,8 +26,7 @@ RoxygenNote: 7.3.2
 Depends: 
     R (>= 4.5)
 Imports:
-    utils, 
-    stats, 
+    utils,
     psych (>= 2.5.6),
     lavaan (>= 0.6.1),
     checkmate (>= 2.3.3)
