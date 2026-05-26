@@ -372,7 +372,7 @@ dropit <- function(
         )
         if (!is.null(target_factor)) {
           stop(
-            "Custom measurement models are not yet supported., so 'target_factor' cannot be specified. Please set 'target_factor = NULL'."
+            "Custom measurement models are not yet supported, so 'target_factor' cannot be specified. Please set 'target_factor = NULL'."
           )
         }
         # short name
