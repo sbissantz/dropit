@@ -410,35 +410,37 @@ dropit <- function(
           res <- lapply(splt_pos, function(idx) {
             naivedrop(
               dta = dta[, idx, drop = FALSE],
-              n_drp,
-              dir,
-              crt,
-              apr,
-              out_tmp, # use temporary output type
-              alp_mtr,
-              alp_args,
-              mmt_mdl,
-              tgt_fct,
-              lam_mtr,
-              cfa_args
+              n_drp = n_drp,
+              dir = dir,
+              crt = crt,
+              apr = apr,
+              out = out_tmp,
+              alp_mtr = alp_mtr,
+              alp_args = alp_args,
+              mmt_mdl = mmt_mdl,
+              tgt_fct = tgt_fct,
+              lam_mtr = lam_mtr,
+              cfa_args = cfa_args,
+              verbose = vbs
             )
           })
           names(res) <- names(splt_pos)
           res
         } else {
           naivedrop(
-            dta,
-            n_drp,
-            dir,
-            crt,
-            apr,
-            out_tmp, # use temporary output type
-            alp_mtr,
-            alp_args,
-            mmt_mdl,
-            tgt_fct,
-            lam_mtr,
-            cfa_args
+            dta = dta,
+            n_drp = n_drp,
+            dir = dir,
+            crt = crt,
+            apr = apr,
+            out = out_tmp,
+            alp_mtr = alp_mtr,
+            alp_args = alp_args,
+            mmt_mdl = mmt_mdl,
+            tgt_fct = tgt_fct,
+            lam_mtr = lam_mtr,
+            cfa_args = cfa_args,
+            verbose = vbs
           )
         }
       },

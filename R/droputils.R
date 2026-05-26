@@ -89,7 +89,9 @@ naivedrop <- function(
   mmt_mdl,
   tgt_fct,
   lam_mtr,
-  cfa_args
+  cfa_args,
+  # reporting
+  verbose = FALSE
 ) {
   # TODO Consistent ordering of args across all functions
   switch(
@@ -118,24 +120,26 @@ naivedrop <- function(
     "lambda" = switch(
       apr,
       "oneshot" = oneshotdrop_lambda(
-        dta,
-        n_drp,
-        dir,
-        out,
-        mmt_mdl,
+        dta = dta,
+        n_drp = n_drp,
+        dir = dir,
+        out = out,
+        mmt_mdl = mmt_mdl,
         tgt_fct = tgt_fct,
         lam_mtr = lam_mtr,
-        cfa_args = cfa_args
+        cfa_args = cfa_args,
+        verbose = verbose
       ),
       "greedy" = greedydrop_lambda(
-        dta, 
-        n_drp,
-        dir, 
-        out,
-        mmt_mdl,
-        tgt_fct,
-        lam_mtr, 
-        cfa_args
+        dta = dta, 
+        n_drp = n_drp,
+        dir = dir, 
+        out = out,
+        mmt_mdl = mmt_mdl,
+        tgt_fct = tgt_fct,
+        lam_mtr = lam_mtr,
+        cfa_args = cfa_args,
+        verbose = verbose
       ),
       # Should never reached if input validation works properly 
       stop("Debug: Invalid criterion specified. Use 'oneshot' or 'greedy'.")
@@ -158,22 +162,33 @@ greedydrop_lambda <- function(
   mmt_mdl, 
   tgt_fct,
   lam_mtr,
-  cfa_args
+  cfa_args,
+  # reporting
+  verbose = FALSE
 ) {
   itm_drp <- character(n_drp)
   itm_nms <- colnames(dta)
   for (i in seq_len(n_drp)) {
     updatedta <- dta[, setdiff(itm_nms, itm_drp), drop = FALSE]
-    itm_drp[i] <- oneshotdrop_lambda(
+    dropped <- oneshotdrop_lambda(
       dta = updatedta,
       n_drp = 1,
-      dir,
+      dir = dir,
       out = "names",
-      mmt_mdl,
-      tgt_fct,
-      lam_mtr,
-      cfa_args
+      mmt_mdl = mmt_mdl,
+      tgt_fct = tgt_fct,
+      lam_mtr = lam_mtr,
+      cfa_args = cfa_args,
+      verbose = verbose
     )
+    if (verbose) {
+      message(sprintf(
+        "Step %d/%d: dropped '%s' (remaining: %s)",
+        i, n_drp, dropped,
+        paste0(setdiff(itm_nms, c(itm_drp[seq_len(i - 1)], dropped)), collapse = ", ")
+      ))
+    }
+    itm_drp[i] <- dropped
   }
   switch(
     out,
@@ -246,20 +261,21 @@ oneshotdrop_lambda <- function(
   mmt_mdl, 
   tgt_fct,
   lam_mtr,
-  cfa_args
+  cfa_args,
+  # reporting
+  verbose = FALSE
 ) {
   itm_nms <- colnames(dta)
   if (is.null(mmt_mdl)) {
     mmt_mdl <- paste0("F =~ ", paste0(itm_nms, collapse = " + "))
-    message(
+    if (verbose) message(
       "No measurement model was specified. Assuming a single-factor model."
     )
   } else {
    # Should never be reached if the input validation works properly 
    stop("Debug: Custom measurement models are not yet supported.") 
   }
-  message("Model history:")
-  message(mmt_mdl)
+  if (verbose) message("Model: ", mmt_mdl)
   arg_ls <- c(
     list(model = mmt_mdl, data = dta),
     cfa_args
