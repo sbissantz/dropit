@@ -169,7 +169,12 @@ greedydrop_lambda <- function(
   itm_drp <- character(n_drp)
   itm_nms <- colnames(dta)
   for (i in seq_len(n_drp)) {
-    updatedta <- dta[, setdiff(itm_nms, itm_drp), drop = FALSE]
+    current_items <- setdiff(itm_nms, itm_drp[nchar(itm_drp) > 0])
+    if (verbose) {
+      model_str <- paste0("F =~ ", paste0(current_items, collapse = " + "))
+      message(sprintf("Model (%d/%d)  %s", i, n_drp, model_str))
+    }
+    updatedta <- dta[, current_items, drop = FALSE]
     dropped <- oneshotdrop_lambda(
       dta = updatedta,
       n_drp = 1,
@@ -179,15 +184,8 @@ greedydrop_lambda <- function(
       tgt_fct = tgt_fct,
       lam_mtr = lam_mtr,
       cfa_args = cfa_args,
-      verbose = verbose
+      verbose = FALSE
     )
-    if (verbose) {
-      message(sprintf(
-        "Step %d/%d: dropped '%s' (remaining: %s)",
-        i, n_drp, dropped,
-        paste0(setdiff(itm_nms, c(itm_drp[seq_len(i - 1)], dropped)), collapse = ", ")
-      ))
-    }
     itm_drp[i] <- dropped
   }
   switch(
@@ -268,14 +266,10 @@ oneshotdrop_lambda <- function(
   itm_nms <- colnames(dta)
   if (is.null(mmt_mdl)) {
     mmt_mdl <- paste0("F =~ ", paste0(itm_nms, collapse = " + "))
-    if (verbose) message(
-      "No measurement model was specified. Assuming a single-factor model."
-    )
   } else {
    # Should never be reached if the input validation works properly 
    stop("Debug: Custom measurement models are not yet supported.") 
   }
-  if (verbose) message("Model: ", mmt_mdl)
   arg_ls <- c(
     list(model = mmt_mdl, data = dta),
     cfa_args
