@@ -193,7 +193,8 @@ test_that("greedydrop_lambda errors for invalid output type", {
         mmt_mdl = NULL,
         tgt_fct = NULL,
         lam_mtr = "std",
-        cfa_args = list()
+        cfa_args = list(),
+        verbose = TRUE
       ),
       regexp = "Invalid output"
     ),
