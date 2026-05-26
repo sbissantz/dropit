@@ -44,7 +44,7 @@
 #'   factor used for ranking.  Required when the fitted CFA has multiple
 #'   factors.
 #' @param lam_mtr Character string passed to
-#'   [lavaan::inspect()] selecting which standardized solution matrix
+#'   [lavaan::lavInspect()] selecting which standardized solution matrix
 #'   to extract (e.g., `"std"`).
 #' @param cfa_args Named list of additional arguments passed to
 #'   [lavaan::cfa()].
@@ -53,7 +53,7 @@
 #' * Alpha methods call [psych::alpha()] with `check.keys = TRUE`.
 #' * Lambda methods call [lavaan::cfa()] (defaulting to `std.lv = TRUE`
 #'   unless overridden) and extract the `"lambda"` matrix from
-#'   [lavaan::inspect()].
+#'   [lavaan::lavInspect()].
 #' * All helpers validate that the number of extracted loadings matches
 #'   the number of columns in `dta` and throw an error otherwise.
 #'
@@ -269,7 +269,7 @@ oneshotdrop_lambda <- function(
   lam_mat <- fit_info[["lambda"]]
   if (is.null(lam_mat) || !is.matrix(lam_mat)) {
     stop(sprintf(
-      "No 'lambda' matrix found in lavaan::inspect(fit, '%s').",
+      "No 'lambda' matrix found in lavaan::lavInspect(fit, '%s').",
       lam_mtr
     ))
   }
@@ -388,7 +388,7 @@ lavaan_cfa_internal <- function(...) {
 #' @keywords internal
 #' @noRd
 lavaan_inspect_internal <- function(x, what) {
-  lavaan::inspect(x, what)
+  lavaan::lavInspect(x, what)
 }
 
 #' @keywords internal

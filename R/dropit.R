@@ -80,7 +80,7 @@
 #' }
 #'
 #' @seealso
-#' [psych::alpha()], [lavaan::cfa()], [lavaan::inspect()],
+#' [psych::alpha()], [lavaan::cfa()], [lavaan::lavInspect()],
 #' and the internal helpers documented at [miscutils].
 #'
 #' @examples
