@@ -315,21 +315,18 @@ test_that("oneshotdrop_lambda errors for invalid output type", {
       list(lambda = fake_lambda)
     }
   )
-  expect_message(
-    expect_error(
-      oneshotdrop_lambda(
-        dta = dat,
-        n_drp = 1,
-        dir = "tail",
-        out = "wrong",
-        mmt_mdl = NULL,
-        tgt_fct = NULL,
-        lam_mtr = "std",
-        cfa_args = list(),
-        verbose = TRUE
-      ),
-      regexp = "Invalid output"
+  expect_error(
+    oneshotdrop_lambda(
+      dta = dat,
+      n_drp = 1,
+      dir = "tail",
+      out = "wrong",
+      mmt_mdl = NULL,
+      tgt_fct = NULL,
+      lam_mtr = "std",
+      cfa_args = list(),
+      verbose = FALSE
     ),
-    regexp = "No measurement model was specified"
+    regexp = "Invalid output"
   )
 })

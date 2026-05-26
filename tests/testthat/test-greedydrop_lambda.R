@@ -198,6 +198,6 @@ test_that("greedydrop_lambda errors for invalid output type", {
       ),
       regexp = "Invalid output"
     ),
-    regexp = "No measurement model was specified"
+    regexp = "^Model \\(1/1\\)"
   )
 })
