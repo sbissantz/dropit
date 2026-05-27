@@ -247,7 +247,7 @@ dropit <- function(
           splt_pos <- split(seq_along(partition), partition)
           bad_prts <- vapply(
             splt_pos,
-            function(splt_pos) ncol(dta[, splt_pos, drop = FALSE]) < n_drp,
+            function(x) ncol(dta[, x, drop = FALSE]) < n_drp,
             logical(1)
           )
           if (any(bad_prts)) {
