@@ -166,7 +166,7 @@ greedydrop_lambda <- function(
   # reporting
   verbose = FALSE
 ) {
-  itm_drp <- character(n_drp)
+  itm_drp <- rep(NA_character_, n_drp)
   itm_nms <- colnames(dta)
   for (i in seq_len(n_drp)) {
     current_items <- setdiff(itm_nms, itm_drp[nchar(itm_drp) > 0])
@@ -174,7 +174,7 @@ greedydrop_lambda <- function(
       model_str <- paste0("F =~ ", paste0(current_items, collapse = " + "))
       message(sprintf("Model (%d/%d)  %s", i, n_drp, model_str))
     }
-    updatedta <- dta[, current_items, drop = FALSE]
+    updatedta <- dta[, setdiff(itm_nms, stats::na.omit(itm_drp)), drop = FALSE]
     dropped <- oneshotdrop_lambda(
       dta = updatedta,
       n_drp = 1,
@@ -216,11 +216,11 @@ greedydrop_alpha <- function(
   alp_mtr,
   alp_args 
 ) {
-  itm_drp <- character(n_drp)
+  itm_drp <- rep(NA_character_, n_drp)
   itm_nms <- colnames(dta)
   for (i in seq_len(n_drp)) {
     # positions are relative so need name-based indexing methods
-    updatedta <- dta[, setdiff(itm_nms, itm_drp), drop = FALSE]
+    updatedta <- dta[, setdiff(itm_nms, stats::na.omit(itm_drp)), drop = FALSE]
     # drop the next item greedily
     itm_drp[i] <- oneshotdrop_alpha(
       dta = updatedta,
