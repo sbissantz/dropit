@@ -305,7 +305,9 @@ oneshotdrop_lambda <- function(
   mf <- match.fun(dir)
   pos_drp <- mf(lam_srt, n_drp)
   # Can we extract the names directly in the previous step?
-  nms_drp <- itm_nms[pos_drp]
+  # nms_drp <- itm_nms[pos_drp]
+  # FIX: Map by name, not by external position
+  nms_drp <- names(lam_vec)[pos_drp]
   switch(
     out,
     "names" = nms_drp,
@@ -362,7 +364,9 @@ oneshotdrop_alpha <- function(
   alp_srt <- order(alp_drp[, alp_mtr], decreasing = TRUE)
   mf <- match.fun(dir) # find head() or tail()
   pos_drp <- mf(alp_srt, n_drp)
-  nms_drp <- itm_nms[pos_drp]
+  # FIX: Extract names safely and strip psych's negative signs
+  raw_nms <- rownames(alp_drp)[pos_drp]
+  nms_drp <- sub("-$", "", raw_nms)
   switch(
     out,
     "names" = nms_drp,
