@@ -1,6 +1,7 @@
 # Tools for Reproducible Psychometric Experimentation
 
 ``` r
+
 library(dropit)
 #> dropit
 #> Version: 0.0.0.9000
@@ -12,6 +13,7 @@ We will use the BFI data from the `psych` package to illustrate the
 function for item dropping based on Cronbach’s alpha.
 
 ``` r
+
 # Load BFI data
 dta <- psych::bfi
 
@@ -44,6 +46,7 @@ that it allows easy computation of sum scores for each domain by matrix
 multiplication.
 
 ``` r
+
 Q <- matrix(0, nrow = I, ncol = D) 
 rownames(Q) <- colnames(bfi)
 colnames(Q) <- c("a", "c", "e", "n", "o")
@@ -70,6 +73,7 @@ bfi %*% Q |> head()
 For now, let’s focus on the Extraversion items:
 
 ``` r
+
 # Extraversion items
 extra <- bfi[,Q[,"e"] == 1]
 extra |> head()
@@ -90,6 +94,7 @@ from the extraversion scale based on their alpha values? The
 function allows us to explore that question.
 
 ``` r
+
 drop2ga <- dropit(
   extra,
   n_drop = 2L,

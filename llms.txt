@@ -20,6 +20,7 @@ development version from GitHub.
 Using **pak** (recommended):
 
 ``` r
+
 install.packages("pak")
 pak::pak("sbissantz/dropit")
 ```
@@ -27,6 +28,7 @@ pak::pak("sbissantz/dropit")
 Alternatively, using **remotes**:
 
 ``` r
+
 install.packages("remotes")
 remotes::install_github("sbissantz/dropit") 
 ```
