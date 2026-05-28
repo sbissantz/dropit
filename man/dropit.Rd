@@ -26,8 +26,9 @@ dropit(
 \arguments{
 \item{data}{A \code{data.frame} of item responses
 (rows = respondents, columns = items). Must have at least one row
-and one column. Non-\code{data.frame} inputs are coerced.
-#' @param anchor Optional character vector of item names to protect from
+and one column. Non-\code{data.frame} inputs are coerced.}
+
+\item{anchor}{Optional character vector of item names to protect from
 removal. These theoretical anchors will be shielded from the dropping
 algorithm, ensuring they remain in the final subset regardless of their
 statistical performance. Defaults to \code{NULL}.}
