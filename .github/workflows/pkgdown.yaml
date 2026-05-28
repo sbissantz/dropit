@@ -8,7 +8,7 @@ on:
     types: [published]
   workflow_dispatch:
 
-name: pkgdown.yaml
+name: pkgdown
 
 permissions: read-all
 
@@ -24,6 +24,12 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
+      # --- ADDED: Install Quarto CLI so pkgdown can render .qmd vignettes ---
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          tinytex: false # Set to true later if you ever add PDF vignettes
+      # ----------------------------------------------------------------------
 
       - uses: r-lib/actions/setup-pandoc@v2
 
