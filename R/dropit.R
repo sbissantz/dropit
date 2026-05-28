@@ -18,6 +18,10 @@
 #' @param data A `data.frame` of item responses
 #'   (rows = respondents, columns = items). Must have at least one row
 #'   and one column. Non-`data.frame` inputs are coerced.
+#' #' @param anchor Optional character vector of item names to protect from 
+#'   removal. These theoretical anchors will be shielded from the dropping 
+#'   algorithm, ensuring they remain in the final subset regardless of their 
+#'   statistical performance. Defaults to `NULL`.
 #' @param partition Optional character vector of length `ncol(data)`
 #'   giving a partition label for each column. Dropping is performed
 #'   independently within each partition.

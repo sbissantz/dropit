@@ -11,6 +11,7 @@
 \usage{
 naivedrop(
   dta,
+  anc,
   n_drp,
   dir,
   crt,
@@ -21,25 +22,50 @@ naivedrop(
   mmt_mdl,
   tgt_fct,
   lam_mtr,
-  cfa_args
+  cfa_args,
+  verbose = FALSE
 )
 
-greedydrop_lambda(dta, n_drp, dir, out, mmt_mdl, tgt_fct, lam_mtr, cfa_args)
+greedydrop_lambda(
+  dta,
+  anc,
+  n_drp,
+  dir,
+  out,
+  mmt_mdl,
+  tgt_fct,
+  lam_mtr,
+  cfa_args,
+  verbose = FALSE
+)
 
-greedydrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
+greedydrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
 
-oneshotdrop_lambda(dta, n_drp, dir, out, mmt_mdl, tgt_fct, lam_mtr, cfa_args)
+oneshotdrop_lambda(
+  dta,
+  anc,
+  n_drp,
+  dir,
+  out,
+  mmt_mdl,
+  tgt_fct,
+  lam_mtr,
+  cfa_args,
+  verbose = FALSE
+)
 
-oneshotdrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
+oneshotdrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
 }
 \arguments{
 \item{dta}{A \code{data.frame} of item responses (rows = respondents,
-columns = items).}
+columns = items).
+#' @param anc Character vector of protected item names. Passed internally
+from the \code{anchor} argument in \code{dropit()}.}
 
 \item{n_drp}{Integer scalar giving the number of items to remove.}
 
 \item{dir}{Character string, either \code{"tail"} or \code{"head"}, passed to
-\code{\link[utils:head]{utils::tail()}} / \code{\link[utils:head]{utils::head()}} to select the weakest or strongest
+\code{\link[utils:tail]{utils::tail()}} / \code{\link[utils:head]{utils::head()}} to select the weakest or strongest
 items.}
 
 \item{crt}{Character string, \code{"alpha"} or \code{"lambda"},
@@ -65,7 +91,7 @@ factor used for ranking.  Required when the fitted CFA has multiple
 factors.}
 
 \item{lam_mtr}{Character string passed to
-\code{\link[lavaan:lavInspect]{lavaan::inspect()}} selecting which standardized solution matrix
+\code{\link[lavaan:lavInspect]{lavaan::lavInspect()}} selecting which standardized solution matrix
 to extract (e.g., \code{"std"}).}
 
 \item{cfa_args}{Named list of additional arguments passed to
@@ -91,7 +117,7 @@ algorithm.
 \item Alpha methods call \code{\link[psych:alpha]{psych::alpha()}} with \code{check.keys = TRUE}.
 \item Lambda methods call \code{\link[lavaan:cfa]{lavaan::cfa()}} (defaulting to \code{std.lv = TRUE}
 unless overridden) and extract the \code{"lambda"} matrix from
-\code{\link[lavaan:lavInspect]{lavaan::inspect()}}.
+\code{\link[lavaan:lavInspect]{lavaan::lavInspect()}}.
 \item All helpers validate that the number of extracted loadings matches
 the number of columns in \code{dta} and throw an error otherwise.
 }

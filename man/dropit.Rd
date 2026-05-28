@@ -6,6 +6,7 @@
 \usage{
 dropit(
   data = data.frame(),
+  anchor = NULL,
   partition = NULL,
   n_drop = 1L,
   direction = c("tail", "head"),
@@ -25,7 +26,11 @@ dropit(
 \arguments{
 \item{data}{A \code{data.frame} of item responses
 (rows = respondents, columns = items). Must have at least one row
-and one column. Non-\code{data.frame} inputs are coerced.}
+and one column. Non-\code{data.frame} inputs are coerced.
+#' @param anchor Optional character vector of item names to protect from
+removal. These theoretical anchors will be shielded from the dropping
+algorithm, ensuring they remain in the final subset regardless of their
+statistical performance. Defaults to \code{NULL}.}
 
 \item{partition}{Optional character vector of length \code{ncol(data)}
 giving a partition label for each column. Dropping is performed
@@ -133,6 +138,6 @@ dropit(dat, n_drop = 1, verbose = FALSE)
 
 }
 \seealso{
-\code{\link[psych:alpha]{psych::alpha()}}, \code{\link[lavaan:cfa]{lavaan::cfa()}}, \code{\link[lavaan:lavInspect]{lavaan::inspect()}},
+\code{\link[psych:alpha]{psych::alpha()}}, \code{\link[lavaan:cfa]{lavaan::cfa()}}, \code{\link[lavaan:lavInspect]{lavaan::lavInspect()}},
 and the internal helpers documented at \link{miscutils}.
 }
