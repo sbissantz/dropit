@@ -30,11 +30,12 @@ Imports:
     lavaan (>= 0.6.1),
     checkmate (>= 2.3.3)
 Suggests:
+    quarto,
+    knitr,
     shiny,
     knitr,
-    rmarkdown,
     testthat (>= 3.0.0)
-VignetteBuilder: knitr
+VignetteBuilder: quarto
 LazyData: true
 Config/testthat/edition: 3
 URL: https://sbissantz.github.io/dropit/
