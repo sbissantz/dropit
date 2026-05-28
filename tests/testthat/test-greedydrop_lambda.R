@@ -7,6 +7,7 @@ dta <- psych::bfi[, 1:5]
 test_that("greedydrop_lambda() returns manually debugged output", {
   res <- greedydrop_lambda(
     dta = dta,
+    anc = NULL,
     n_drp = 3,
     dir = "tail",
     out = "names",
@@ -21,6 +22,7 @@ test_that("greedydrop_lambda() returns manually debugged output", {
 test_that("greedydrop_lambda() drops exactly n_drp unique items", {
   res <- greedydrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 3,
     dir = "tail",
     out = "names",
@@ -36,6 +38,7 @@ test_that("greedydrop_lambda() drops exactly n_drp unique items", {
 test_that("greedydrop_lambda() subset has expected number of columns", {
   res <- greedydrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "tail",
     out = "subset",
@@ -50,6 +53,7 @@ test_that("greedydrop_lambda() subset has expected number of columns", {
 test_that("greedydrop_lambda() returns both names and subset when out = 'both'", {
   res <- greedydrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "tail",
     out = "both",
@@ -65,6 +69,7 @@ test_that("greedydrop_lambda() returns both names and subset when out = 'both'",
 test_that("greedydrop_lambda() dir = 'head' works", {
   res <- greedydrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "head",
     out = "names",
@@ -79,6 +84,7 @@ test_that("greedydrop_lambda() dir = 'head' works", {
 test_that("greedydrop_lambda() greedy vs oneshot differ when n_drp > 1", {
   greedy <- greedydrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 3,
     dir = "tail",
     out = "names",
@@ -90,6 +96,7 @@ test_that("greedydrop_lambda() greedy vs oneshot differ when n_drp > 1", {
 
   oneshot <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 3,
     dir = "tail",
     out = "names",
@@ -105,6 +112,7 @@ test_that("greedydrop_lambda() greedy vs oneshot differ when n_drp > 1", {
 test_that("greedydrop_lambda() n_drp = 0 returns empty vector", {
   res <- greedydrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 0,
     dir = "tail",
     out = "names",
@@ -120,6 +128,7 @@ test_that("greedydrop_lambda() invalid 'dir' or 'out' throws clean error", {
   expect_error(
     greedydrop_lambda(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "foobar",
       out = "names",
@@ -132,6 +141,7 @@ test_that("greedydrop_lambda() invalid 'dir' or 'out' throws clean error", {
   expect_error(
     greedydrop_lambda(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       out = "grapefruit",
@@ -146,6 +156,7 @@ test_that("greedydrop_lambda() invalid 'dir' or 'out' throws clean error", {
 test_that("greedydrop_lambda() works with lam_mtr = 'est'", {
   res <- greedydrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -160,6 +171,7 @@ test_that("greedydrop_lambda() works with lam_mtr = 'est'", {
 test_that("greedydrop_lambda() works when no model provided (mmt_mdl = NULL)", {
   res <- greedydrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -187,6 +199,7 @@ test_that("greedydrop_lambda errors for invalid output type", {
     expect_error(
       greedydrop_lambda(
         dta = dat,
+        anc = NULL,
         n_drp = 1,
         dir = "tail",
         out = "wrong",

@@ -8,6 +8,7 @@ dta <- psych::bfi[, 1:5]
 test_that("oneshotdrop_lambda() returns manually debugged output", {
 res <- oneshotdrop_lambda(
   dta,
+  anc = NULL,
   n_drp = 4,
   dir = "tail",
   out = "names",
@@ -23,6 +24,7 @@ test_that("oneshotdrop_lambda() errors with custom measurement model", {
 expect_error(
   oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "subset",
@@ -38,6 +40,7 @@ test_that("oneshotdrop_lambda() errors with specified target_factor", {
 expect_error(
   oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "subset",
@@ -52,6 +55,7 @@ expect_error(
 test_that("oneshotdrop_lambda() returns character when out = 'names'", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -66,6 +70,7 @@ test_that("oneshotdrop_lambda() returns character when out = 'names'", {
 test_that("oneshotdrop_lambda() returns data.frame when out = 'subset'", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "subset",
@@ -80,6 +85,7 @@ test_that("oneshotdrop_lambda() returns data.frame when out = 'subset'", {
 test_that("oneshotdrop_lambda() put = 'both' returns two-element list with 'names' and 'subset'", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "both",
@@ -95,6 +101,7 @@ test_that("oneshotdrop_lambda() put = 'both' returns two-element list with 'name
 test_that("oneshotdrop_lambda() dropped name is not a column name in subset", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "both",
@@ -109,6 +116,7 @@ test_that("oneshotdrop_lambda() dropped name is not a column name in subset", {
 test_that("oneshotdrop_lambda() returns subset has expected number of columns", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "tail",
     out = "subset",
@@ -123,6 +131,7 @@ test_that("oneshotdrop_lambda() returns subset has expected number of columns", 
 test_that("oneshotdrop_lambda() dir='tail' with multiple drops removes correct number of items", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "tail",
     out = "names",
@@ -137,6 +146,7 @@ test_that("oneshotdrop_lambda() dir='tail' with multiple drops removes correct n
 test_that("oneshotdrop_lambda() dir='head' with multiple drops removes correct number of items", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "head",
     out = "names",
@@ -151,6 +161,7 @@ test_that("oneshotdrop_lambda() dir='head' with multiple drops removes correct n
 test_that("oneshotdrop_lambda() works with lam_mtr = 'std.all'", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -165,6 +176,7 @@ test_that("oneshotdrop_lambda() works with lam_mtr = 'std.all'", {
 test_that("oneshotdrop_lambda() works with lam_mtr = 'est'", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -180,6 +192,7 @@ test_that("oneshotdrop_lambda() throws error if lam_mtr invalid", {
   expect_error(
     oneshotdrop_lambda(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       out = "names",
@@ -194,6 +207,7 @@ test_that("oneshotdrop_lambda() throws error if lam_mtr invalid", {
 test_that("oneshotdrop_lambda() n_drp = 0 returns empty character vector", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = 0,
     dir = "tail",
     out = "names",
@@ -208,6 +222,7 @@ test_that("oneshotdrop_lambda() n_drp = 0 returns empty character vector", {
 test_that("oneshotdrop_lambda() n_drp = ncol(data) drops all columns", {
   res <- oneshotdrop_lambda(
     dta,
+    anc = NULL,
     n_drp = ncol(dta),
     dir = "tail",
     out = "names",
@@ -223,6 +238,7 @@ test_that("oneshotdrop_lambda() errors cleanly on invalid 'dir'", {
   expect_error(
     oneshotdrop_lambda(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "foobar",
       out = "names",
@@ -238,6 +254,7 @@ test_that("oneshotdrop_lambda() errors cleanly on invalid 'out'", {
   expect_error(
     oneshotdrop_lambda(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       out = "foobar",
@@ -259,6 +276,7 @@ test_that("oneshotdrop_lambda errors when lambda matrix missing", {
   expect_error(
     oneshotdrop_lambda(
       dta = dat,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       out = "names",
@@ -291,6 +309,7 @@ test_that("oneshotdrop_lambda errors when multiple factors present", {
   expect_error(
     oneshotdrop_lambda(
       dta = dat,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       out = "names",
@@ -318,6 +337,7 @@ test_that("oneshotdrop_lambda errors for invalid output type", {
   expect_error(
     oneshotdrop_lambda(
       dta = dat,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       out = "wrong",

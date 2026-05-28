@@ -8,6 +8,7 @@ dta <- psych::bfi[, 1:5]
 test_that("oneshotdrop_alpha() returns manually debugged output", {
 res <- oneshotdrop_alpha(
   dta,
+  anc = NULL,
   n_drp = 4,
   dir = "tail",
   out = "names",
@@ -20,6 +21,7 @@ expect_equal(res, c("A4", "A5", "A2", "A3"))
 test_that("oneshotdrop_alpha() returns character when out = 'names'", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -32,6 +34,7 @@ test_that("oneshotdrop_alpha() returns character when out = 'names'", {
 test_that("oneshotdrop_alpha() returns data.frame when out = 'subset'", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "subset",
@@ -44,6 +47,7 @@ test_that("oneshotdrop_alpha() returns data.frame when out = 'subset'", {
 test_that("oneshotdrop_alpha() out='both' returns two-element list with 'names' and 'subset'", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "both",
@@ -57,6 +61,7 @@ test_that("oneshotdrop_alpha() out='both' returns two-element list with 'names' 
 test_that("oneshotdrop_alpha() dropped name is not a column name in subset", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "both",
@@ -69,6 +74,7 @@ test_that("oneshotdrop_alpha() dropped name is not a column name in subset", {
 test_that("oneshotdrop_alpha() returns subset with expected number of columns", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "tail",
     out = "subset",
@@ -81,6 +87,7 @@ test_that("oneshotdrop_alpha() returns subset with expected number of columns", 
 test_that("oneshotdrop_alpha() removes correct number of items with dir='tail'  ", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "tail",
     out = "names",
@@ -93,6 +100,7 @@ test_that("oneshotdrop_alpha() removes correct number of items with dir='tail'  
 test_that("oneshotdrop_alpha() removes corrects number of items with dir='head' ", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "head",
     out = "names",
@@ -105,6 +113,7 @@ test_that("oneshotdrop_alpha() removes corrects number of items with dir='head' 
 test_that("oneshotdrop_alpha() works with alp_mtr = 'raw_alpha'", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -117,6 +126,7 @@ test_that("oneshotdrop_alpha() works with alp_mtr = 'raw_alpha'", {
 test_that("oneshotdrop_alpha() works with alp_mtr = 'std.alpha'", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -129,6 +139,7 @@ test_that("oneshotdrop_alpha() works with alp_mtr = 'std.alpha'", {
 test_that("oneshotdrop_alpha() n_drp = 0 returns empty character vector", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 0,
     dir = "tail",
     out = "names",
@@ -141,6 +152,7 @@ test_that("oneshotdrop_alpha() n_drp = 0 returns empty character vector", {
 test_that("oneshotdrop_alpha() n_drp = ncol(data) drops all columns", {
   res <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = ncol(dta),
     dir = "tail",
     out = "names",
@@ -155,6 +167,7 @@ test_that("oneshotdrop_alpha() n_drp = ncol(data) drops all columns", {
 test_that("oneshotdrop_alpha() throws errors if 'dir' is invalid", {
   expect_error(oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "foobar",
     out = "names",
@@ -166,6 +179,7 @@ test_that("oneshotdrop_alpha() throws errors if 'dir' is invalid", {
 test_that("oneshotdrop_alpha() throws error if 'alp_mtr' is invalid", {
   expect_error(oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "names",
@@ -177,6 +191,7 @@ test_that("oneshotdrop_alpha() throws error if 'alp_mtr' is invalid", {
 test_that("oneshotdrop_alpha() throws error when 'out' is invalid", {
   expect_error(oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     out = "foobar",
@@ -190,6 +205,7 @@ test_that("oneshotdrop_alpha errors for invalid output type", {
   expect_error(
     oneshotdrop_alpha(
       dta = dat,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       out = "wrong",

@@ -7,6 +7,7 @@ dta <- psych::bfi[, 1:5]
 test_that("naivedrop() inherits debugged output from oneshotdrop_alpha()", {
 res <- naivedrop(
   dta,
+  anc = NULL,
   n_drp = 4,
   dir = "tail",
   crt = "alpha",
@@ -21,6 +22,7 @@ expect_equal(res, c("A4", "A5", "A2", "A3"))
 test_that("naivedrop() inherits debugged output from oneshotdrop_lambda()", {
   res <- naivedrop(
     dta = dta,
+    anc = NULL,
     n_drp = 4,
     dir = "tail",
     crt = "lambda",
@@ -37,6 +39,7 @@ test_that("naivedrop() inherits debugged output from oneshotdrop_lambda()", {
 test_that("naivedrop() inherits debugged output from greedydrop_alpha()", {
 res <- naivedrop(
   dta,
+  anc = NULL,
   n_drp = 4,
   dir = "tail",
   crt = "alpha",
@@ -51,6 +54,7 @@ expect_equal(res, c("A3", "A2", "A5", "A1"))
 test_that("naivedrop() inherits debugged output from greedydrop_lambda()", {
   res <- naivedrop(
     dta = dta,
+    anc = NULL,
     n_drp = 3,
     dir = "tail",
     crt = "lambda",
@@ -67,6 +71,7 @@ expect_equal(res, c("A1", "A4", "A2"))
 test_that("naivedrop() dispatches correctly for alpha-greedy", {
   res <- naivedrop(
     dta = dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     crt = "alpha",
@@ -81,6 +86,7 @@ test_that("naivedrop() dispatches correctly for alpha-greedy", {
 test_that("naivedrop() dispatches correctly for lambda-oneshot", {
   res <- naivedrop(
     dta = dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     crt = "lambda",
@@ -99,6 +105,7 @@ test_that("naivedrop() dispatches correctly for lambda-oneshot", {
 test_that("naivedrop() dispatches correctly for lambda-greedy", {
   res <- naivedrop(
     dta = dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     crt = "lambda",
@@ -117,6 +124,7 @@ test_that("naivedrop() dispatches correctly for lambda-greedy", {
 test_that("naivedrop() out='names' returns character vector", {
   res <- naivedrop(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     crt = "alpha",
@@ -135,6 +143,7 @@ test_that("naivedrop() out='names' returns character vector", {
 test_that("naivedrop() out='subset' returns data.frame", {
   res <- naivedrop(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     crt = "alpha",
@@ -153,6 +162,7 @@ test_that("naivedrop() out='subset' returns data.frame", {
 test_that("naivedrop() out='both' returns named list", {
   res <- naivedrop(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "tail",
     crt = "alpha",
@@ -172,6 +182,7 @@ test_that("naivedrop() invalid 'dir' throws error", {
   expect_error(
     naivedrop(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "foobar",
       crt = "alpha",
@@ -191,6 +202,7 @@ test_that("naivedrop() invalid 'crt' throws error", {
   expect_error(
     naivedrop(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       crt = "foobar",
@@ -210,6 +222,7 @@ test_that("naivedrop() invalid 'apr' throws informative error", {
   expect_error(
     naivedrop(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       crt = "alpha",
@@ -229,6 +242,7 @@ test_that("naivedrop() invalid 'out' propagates cleanly to inner functions", {
   expect_error(
     naivedrop(
       dta,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       crt = "alpha",
@@ -249,6 +263,7 @@ test_that("naivedrop() always returns exactly n_drp items (when out='names')", {
     for (apr in c("oneshot", "greedy")) {
       res <- naivedrop(
         dta,
+        anc = NULL,
         n_drp = 2,
         dir = "tail",
         crt = crt,
@@ -271,6 +286,7 @@ test_that("naivedrop errors for invalid criterion", {
   expect_error(
     naivedrop(
       dta = dat,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       crt = "wrong",
@@ -291,6 +307,7 @@ test_that("naivedrop errors for invalid approach with alpha criterion", {
   expect_error(
     naivedrop(
       dta = dat,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       crt = "alpha",
@@ -312,6 +329,7 @@ test_that("naivedrop errors for invalid approach with lambda criterion", {
   expect_error(
     naivedrop(
       dta = dat,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       crt = "lambda",
@@ -332,6 +350,7 @@ test_that("dropit records warning when non-data.frame input is coerced", {
   mat <- matrix(1:24, ncol = 4)
   res <- dropit(
     data = mat,
+    anc = NULL,
     n_drop = 1,
     direction = "tail",
     criterion = "alpha",
@@ -350,6 +369,7 @@ test_that("dropit errors when partition has too few columns", {
   expect_error(
     dropit(
       data = dat,
+      anc = NULL,
       partition = part,
       n_drop = 2,
       criterion = "alpha",
@@ -365,6 +385,7 @@ test_that("dropit errors for invalid criterion", {
   expect_error(
     dropit(
       data = dat,
+      anc = NULL,
       n_drop = 1,
       criterion = "wrong",
       approach = "oneshot",

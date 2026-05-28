@@ -7,6 +7,7 @@ dta <- psych::bfi[, 1:5]
 test_that("greedydrop_alpha() returns manually debugged output", {
 res <- greedydrop_alpha(
   dta,
+  anc = NULL,
   n_drp = 4,
   dir = "tail",
   out = "names",
@@ -19,6 +20,7 @@ expect_equal(res, c("A3", "A2", "A5", "A1"))
 test_that("greedydrop_alpha() drops exactly n_drp unique items", {
   res <- greedydrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 3,
     dir = "tail",
     out = "names",
@@ -32,6 +34,7 @@ test_that("greedydrop_alpha() drops exactly n_drp unique items", {
 test_that("greedydrop_alpha() subset has expected number of columns", {
   res <- greedydrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "tail",
     out = "subset",
@@ -44,6 +47,7 @@ test_that("greedydrop_alpha() subset has expected number of columns", {
 test_that("greedydrop_alpha() returns both names and subset when out = 'both'", {
   res <- greedydrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "tail",
     out = "both",
@@ -57,6 +61,7 @@ test_that("greedydrop_alpha() returns both names and subset when out = 'both'", 
 test_that("greedydrop_alpha() dir = 'head' works", {
   res <- greedydrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 2,
     dir = "head",
     out = "names",
@@ -69,6 +74,7 @@ test_that("greedydrop_alpha() dir = 'head' works", {
 test_that("greedydrop_alpha() greedy vs oneshot differ when n_drp > 1", {
   greedy <- greedydrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 3,
     dir = "tail",
     out = "names",
@@ -77,6 +83,7 @@ test_that("greedydrop_alpha() greedy vs oneshot differ when n_drp > 1", {
   )
   oneshot <- oneshotdrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 3,
     dir = "tail",
     out = "names",
@@ -89,6 +96,7 @@ test_that("greedydrop_alpha() greedy vs oneshot differ when n_drp > 1", {
 test_that("greedydrop_alpha() n_drp = 0 returns empty vector", {
   res <- greedydrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 0,
     dir = "tail",
     out = "names",
@@ -102,6 +110,7 @@ test_that("greedydrop_alpha() throws error if n_drp = ncol(dta) - alpha requires
   expect_error(
     res <- greedydrop_alpha(
       dta,
+      anc = NULL,
       n_drp = ncol(dta),
       dir = "tail",
       out = "names",
@@ -114,6 +123,7 @@ test_that("greedydrop_alpha() throws error if n_drp = ncol(dta) - alpha requires
 test_that("greedydrop_alpha() invalid 'dir' or 'out' throws clean error", {
   expect_error(greedydrop_alpha(
     dta,
+    anc = NULL,
     n_drp = 1,
     dir = "foobar",
     out = "names",
@@ -135,6 +145,7 @@ test_that("greedydrop_alpha errors for invalid output type", {
   expect_error(
     greedydrop_alpha(
       dta = dat,
+      anc = NULL,
       n_drp = 1,
       dir = "tail",
       out = "wrong",
