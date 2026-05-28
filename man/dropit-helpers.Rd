@@ -58,8 +58,9 @@ oneshotdrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
 }
 \arguments{
 \item{dta}{A \code{data.frame} of item responses (rows = respondents,
-columns = items).
-#' @param anc Character vector of protected item names. Passed internally
+columns = items).}
+
+\item{anc}{Character vector of protected item names. Passed internally
 from the \code{anchor} argument in \code{dropit()}.}
 
 \item{n_drp}{Integer scalar giving the number of items to remove.}

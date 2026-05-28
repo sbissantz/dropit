@@ -22,7 +22,7 @@
 #'
 #' @param dta A `data.frame` of item responses (rows = respondents,
 #'   columns = items).
-#' #' @param anc Character vector of protected item names. Passed internally 
+#' @param anc Character vector of protected item names. Passed internally 
 #'   from the `anchor` argument in `dropit()`.
 #' @param n_drp Integer scalar giving the number of items to remove.
 #' @param dir Character string, either `"tail"` or `"head"`, passed to
