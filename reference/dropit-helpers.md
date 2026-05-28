@@ -62,8 +62,12 @@ oneshotdrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
 - dta:
 
   A `data.frame` of item responses (rows = respondents, columns =
-  items). \#' @param anc Character vector of protected item names.
-  Passed internally from the `anchor` argument in
+  items).
+
+- anc:
+
+  Character vector of protected item names. Passed internally from the
+  `anchor` argument in
   [`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md).
 
 - n_drp:
