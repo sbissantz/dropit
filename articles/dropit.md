@@ -3,8 +3,13 @@
 ``` r
 
 library(dropit)
-#> dropit
-#> Version: 0.0.0.9000
+```
+
+    dropit
+    Version: 0.0.0.9000
+
+``` r
+
 library(psych)
 ```
 
@@ -59,16 +64,17 @@ Q[21:25, "o"] <- 1 # Openness
 
 # Sumscores (original)
 bfi %*% Q |> head()
-#>     a  c  e  n  o
-#> p1 17 16 17 14 19
-#> p2 18 20 15 19 16
-#> p3 22 20 19 18 18
-#> p4 24 21 20 14 18
-#> p5 17 18 18 16 16
-#> p6 28 22 20 15 19
 ```
 
-## Extraversion
+        a  c  e  n  o
+    p1 17 16 17 14 19
+    p2 18 20 15 19 16
+    p3 22 20 19 18 18
+    p4 24 21 20 14 18
+    p5 17 18 18 16 16
+    p6 28 22 20 15 19
+
+## Extraversion Domain
 
 For now, let’s focus on the Extraversion items:
 
@@ -77,16 +83,17 @@ For now, let’s focus on the Extraversion items:
 # Extraversion items
 extra <- bfi[,Q[,"e"] == 1]
 extra |> head()
-#>    E1 E2 E3 E4 E5
-#> p1  3  3  3  4  4
-#> p2  1  1  6  4  3
-#> p3  2  4  4  4  5
-#> p4  5  3  4  4  4
-#> p5  2  2  5  4  5
-#> p6  2  1  6  5  6
 ```
 
-## Drop it
+       E1 E2 E3 E4 E5
+    p1  3  3  3  4  4
+    p2  1  1  6  4  3
+    p3  2  4  4  4  5
+    p4  5  3  4  4  4
+    p5  2  2  5  4  5
+    p6  2  1  6  5  6
+
+## Drop It!
 
 What happens, when we greadily drop, say the 2 worst-performing items
 from the extraversion scale based on their alpha values? The
@@ -107,9 +114,51 @@ drop2ga <- dropit(
   verbose = FALSE
 )
 drop2ga$names
-#> [1] "E2" "E4"
+```
+
+    [1] "E2" "E4"
+
+``` r
 
 # Manifest correlation between sum scores
 cor(rowSums(extra), rowSums(drop2ga$subset), use = "pairwise.complete.obs")
-#> [1] 0.8282344
 ```
+
+    [1] 0.8282344
+
+## Anchoring Items
+
+Researchers often need to retain specific items to ensure strict
+comparability against an established baseline. The `anchor` argument
+allows you to define a set of items that are immune to dropping. Let’s
+assume items `E2` and `E4` are theoretically vital to the Extraversion
+scale. However, in the previous run, the algorithm dropped them. By
+setting them as anchors, we ensure they remain protected.
+
+``` r
+
+drop2_anc <- dropit(
+  extra,
+  anchor = c("E2", "E4"),
+  n_drop = 2L,
+  direction = "tail",
+  criterion = "alpha",
+  approach = "greedy",
+  output_type = "names",
+  alpha_metric = "raw_alpha",
+  alpha_args = list(check.keys = TRUE),
+  verbose = FALSE
+)
+
+# Compare dropped items against unanchored baseline
+cat("Unanchored:", paste0(drop2ga$names, collapse = ", "), "\n")
+```
+
+    Unanchored: E2, E4 
+
+``` r
+
+cat("Anchored:", paste0(drop2_anc, collapse = ", "), "\n")
+```
+
+    Anchored: E1, E3 

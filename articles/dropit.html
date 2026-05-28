@@ -10,7 +10,9 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Tools for Reproducible Psychometric Experimentation">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="dropit_files/libs/quarto-html/popper.min.js"></script><script src="dropit_files/libs/quarto-html/tippy.umd.min.js"></script><link href="dropit_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="dropit_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Tools for Reproducible Psychometric Experimentation">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -41,32 +43,37 @@
 
 
   </div>
-</nav><div class="container template-article">
-
-
-
-
+</nav><div class="container template-quarto">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Tools for Reproducible Psychometric Experimentation</h1>
-            
-      
 
-      <div class="d-none name"><code>dropit.Rmd</code></div>
+
+
+
+
+      <div class="d-none name"><code></code></div>
     </div>
 
-    
-    
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sbissantz.github.io/dropit/">dropit</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; dropit</span></span>
-<span><span class="co">#&gt; Version: 0.0.0.9000</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://personality-project.org/r/psych/" class="external-link">psych</a></span><span class="op">)</span></span></code></pre></div>
-<p>We will use the BFI data from the <code>psych</code> package to
-illustrate the <code><a href="../reference/dropit.html">dropit()</a></code> function for item dropping based on
-Cronbach’s alpha.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+
+
+
+
+
+    <div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sbissantz.github.io/dropit/">dropit</a></span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>dropit
+Version: 0.0.0.9000</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://personality-project.org/r/psych/" class="external-link">psych</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<p>We will use the BFI data from the <code>psych</code> package to illustrate the <code><a href="../reference/dropit.html">dropit()</a></code> function for item dropping based on Cronbach’s alpha.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load BFI data</span></span>
 <span><span class="va">dta</span> <span class="op">&lt;-</span> <span class="fu">psych</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/psych/man/bfi.html" class="external-link">bfi</a></span></span>
 <span></span>
@@ -88,15 +95,12 @@ Cronbach’s alpha.</p>
 <span></span>
 <span><span class="co"># Number of dimensions</span></span>
 <span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fl">5</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="assignment">Assignment<a class="anchor" aria-label="anchor" href="#assignment"></a>
+</div>
+<section class="section level2"><h2 id="assignment">Assignment<a class="anchor" aria-label="anchor" href="#assignment"></a>
 </h2>
-<p>The Q-matrix is a binary matrix that specifies the mapping of an item
-to its respective latent construct(s). Here, it helps us define which
-BFI items belong to which domain. A nice feature of this representation
-is that it allows easy computation of sum scores for each domain by
-matrix multiplication.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>The Q-matrix is a binary matrix that specifies the mapping of an item to its respective latent construct(s). Here, it helps us define which BFI items belong to which domain. A nice feature of this representation is that it allows easy computation of sum scores for each domain by matrix multiplication.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">Q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="va">I</span>, ncol <span class="op">=</span> <span class="va">D</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">bfi</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">Q</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"c"</span>, <span class="st">"e"</span>, <span class="st">"n"</span>, <span class="st">"o"</span><span class="op">)</span></span>
@@ -108,38 +112,40 @@ matrix multiplication.</p>
 <span><span class="va">Q</span><span class="op">[</span><span class="fl">21</span><span class="op">:</span><span class="fl">25</span>, <span class="st">"o"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># Openness</span></span>
 <span></span>
 <span><span class="co"># Sumscores (original)</span></span>
-<span><span class="va">bfi</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">Q</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     a  c  e  n  o</span></span>
-<span><span class="co">#&gt; p1 17 16 17 14 19</span></span>
-<span><span class="co">#&gt; p2 18 20 15 19 16</span></span>
-<span><span class="co">#&gt; p3 22 20 19 18 18</span></span>
-<span><span class="co">#&gt; p4 24 21 20 14 18</span></span>
-<span><span class="co">#&gt; p5 17 18 18 16 16</span></span>
-<span><span class="co">#&gt; p6 28 22 20 15 19</span></span></code></pre></div>
+<span><span class="va">bfi</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">Q</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    a  c  e  n  o
+p1 17 16 17 14 19
+p2 18 20 15 19 16
+p3 22 20 19 18 18
+p4 24 21 20 14 18
+p5 17 18 18 16 16
+p6 28 22 20 15 19</code></pre>
 </div>
-<div class="section level2">
-<h2 id="extraversion">Extraversion<a class="anchor" aria-label="anchor" href="#extraversion"></a>
+</div>
+</section><section class="section level2"><h2 id="extraversion-domain">Extraversion Domain<a class="anchor" aria-label="anchor" href="#extraversion-domain"></a>
 </h2>
 <p>For now, let’s focus on the Extraversion items:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Extraversion items</span></span>
 <span><span class="va">extra</span> <span class="op">&lt;-</span> <span class="va">bfi</span><span class="op">[</span>,<span class="va">Q</span><span class="op">[</span>,<span class="st">"e"</span><span class="op">]</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">extra</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    E1 E2 E3 E4 E5</span></span>
-<span><span class="co">#&gt; p1  3  3  3  4  4</span></span>
-<span><span class="co">#&gt; p2  1  1  6  4  3</span></span>
-<span><span class="co">#&gt; p3  2  4  4  4  5</span></span>
-<span><span class="co">#&gt; p4  5  3  4  4  4</span></span>
-<span><span class="co">#&gt; p5  2  2  5  4  5</span></span>
-<span><span class="co">#&gt; p6  2  1  6  5  6</span></span></code></pre></div>
+<span><span class="va">extra</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   E1 E2 E3 E4 E5
+p1  3  3  3  4  4
+p2  1  1  6  4  3
+p3  2  4  4  4  5
+p4  5  3  4  4  4
+p5  2  2  5  4  5
+p6  2  1  6  5  6</code></pre>
 </div>
-<div class="section level2">
-<h2 id="drop-it">Drop it<a class="anchor" aria-label="anchor" href="#drop-it"></a>
+</div>
+</section><section class="section level2"><h2 id="drop-it">Drop It!<a class="anchor" aria-label="anchor" href="#drop-it"></a>
 </h2>
-<p>What happens, when we greadily drop, say the 2 worst-performing items
-from the extraversion scale based on their alpha values? The
-<code><a href="../reference/dropit.html">dropit()</a></code> function allows us to explore that question.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>What happens, when we greadily drop, say the 2 worst-performing items from the extraversion scale based on their alpha values? The <code><a href="../reference/dropit.html">dropit()</a></code> function allows us to explore that question.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drop2ga</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
 <span>  <span class="va">extra</span>,</span>
 <span>  n_drop <span class="op">=</span> <span class="fl">2L</span>,</span>
@@ -151,17 +157,131 @@ from the extraversion scale based on their alpha values? The
 <span>  alpha_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>check.keys <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">drop2ga</span><span class="op">$</span><span class="va">names</span></span>
-<span><span class="co">#&gt; [1] "E2" "E4"</span></span>
+<span><span class="va">drop2ga</span><span class="op">$</span><span class="va">names</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "E2" "E4"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Manifest correlation between sum scores</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">extra</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">drop2ga</span><span class="op">$</span><span class="va">subset</span><span class="op">)</span>, use <span class="op">=</span> <span class="st">"pairwise.complete.obs"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8282344</code></pre>
+</div>
+</div>
+</section><section class="section level2"><h2 id="anchoring-items">Anchoring Items<a class="anchor" aria-label="anchor" href="#anchoring-items"></a>
+</h2>
+<p>Researchers often need to retain specific items to ensure strict comparability against an established baseline. The <code>anchor</code> argument allows you to define a set of items that are immune to dropping. Let’s assume items <code>E2</code> and <code>E4</code> are theoretically vital to the Extraversion scale. However, in the previous run, the algorithm dropped them. By setting them as anchors, we ensure they remain protected.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">drop2_anc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  <span class="va">extra</span>,</span>
+<span>  anchor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E2"</span>, <span class="st">"E4"</span><span class="op">)</span>,</span>
+<span>  n_drop <span class="op">=</span> <span class="fl">2L</span>,</span>
+<span>  direction <span class="op">=</span> <span class="st">"tail"</span>,</span>
+<span>  criterion <span class="op">=</span> <span class="st">"alpha"</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"greedy"</span>,</span>
+<span>  output_type <span class="op">=</span> <span class="st">"names"</span>,</span>
+<span>  alpha_metric <span class="op">=</span> <span class="st">"raw_alpha"</span>,</span>
+<span>  alpha_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>check.keys <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Manifest correlation between sum scores</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">extra</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">drop2ga</span><span class="op">$</span><span class="va">subset</span><span class="op">)</span>, use <span class="op">=</span> <span class="st">"pairwise.complete.obs"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.8282344</span></span></code></pre></div>
+<span><span class="co"># Compare dropped items against unanchored baseline</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Unanchored:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">drop2ga</span><span class="op">$</span><span class="va">names</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Unanchored: E2, E4 </code></pre>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
+<div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Anchored:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">drop2_anc</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Anchored: E1, E3 </code></pre>
 </div>
-
+</div>
+</section><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config);
+    }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script></main>
+</div>
 
 
     <footer><div class="pkgdown-footer-left">
