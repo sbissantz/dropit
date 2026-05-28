@@ -11,6 +11,7 @@ developers who may wish to extend or debug the algorithm.
 ``` r
 naivedrop(
   dta,
+  anc,
   n_drp,
   dir,
   crt,
@@ -21,16 +22,39 @@ naivedrop(
   mmt_mdl,
   tgt_fct,
   lam_mtr,
-  cfa_args
+  cfa_args,
+  verbose = FALSE
 )
 
-greedydrop_lambda(dta, n_drp, dir, out, mmt_mdl, tgt_fct, lam_mtr, cfa_args)
+greedydrop_lambda(
+  dta,
+  anc,
+  n_drp,
+  dir,
+  out,
+  mmt_mdl,
+  tgt_fct,
+  lam_mtr,
+  cfa_args,
+  verbose = FALSE
+)
 
-greedydrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
+greedydrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
 
-oneshotdrop_lambda(dta, n_drp, dir, out, mmt_mdl, tgt_fct, lam_mtr, cfa_args)
+oneshotdrop_lambda(
+  dta,
+  anc,
+  n_drp,
+  dir,
+  out,
+  mmt_mdl,
+  tgt_fct,
+  lam_mtr,
+  cfa_args,
+  verbose = FALSE
+)
 
-oneshotdrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
+oneshotdrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
 ```
 
 ## Arguments
@@ -38,7 +62,9 @@ oneshotdrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
 - dta:
 
   A `data.frame` of item responses (rows = respondents, columns =
-  items).
+  items). \#' @param anc Character vector of protected item names.
+  Passed internally from the `anchor` argument in
+  [`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md).
 
 - n_drp:
 
@@ -89,7 +115,7 @@ oneshotdrop_alpha(dta, n_drp, dir, out, alp_mtr, alp_args)
 - lam_mtr:
 
   Character string passed to
-  [`lavaan::inspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html)
+  [`lavaan::lavInspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html)
   selecting which standardized solution matrix to extract (e.g.,
   `"std"`).
 
@@ -118,7 +144,7 @@ Depending on `out`:
   [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html) (defaulting
   to `std.lv = TRUE` unless overridden) and extract the `"lambda"`
   matrix from
-  [`lavaan::inspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html).
+  [`lavaan::lavInspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html).
 
 - All helpers validate that the number of extracted loadings matches the
   number of columns in `dta` and throw an error otherwise.

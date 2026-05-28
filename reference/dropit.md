@@ -10,6 +10,7 @@ data set or within user-defined column partitions.
 ``` r
 dropit(
   data = data.frame(),
+  anchor = NULL,
   partition = NULL,
   n_drop = 1L,
   direction = c("tail", "head"),
@@ -33,7 +34,11 @@ dropit(
 
   A `data.frame` of item responses (rows = respondents, columns =
   items). Must have at least one row and one column. Non-`data.frame`
-  inputs are coerced.
+  inputs are coerced. \#' @param anchor Optional character vector of
+  item names to protect from removal. These theoretical anchors will be
+  shielded from the dropping algorithm, ensuring they remain in the
+  final subset regardless of their statistical performance. Defaults to
+  `NULL`.
 
 - partition:
 
@@ -160,7 +165,7 @@ frame, or list depending on the specified output type. If
 
 [`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html),
 [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html),
-[`lavaan::inspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html),
+[`lavaan::lavInspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html),
 and the internal helpers documented at
 [miscutils](https://sbissantz.github.io/dropit/reference/miscutils.md).
 
