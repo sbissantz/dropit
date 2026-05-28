@@ -394,3 +394,26 @@ test_that("dropit errors for invalid criterion", {
     regexp = "should be one of"
   )
 })
+
+test_that("naivedrop() respects anchor items", {
+  # A greedy alpha drop of 2 items normally removes A3 and A2.
+  # Anchoring A3 ensures naivedrop successfully passes the parameter down.
+  res <- naivedrop(
+    dta = dta,
+    anc = "A3",
+    n_drp = 2,
+    dir = "tail",
+    crt = "alpha",
+    apr = "greedy",
+    out = "names",
+    alp_mtr = "raw_alpha",
+    alp_args = list(check.keys = TRUE),
+    mmt_mdl = NULL,
+    tgt_fct = NULL,
+    lam_mtr = "std.all",
+    cfa_args = list()
+  )
+  expect_equal(res, c("A2", "A5"))
+  expect_false("A3" %in% res)
+  expect_length(res, 2)
+})

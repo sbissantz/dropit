@@ -155,3 +155,17 @@ test_that("greedydrop_alpha errors for invalid output type", {
     regexp = "Invalid output"
   )
 })
+
+test_that("greedydrop_alpha() respects anchor items", {
+  res <- greedydrop_alpha(
+    dta = dta,
+    anc = "A3",
+    n_drp = 2,
+    dir = "tail",
+    out = "names",
+    alp_mtr = "raw_alpha",
+    alp_args = list(check.keys = TRUE)
+  )
+  expect_false("A3" %in% res)
+  expect_length(res, 2)
+})

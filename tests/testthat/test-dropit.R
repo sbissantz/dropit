@@ -406,3 +406,23 @@ test_that("dropit() errors when n_drop > ncol(data) (explicit guard at top level
     )
   )
 })
+
+test_that("dropit() frontend correctly passes and shields anchor items", {
+  # A normal greedy drop of 2 items removes A3 and A2.
+  # Anchoring them forces the algorithm to shift to the next weakest items.
+  res <- dropit(
+    data = dta,
+    anchor = c("A3", "A2"),
+    n_drop = 2L,
+    direction = "tail",
+    criterion = "alpha",
+    approach = "greedy",
+    output_type = "names",
+    alpha_metric = "raw_alpha",
+    alpha_args = list(check.keys = TRUE),
+    verbose = FALSE
+  )
+  expect_equal(res, c("A5", "A4"))
+  expect_false(any(c("A3", "A2") %in% res))
+  expect_length(res, 2)
+})

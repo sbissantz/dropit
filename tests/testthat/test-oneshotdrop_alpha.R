@@ -4,7 +4,7 @@
 
 # Agreeableness
 dta <- psych::bfi[, 1:5]  
-
+colnames(dta)
 test_that("oneshotdrop_alpha() returns manually debugged output", {
 res <- oneshotdrop_alpha(
   dta,
@@ -214,4 +214,22 @@ test_that("oneshotdrop_alpha errors for invalid output type", {
     ),
     regexp = "Invalid output"
   )
+})
+
+test_that("oneshotdrop_alpha() respects anchor items", {
+  # Normally, dropping tail 2 yields "A2" and "A3".
+  # We anchor "A3" to force the algorithm to skip it.
+  res <- oneshotdrop_alpha(
+    dta = dta,
+    anc = "A3",
+    n_drp = 2,
+    dir = "tail",
+    out = "names",
+    alp_mtr = "raw_alpha",
+    alp_args = list(check.keys = TRUE)
+  )
+  # A3 must survive
+  expect_false("A3" %in% res)
+  # The algorithm should shift up and drop A5 and A2 instead
+  expect_equal(res, c("A5", "A2"))
 })

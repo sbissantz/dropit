@@ -214,3 +214,21 @@ test_that("greedydrop_lambda errors for invalid output type", {
     regexp = "^Model \\(1/1\\)"
   )
 })
+
+test_that("greedydrop_lambda() respects anchor items", {
+  # Normally drops A1, A4
+  res <- greedydrop_lambda(
+    dta = dta,
+    anc = "A1",
+    n_drp = 2,
+    dir = "tail",
+    out = "names",
+    mmt_mdl = NULL,
+    tgt_fct = NULL,
+    lam_mtr = "std.all",
+    cfa_args = list(std.lv = TRUE)
+  )
+  expect_equal(res, c("A4", "A5"))
+  expect_false("A1" %in% res)
+  expect_length(res, 2)
+})

@@ -350,3 +350,21 @@ test_that("oneshotdrop_lambda errors for invalid output type", {
     regexp = "Invalid output"
   )
 })
+
+test_that("oneshotdrop_lambda() respects anchor items", {
+  # Tail 1 normally drops A1. Anchor it.
+  res <- oneshotdrop_lambda(
+    dta = dta,
+    anc = "A1",
+    n_drp = 1,
+    dir = "tail",
+    out = "names",
+    mmt_mdl = NULL,
+    tgt_fct = NULL,
+    lam_mtr = "std.all",
+    cfa_args = list(std.lv = TRUE)
+  )
+  res
+  expect_false("A1" %in% res)
+  expect_equal(res, "A4") # A4 is the next weakest loading
+})
