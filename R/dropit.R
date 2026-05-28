@@ -97,6 +97,7 @@
 dropit <- function(
   # core
   data = data.frame(),
+  anchor = NULL,
   partition = NULL,
   n_drop = 1L,
   direction = c("tail", "head"),
@@ -232,6 +233,18 @@ dropit <- function(
           }
         }
 
+        ## ---- anchor ----
+        checkmate::assert_character(
+          anchor,
+          null.ok = TRUE,
+          any.missing = FALSE
+        )
+        if (!is.null(anchor)) {
+          checkmate::assert_subset(anchor, colnames(dta))
+        }
+        # short name
+        anc <- anchor
+
         ## ---- partition ----
 
         # TODO: debug with example partition, to see if it works.
@@ -247,7 +260,13 @@ dropit <- function(
           splt_pos <- split(seq_along(partition), partition)
           bad_prts <- vapply(
             splt_pos,
-            function(x) ncol(dta[, x, drop = FALSE]) < n_drp,
+            function(x) {
+              cols_in_part <- colnames(dta[, x, drop = FALSE])
+              # Count how many items in this partition are NOT anchors
+              n_drpbl <- length(setdiff(cols_in_part, anc))
+              # ensure each partition has enough droppable (non-anchor) items
+              n_drpbl < n_drp
+            },
             logical(1)
           )
           if (any(bad_prts)) {
@@ -410,6 +429,7 @@ dropit <- function(
           res <- lapply(splt_pos, function(idx) {
             naivedrop(
               dta = dta[, idx, drop = FALSE],
+              anc = anc,
               n_drp = n_drp,
               dir = dir,
               crt = crt,
@@ -429,6 +449,7 @@ dropit <- function(
         } else {
           naivedrop(
             dta = dta,
+            anc = anc,
             n_drp = n_drp,
             dir = dir,
             crt = crt,

@@ -75,6 +75,7 @@ NULL
 naivedrop <- function(
   # core
   dta,
+  anc,
   n_drp,
   dir,
   # method selection
@@ -99,20 +100,22 @@ naivedrop <- function(
     "alpha" = switch(
       apr,
       "oneshot" = oneshotdrop_alpha(
-        dta,
-        n_drp,
-        dir,
-        out,
-        alp_mtr,
-        alp_args
+        dta = dta,
+        anc = anc,
+        n_drp = n_drp,
+        dir = dir,
+        out = out,
+        alp_mtr = alp_mtr,
+        alp_args = alp_args
       ),
       "greedy" = greedydrop_alpha(
-        dta,
-        n_drp,
-        dir,
-        out,
-        alp_mtr,
-        alp_args
+        dta = dta,
+        anc = anc,
+        n_drp = n_drp,
+        dir = dir,
+        out = out,
+        alp_mtr = alp_mtr,
+        alp_args = alp_args
       ),
       # Should never reached if input validation works properly 
       stop("Debug: Invalid criterion specified. Use 'oneshot' or 'greedy'.")
@@ -121,6 +124,7 @@ naivedrop <- function(
       apr,
       "oneshot" = oneshotdrop_lambda(
         dta = dta,
+        anc = anc,
         n_drp = n_drp,
         dir = dir,
         out = out,
@@ -132,6 +136,7 @@ naivedrop <- function(
       ),
       "greedy" = greedydrop_lambda(
         dta = dta, 
+        anc = anc,
         n_drp = n_drp,
         dir = dir, 
         out = out,
@@ -153,7 +158,8 @@ naivedrop <- function(
 #' @keywords internal
 greedydrop_lambda <- function(
   # core
-  dta, 
+  dta,
+  anc, 
   n_drp,
   dir,
   # output type
@@ -177,6 +183,7 @@ greedydrop_lambda <- function(
     updatedta <- dta[, setdiff(itm_nms, stats::na.omit(itm_drp)), drop = FALSE]
     dropped <- oneshotdrop_lambda(
       dta = updatedta,
+      anc = anc,
       n_drp = 1,
       dir = dir,
       out = "names",
@@ -208,6 +215,7 @@ greedydrop_lambda <- function(
 greedydrop_alpha <- function(
   # core
   dta,
+  anc,
   n_drp,
   dir,
   # output type
@@ -224,6 +232,7 @@ greedydrop_alpha <- function(
     # drop the next item greedily
     itm_drp[i] <- oneshotdrop_alpha(
       dta = updatedta,
+      anc = anc,
       n_drp = 1,
       dir,
       out = "names",
@@ -251,6 +260,7 @@ greedydrop_alpha <- function(
 oneshotdrop_lambda <- function(
   # core
   dta,
+  anc,
   n_drp,
   dir,
   # output type 
@@ -302,12 +312,11 @@ oneshotdrop_lambda <- function(
   names(lam_vec) <- rownames(lam_mat)
   # Sort by absolute value
   lam_srt <- order(abs(lam_vec), decreasing = TRUE)
+  nms_srt <- names(lam_vec)[lam_srt]
+  # Propose drop candidates, safe anchor items
+  cand <- setdiff(nms_srt, anc)
   mf <- match.fun(dir)
-  pos_drp <- mf(lam_srt, n_drp)
-  # Can we extract the names directly in the previous step?
-  # nms_drp <- itm_nms[pos_drp]
-  # FIX: Map by name, not by external position
-  nms_drp <- names(lam_vec)[pos_drp]
+  nms_drp <- mf(cand, n_drp)
   switch(
     out,
     "names" = nms_drp,
@@ -339,6 +348,7 @@ oneshotdrop_lambda <- function(
 oneshotdrop_alpha <- function(
   # core
   dta,
+  anc,
   n_drp,
   dir,
   # output type 
@@ -362,11 +372,13 @@ oneshotdrop_alpha <- function(
   # extract the relevant metric
   alp_drp <- alp[["alpha.drop"]]
   alp_srt <- order(alp_drp[, alp_mtr], decreasing = TRUE)
-  mf <- match.fun(dir) # find head() or tail()
-  pos_drp <- mf(alp_srt, n_drp)
-  # FIX: Extract names safely and strip psych's negative signs
-  raw_nms <- rownames(alp_drp)[pos_drp]
-  nms_drp <- sub("-$", "", raw_nms)
+  nms_raw <- rownames(alp_drp)[alp_srt]
+  # Remove psych's trailing negative sign feature
+  nms_cln <- sub("-$", "", nms_raw)
+  # Propose drop candidates, safe anchor items
+  cand <- setdiff(nms_cln, anc)
+  mf <- match.fun(dir) 
+  nms_drp <- mf(cand, n_drp)
   switch(
     out,
     "names" = nms_drp,
