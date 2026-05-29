@@ -17,7 +17,32 @@ test_that("dropit() produces debugged results with 'partitions'", {
     direction = "tail",
     criterion = "alpha",
     approach = "oneshot",
-    output_type = "names",
+    alpha_metric = "raw_alpha",
+    alpha_args = list(check.keys = TRUE),
+    partition = ptn,
+    verbose = TRUE
+  )$names
+  lst <- list(
+    A = c("A3", "A2"),
+    C = c("C2", "C4"),
+    E = c("E1", "E2"),
+    N = c("N2", "N3"),
+    O = c("O5", "O3")
+  )
+  expect_identical(res, lst)
+})
+# ----------------------------------------------------------------------- 
+
+test_that("dropit() produces correct results with 'partitions'", {
+  # fake 'paritions' for testing
+  dta_ptn <- psych::bfi[1:500, -(26:28)]
+  ptn <- substr(colnames(dta_ptn), 1, 1)
+  res <- dropit(
+    data = dta_ptn,
+    n_drop = 2L,
+    direction = "tail",
+    criterion = "alpha",
+    approach = "oneshot",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     partition = ptn,
@@ -30,7 +55,7 @@ test_that("dropit() produces debugged results with 'partitions'", {
     N = c("N2", "N3"),
     O = c("O5", "O3")
   )
-  expect_identical(res, lst)
+  expect_identical(res$names, lst)
 })
 
 test_that("dropit() inherits output from oneshotdrop_alpha()", {
@@ -40,12 +65,11 @@ test_that("dropit() inherits output from oneshotdrop_alpha()", {
     direction = "tail",
     criterion = "alpha",
     approach = "oneshot",
-    output_type = "names",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
   ) 
-  expect_equal(res, c("A4", "A5", "A2", "A3"))
+  expect_equal(res$names, c("A4", "A5", "A2", "A3"))
 })
 
 test_that("dropit() inherits output from oneshotdrop_lambda()", {
@@ -55,13 +79,12 @@ test_that("dropit() inherits output from oneshotdrop_lambda()", {
     direction = "tail",
     criterion = "lambda",
     approach = "oneshot",
-    output_type = "names",
     measurement_model = NULL, 
     target_factor = NULL,
     lambda_metric = "std.all",
     cfa_args = list(std.lv = TRUE) 
   )
-  expect_equal(res, c("A2", "A5", "A4", "A1"))
+  expect_equal(res$names, c("A2", "A5", "A4", "A1"))
 })
 
 test_that("dropit() inherits output from greedydrop_alpha()", {
@@ -71,12 +94,11 @@ test_that("dropit() inherits output from greedydrop_alpha()", {
     direction = "tail",
     criterion = "alpha",
     approach = "greedy",
-    output_type = "names",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
   ) 
-  expect_equal(res, c("A3", "A2", "A5", "A1"))
+  expect_equal(res$names, c("A3", "A2", "A5", "A1"))
 })
 
 test_that("dropit() inherits output from greedydrop_lambda()", {
@@ -86,13 +108,12 @@ test_that("dropit() inherits output from greedydrop_lambda()", {
     direction = "tail",
     criterion = "lambda",
     approach = "greedy",
-    output_type = "names",
     measurement_model = NULL, 
     target_factor = NULL,
     lambda_metric = "std.all",
     cfa_args = list(std.lv = TRUE) 
   )
-expect_equal(res, c("A1", "A4", "A2"))
+expect_equal(res$names, c("A1", "A4", "A2"))
 })
 
 # ----------------------------------------------------------------------- 
@@ -105,7 +126,6 @@ expect_error(
     direction = "tail",
     criterion = "alpha",
     approach = "oneshot",
-    output_type = "names",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
@@ -121,7 +141,6 @@ expect_error(
     direction = "foobar",
     criterion = "alpha",
     approach = "oneshot",
-    output_type = "names",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
@@ -137,7 +156,6 @@ expect_error(
     direction = "tail",
     criterion = "foobar",
     approach = "oneshot",
-    output_type = "names",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
@@ -153,23 +171,6 @@ expect_error(
     direction = "tail",
     criterion = "alpha",
     approach = "foobar",
-    output_type = "names",
-    alpha_metric = "raw_alpha",
-    alpha_args = list(check.keys = TRUE),
-    verbose = FALSE
-  ) 
-)
-})
-
-test_that("dropit() errors with invalid 'output_type'", {
-expect_error( 
-  dropit(
-    data = dta,
-    n_drop = 1L,
-    direction = "tail",
-    criterion = "alpha",
-    approach = "oneshot",
-    output_type = "foobar",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
@@ -185,7 +186,6 @@ expect_error(
     direction = "tail",
     criterion = "alpha",
     approach = "oneshot",
-    output_type = "names",
     alpha_metric = "foobar",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
@@ -201,7 +201,6 @@ expect_error(
     direction = "tail",
     criterion = "alpha",
     approach = "oneshot",
-    output_type = "names",
     alpha_metric = "raw_alpha",
     alpha_args = "foobar",
     verbose = FALSE
@@ -217,7 +216,6 @@ expect_error(
     direction = "tail",
     criterion = "lambda",
     approach = "greedy",
-    output_type = "names",
     measurement_model = "foobar", 
     target_factor = NULL,
     lambda_metric = "std.all",
@@ -231,7 +229,6 @@ expect_error(
     direction = "tail",
     criterion = "lambda",
     approach = "greedy",
-    output_type = "names",
     measurement_model = NULL, 
     target_factor = "foobar",
     lambda_metric = "std.all",
@@ -248,7 +245,6 @@ expect_error(
     direction = "tail",
     criterion = "lambda",
     approach = "greedy",
-    output_type = "names",
     measurement_model = NULL, 
     target_factor = NULL,
     lambda_metric = "foobar",
@@ -265,10 +261,9 @@ expect_error(
     direction = "tail",
     criterion = "lambda",
     approach = "greedy",
-    output_type = "names",
     measurement_model = NULL, 
     target_factor = NULL,
-    lambda_metric = "foobar",
+    lambda_metric = "std.all",
     cfa_args = "foobar"
   )
 )
@@ -283,78 +278,38 @@ test_that("dropit() runs end-to-end with 'direction = head'", {
     direction = "head",
     criterion = "lambda",
     approach = "oneshot",
-    output_type = "names",
-    # custom measurement models currently not supported by oneshotdrop_lambda()
     measurement_model = NULL,
     target_factor = NULL,
     lambda_metric = "std.all",
     cfa_args = list(std.lv = TRUE),
     verbose = TRUE 
   )
-  expect_type(res, "character")
-  expect_length(res, 1)
+  expect_type(res$names, "character")
+  expect_length(res$names, 1)
 })
 
 # -----------------------------------------------------------------------
 
-test_that("dropit() produces correct output_type", {
-  # names
-  out_names <- dropit(
+test_that("dropit() always returns master list structure with logs", {
+  res <- dropit(
     data = dta,
     n_drop = 1,
     direction = "tail",
     criterion = "alpha",
     approach = "oneshot",
-    output_type = "names",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
   )
-  expect_type(out_names, "character")
-
-  # subset
-  out_subset <- dropit(
-    data = dta,
-    n_drop = 2,
-    direction = "tail",
-    criterion = "alpha",
-    approach = "oneshot",
-    output_type = "subset",
-    alpha_metric = "raw_alpha",
-    verbose = FALSE
-  )
-  expect_s3_class(out_subset, "data.frame")
-  expect_equal(ncol(out_subset), ncol(dta) - 2)
-
-  # both
-  out_both <- dropit(
-    data = dta,
-    n_drop = 1,
-    direction = "tail",
-    criterion = "alpha",
-    approach = "oneshot",
-    output_type = "both",
-    alpha_metric = "raw_alpha",
-    verbose = FALSE
-  )
-  expect_named(out_both, c("names", "subset"))
-  expect_false(out_both$names %in% colnames(out_both$subset))
-})
-
-test_that('dropit() output_type = "debug" returns structured diagnostics', {
-  dbg <- dropit(
-    data = dta,
-    n_drop = 1,
-    direction = "tail",
-    criterion = "alpha",
-    approach = "oneshot",
-    output_type = "debug",
-    alpha_metric = "raw_alpha",
-    alpha_args = list(check.keys = TRUE),
-    verbose = FALSE 
-  )
-  expect_type(dbg, "list")
-  expect_true(all(c("result", "warnings", "messages") %in% names(dbg)))
+  
+  expect_s3_class(res, "dropit")
+  expect_type(res, "list")
+  expect_named(res, c("names", "subset", "log"))
+  expect_named(res$log, c("warnings", "messages"))
+  
+  expect_type(res$names, "character")
+  expect_s3_class(res$subset, "data.frame")
+  expect_equal(ncol(res$subset), ncol(dta) - 1)
 })
 
 ## ----------------------------------------------------------------------
@@ -366,29 +321,12 @@ test_that("dropit() with n_drop = 0 returns original data set", {
     direction = "tail",
     criterion = "alpha",
     approach = "oneshot",
-    output_type = "subset",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = TRUE 
   )
-  expect_identical(dta, res)
-  # Same with tail
-})
-
-test_that("dropit() with n_drop = 0 returns original data set", {
-  res <- dropit(
-    data = dta,
-    n_drop = 0,
-    direction = "tail",
-    criterion = "alpha",
-    approach = "oneshot",
-    output_type = "subset",
-    alpha_metric = "raw_alpha",
-    alpha_args = list(check.keys = TRUE),
-    verbose = TRUE 
-  )
-  expect_identical(dta, res)
-  # Same with tail
+  expect_identical(dta, res$subset)
+  expect_length(res$names, 0)
 })
 
 test_that("dropit() errors when n_drop > ncol(data) (explicit guard at top level)", {
@@ -399,7 +337,6 @@ test_that("dropit() errors when n_drop > ncol(data) (explicit guard at top level
       direction = "tail",
       criterion = "alpha",
       approach = "oneshot",
-      output_type = "names",
       alpha_metric = "raw_alpha",
       alpha_args = list(check.keys = TRUE),
       verbose = FALSE
@@ -408,8 +345,6 @@ test_that("dropit() errors when n_drop > ncol(data) (explicit guard at top level
 })
 
 test_that("dropit() frontend correctly passes and shields anchor items", {
-  # A normal greedy drop of 2 items removes A3 and A2.
-  # Anchoring them forces the algorithm to shift to the next weakest items.
   res <- dropit(
     data = dta,
     anchor = c("A3", "A2"),
@@ -417,12 +352,11 @@ test_that("dropit() frontend correctly passes and shields anchor items", {
     direction = "tail",
     criterion = "alpha",
     approach = "greedy",
-    output_type = "names",
     alpha_metric = "raw_alpha",
     alpha_args = list(check.keys = TRUE),
     verbose = FALSE
   )
-  expect_equal(res, c("A5", "A4"))
-  expect_false(any(c("A3", "A2") %in% res))
-  expect_length(res, 2)
+  expect_equal(res$names, c("A5", "A4"))
+  expect_false(any(c("A3", "A2") %in% res$names))
+  expect_length(res$names, 2)
 })

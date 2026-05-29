@@ -2,22 +2,22 @@
 # tests/testthat/test-oneshotdrop-lambda.R 
 # ==============================================================================
 
-# Agreeableness
 dta <- psych::bfi[, 1:5]  
 
-test_that("oneshotdrop_lambda() returns manually debugged output", {
-res <- oneshotdrop_lambda(
-  dta,
-  anc = NULL,
-  n_drp = 4,
-  dir = "tail",
-  out = "names",
-  mmt_mdl = NULL,
-  tgt_fct = NULL,
-  lam_mtr = "std.all",
-  cfa_args = list(std.lv = TRUE)
-)
-expect_equal(res, c("A2", "A5", "A4", "A1"))
+test_that("oneshotdrop_lambda() returns manually debugged result", {
+  res <- oneshotdrop_lambda(
+    dta,
+    anc = NULL,
+    n_drp = 4,
+    dir = "tail",
+    mmt_mdl = NULL,
+    tgt_fct = NULL,
+    lam_mtr = "std.all",
+    cfa_args = list(std.lv = TRUE)
+  )
+  expect_type(res, "list")
+  expect_named(res, c("names", "subset"))
+  expect_equal(res$names, c("A2", "A5", "A4", "A1"))
 })
 
 test_that("oneshotdrop_lambda() errors with custom measurement model", {
@@ -27,75 +27,12 @@ expect_error(
     anc = NULL,
     n_drp = 1,
     dir = "tail",
-    out = "subset",
-    mmt_mdl = "F1 =~ A1 + A2 + A3 + A4 + A5", # Not yet supported
-    tgt_fct = NULL, # Not yet supported
+    mmt_mdl = "F1 =~ A1 + A2 + A3 + A4 + A5",
+    tgt_fct = NULL,
     lam_mtr = "std.all",
     cfa_args = list(std.lv = TRUE)
   )
 )
-})
-
-test_that("oneshotdrop_lambda() errors with specified target_factor", {
-expect_error(
-  oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = 1,
-    dir = "tail",
-    out = "subset",
-    mmt_mdl = NULL, # Not yet supported
-    tgt_fct = "F1", # Not yet supported 
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-)
-})
-
-test_that("oneshotdrop_lambda() returns character when out = 'names'", {
-  res <- oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = 1,
-    dir = "tail",
-    out = "names",
-    mmt_mdl = NULL,
-    tgt_fct = NULL,
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-  expect_type(res, "character")
-})
-
-test_that("oneshotdrop_lambda() returns data.frame when out = 'subset'", {
-  res <- oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = 1,
-    dir = "tail",
-    out = "subset",
-    mmt_mdl = NULL,
-    tgt_fct = NULL,
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-  expect_s3_class(res, "data.frame")
-})
-
-test_that("oneshotdrop_lambda() put = 'both' returns two-element list with 'names' and 'subset'", {
-  res <- oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = 1,
-    dir = "tail",
-    out = "both",
-    mmt_mdl = NULL,
-    tgt_fct = NULL,
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-  expect_type(res, "list")
-  expect_named(res, c("names", "subset"))
 })
 
 test_that("oneshotdrop_lambda() dropped name is not a column name in subset", {
@@ -104,7 +41,6 @@ test_that("oneshotdrop_lambda() dropped name is not a column name in subset", {
     anc = NULL,
     n_drp = 1,
     dir = "tail",
-    out = "both",
     mmt_mdl = NULL,
     tgt_fct = NULL,
     lam_mtr = "std.all",
@@ -113,64 +49,19 @@ test_that("oneshotdrop_lambda() dropped name is not a column name in subset", {
   expect_false(res$names %in% colnames(res$subset))
 })
 
-test_that("oneshotdrop_lambda() returns subset has expected number of columns", {
+test_that("oneshotdrop_lambda() removes correct number of items", {
   res <- oneshotdrop_lambda(
     dta,
     anc = NULL,
     n_drp = 2,
     dir = "tail",
-    out = "subset",
     mmt_mdl = NULL,
     tgt_fct = NULL,
     lam_mtr = "std.all",
     cfa_args = list(std.lv = TRUE)
   )
-  expect_equal(ncol(res), ncol(dta) - 2)
-})
-
-test_that("oneshotdrop_lambda() dir='tail' with multiple drops removes correct number of items", {
-  res <- oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = 2,
-    dir = "tail",
-    out = "names",
-    mmt_mdl = NULL,
-    tgt_fct = NULL,
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-  expect_length(res, 2)
-})
-
-test_that("oneshotdrop_lambda() dir='head' with multiple drops removes correct number of items", {
-  res <- oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = 2,
-    dir = "head",
-    out = "names",
-    mmt_mdl = NULL,
-    tgt_fct = NULL,
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-  expect_length(res, 2)
-})
-
-test_that("oneshotdrop_lambda() works with lam_mtr = 'std.all'", {
-  res <- oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = 1,
-    dir = "tail",
-    out = "names",
-    mmt_mdl = NULL,
-    tgt_fct = NULL,
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-  expect_type(res, "character")
+  expect_length(res$names, 2)
+  expect_equal(ncol(res$subset), ncol(dta) - 2)
 })
 
 test_that("oneshotdrop_lambda() works with lam_mtr = 'est'", {
@@ -179,13 +70,12 @@ test_that("oneshotdrop_lambda() works with lam_mtr = 'est'", {
     anc = NULL,
     n_drp = 1,
     dir = "tail",
-    out = "names",
     mmt_mdl = NULL,
     tgt_fct = NULL,
     lam_mtr = "est",
     cfa_args = list(std.lv = TRUE)
   )
-  expect_type(res, "character")
+  expect_type(res$names, "character")
 })
 
 test_that("oneshotdrop_lambda() throws error if lam_mtr invalid", {
@@ -195,7 +85,6 @@ test_that("oneshotdrop_lambda() throws error if lam_mtr invalid", {
       anc = NULL,
       n_drp = 1,
       dir = "tail",
-      out = "names",
       mmt_mdl = NULL,
       tgt_fct = NULL,
       lam_mtr = "foobar",
@@ -204,167 +93,17 @@ test_that("oneshotdrop_lambda() throws error if lam_mtr invalid", {
   )
 })
 
-test_that("oneshotdrop_lambda() n_drp = 0 returns empty character vector", {
-  res <- oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = 0,
-    dir = "tail",
-    out = "names",
-    mmt_mdl = NULL,
-    tgt_fct = NULL,
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-  expect_equal(res, character(0))
-})
-
-test_that("oneshotdrop_lambda() n_drp = ncol(data) drops all columns", {
-  res <- oneshotdrop_lambda(
-    dta,
-    anc = NULL,
-    n_drp = ncol(dta),
-    dir = "tail",
-    out = "names",
-    mmt_mdl = NULL,
-    tgt_fct = NULL,
-    lam_mtr = "std.all",
-    cfa_args = list(std.lv = TRUE)
-  )
-  expect_equal(length(res), ncol(dta))
-})
-
-test_that("oneshotdrop_lambda() errors cleanly on invalid 'dir'", {
-  expect_error(
-    oneshotdrop_lambda(
-      dta,
-      anc = NULL,
-      n_drp = 1,
-      dir = "foobar",
-      out = "names",
-      mmt_mdl = NULL,
-      tgt_fct = NULL,
-      lam_mtr = "std.all",
-      cfa_args = list(std.lv = TRUE)
-    )
-  )
-})
-
-test_that("oneshotdrop_lambda() errors cleanly on invalid 'out'", {
-  expect_error(
-    oneshotdrop_lambda(
-      dta,
-      anc = NULL,
-      n_drp = 1,
-      dir = "tail",
-      out = "foobar",
-      mmt_mdl = NULL,
-      tgt_fct = NULL,
-      lam_mtr = "std.all",
-      cfa_args = list(std.lv = TRUE)
-    )
-  )
-})
-
-test_that("oneshotdrop_lambda errors when lambda matrix missing", {
-  dat <- make_test_data()
-  fake_fit <- structure(list(), class = "fake")
-  testthat::local_mocked_bindings(
-    lavaan_cfa_internal = function(...) fake_fit,
-    lavaan_inspect_internal = function(...) list()
-  )
-  expect_error(
-    oneshotdrop_lambda(
-      dta = dat,
-      anc = NULL,
-      n_drp = 1,
-      dir = "tail",
-      out = "names",
-      mmt_mdl = NULL,
-      tgt_fct = NULL,
-      lam_mtr = "std",
-      cfa_args = list()
-    ),
-    "No 'lambda' matrix found"
-  )
-})
-
-test_that("oneshotdrop_lambda errors when multiple factors present", {
-  dat <- make_test_data()
-  fake_fit <- structure(list(), class = "fake")
-  fake_lambda <- matrix(
-    c(0.8,0.1,
-      0.7,0.2,
-      0.6,0.3,
-      0.5,0.4),
-    nrow = 4,
-    byrow = TRUE
-  )
-  rownames(fake_lambda) <- colnames(dat)
-  colnames(fake_lambda) <- c("F1","F2")
-  testthat::local_mocked_bindings(
-    lavaan_cfa_internal = function(...) fake_fit,
-    lavaan_inspect_internal = function(...) list(lambda = fake_lambda)
-  )
-  expect_error(
-    oneshotdrop_lambda(
-      dta = dat,
-      anc = NULL,
-      n_drp = 1,
-      dir = "tail",
-      out = "names",
-      mmt_mdl = NULL,
-      tgt_fct = NULL,
-      lam_mtr = "std",
-      cfa_args = list()
-    ),
-    "multiple factors"
-  )
-})
-
-test_that("oneshotdrop_lambda errors for invalid output type", {
-  dat <- make_test_data()
-  fake_fit <- structure(list(), class = "fake_lavaan_fit")
-  fake_lambda <- matrix(c(0.2, 0.4, 0.8, 0.6), ncol = 1)
-  rownames(fake_lambda) <- colnames(dat)
-  colnames(fake_lambda) <- "F"
-  testthat::local_mocked_bindings(
-    lavaan_cfa_internal = function(...) fake_fit,
-    lavaan_inspect_internal = function(object, what) {
-      list(lambda = fake_lambda)
-    }
-  )
-  expect_error(
-    oneshotdrop_lambda(
-      dta = dat,
-      anc = NULL,
-      n_drp = 1,
-      dir = "tail",
-      out = "wrong",
-      mmt_mdl = NULL,
-      tgt_fct = NULL,
-      lam_mtr = "std",
-      cfa_args = list(),
-      verbose = FALSE
-    ),
-    regexp = "Invalid output"
-  )
-})
-
 test_that("oneshotdrop_lambda() respects anchor items", {
-  # Tail 1 normally drops A1. Anchor it.
   res <- oneshotdrop_lambda(
     dta = dta,
     anc = "A1",
     n_drp = 1,
     dir = "tail",
-    out = "names",
     mmt_mdl = NULL,
     tgt_fct = NULL,
     lam_mtr = "std.all",
     cfa_args = list(std.lv = TRUE)
   )
-  res
-  expect_false("A1" %in% res)
-  expect_equal(res, "A4") # A4 is the next weakest loading
+  expect_false("A1" %in% res$names)
+  expect_equal(res$names, "A4")
 })

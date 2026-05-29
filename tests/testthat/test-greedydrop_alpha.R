@@ -4,17 +4,19 @@
 
 dta <- psych::bfi[, 1:5]
 
-test_that("greedydrop_alpha() returns manually debugged output", {
-res <- greedydrop_alpha(
-  dta,
-  anc = NULL,
-  n_drp = 4,
-  dir = "tail",
-  out = "names",
-  alp_mtr = "raw_alpha",
-  alp_args = list(check.keys = TRUE)
-)
-expect_equal(res, c("A3", "A2", "A5", "A1"))
+test_that("greedydrop_alpha() returns manually debugged result", {
+  res <- greedydrop_alpha(
+    dta,
+    anc = NULL,
+    n_drp = 4,
+    dir = "tail",
+    alp_mtr = "raw_alpha",
+    alp_args = list(check.keys = TRUE)
+  )
+  expect_type(res, "list")
+  expect_named(res, c("names", "subset"))
+  expect_equal(res$names, c("A3", "A2", "A5", "A1"))
+  expect_false(any(res$names %in% colnames(res$subset)))
 })
 
 test_that("greedydrop_alpha() drops exactly n_drp unique items", {
@@ -23,52 +25,11 @@ test_that("greedydrop_alpha() drops exactly n_drp unique items", {
     anc = NULL,
     n_drp = 3,
     dir = "tail",
-    out = "names",
     alp_mtr = "raw_alpha",
     alp_args = list(check.keys = TRUE)
   )
-  expect_length(res, 3)
-  expect_equal(length(unique(res)), 3)
-})
-
-test_that("greedydrop_alpha() subset has expected number of columns", {
-  res <- greedydrop_alpha(
-    dta,
-    anc = NULL,
-    n_drp = 2,
-    dir = "tail",
-    out = "subset",
-    alp_mtr = "raw_alpha",
-    alp_args = list(check.keys = TRUE)
-  )
-  expect_equal(ncol(res), ncol(dta) - 2)
-})
-
-test_that("greedydrop_alpha() returns both names and subset when out = 'both'", {
-  res <- greedydrop_alpha(
-    dta,
-    anc = NULL,
-    n_drp = 2,
-    dir = "tail",
-    out = "both",
-    alp_mtr = "raw_alpha",
-    alp_args = list(check.keys = TRUE)
-  )
-  expect_named(res, c("names", "subset"))
-  expect_false(any(res$names %in% colnames(res$subset)))
-})
-
-test_that("greedydrop_alpha() dir = 'head' works", {
-  res <- greedydrop_alpha(
-    dta,
-    anc = NULL,
-    n_drp = 2,
-    dir = "head",
-    out = "names",
-    alp_mtr = "raw_alpha",
-    alp_args = list(check.keys = TRUE)
-  )
-  expect_length(res, 2)
+  expect_length(res$names, 3)
+  expect_equal(length(unique(res$names)), 3)
 })
 
 test_that("greedydrop_alpha() greedy vs oneshot differ when n_drp > 1", {
@@ -77,7 +38,6 @@ test_that("greedydrop_alpha() greedy vs oneshot differ when n_drp > 1", {
     anc = NULL,
     n_drp = 3,
     dir = "tail",
-    out = "names",
     alp_mtr = "raw_alpha",
     alp_args = list(check.keys = TRUE)
   )
@@ -86,74 +46,34 @@ test_that("greedydrop_alpha() greedy vs oneshot differ when n_drp > 1", {
     anc = NULL,
     n_drp = 3,
     dir = "tail",
-    out = "names",
     alp_mtr = "raw_alpha",
     alp_args = list(check.keys = TRUE)
   )
-  expect_false(identical(greedy, oneshot))
+  expect_false(identical(greedy$names, oneshot$names))
 })
 
-test_that("greedydrop_alpha() n_drp = 0 returns empty vector", {
-  res <- greedydrop_alpha(
-    dta,
-    anc = NULL,
-    n_drp = 0,
-    dir = "tail",
-    out = "names",
-    alp_mtr = "raw_alpha",
-    alp_args = list(check.keys = TRUE)
-  )
-  expect_equal(res, character(0))
-})
-
-test_that("greedydrop_alpha() throws error if n_drp = ncol(dta) - alpha requires more than one item for correlations", {
+test_that("greedydrop_alpha() throws error if n_drp = ncol(dta)", {
   expect_error(
     res <- greedydrop_alpha(
       dta,
       anc = NULL,
       n_drp = ncol(dta),
       dir = "tail",
-      out = "names",
       alp_mtr = "raw_alpha",
       alp_args = list(check.keys = TRUE)
     )
   )
 })
 
-test_that("greedydrop_alpha() invalid 'dir' or 'out' throws clean error", {
+test_that("greedydrop_alpha() invalid 'dir' throws clean error", {
   expect_error(greedydrop_alpha(
     dta,
     anc = NULL,
     n_drp = 1,
     dir = "foobar",
-    out = "names",
     alp_mtr = "raw_alpha",
     alp_args = list(check.keys = TRUE)
   ))
-  expect_error(greedydrop_alpha(
-    dta,
-    1,
-    "tail",
-    "grapefruit",
-    "raw_alpha",
-    alp_args
-  ))
-})
-
-test_that("greedydrop_alpha errors for invalid output type", {
-  dat <- make_test_data()
-  expect_error(
-    greedydrop_alpha(
-      dta = dat,
-      anc = NULL,
-      n_drp = 1,
-      dir = "tail",
-      out = "wrong",
-      alp_mtr = "raw_alpha",
-      alp_args = list()
-    ),
-    regexp = "Invalid output"
-  )
 })
 
 test_that("greedydrop_alpha() respects anchor items", {
@@ -162,10 +82,9 @@ test_that("greedydrop_alpha() respects anchor items", {
     anc = "A3",
     n_drp = 2,
     dir = "tail",
-    out = "names",
     alp_mtr = "raw_alpha",
     alp_args = list(check.keys = TRUE)
   )
-  expect_false("A3" %in% res)
-  expect_length(res, 2)
+  expect_false("A3" %in% res$names)
+  expect_length(res$names, 2)
 })
