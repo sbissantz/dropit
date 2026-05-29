@@ -360,3 +360,42 @@ test_that("dropit() frontend correctly passes and shields anchor items", {
   expect_false(any(c("A3", "A2") %in% res$names))
   expect_length(res$names, 2)
 })
+
+test_that("dropit() correctly shields anchors across multiple partitions", {
+  dta_ptn <- psych::bfi[, 1:10] # A1-A5, C1-C5
+  ptn <- substr(colnames(dta_ptn), 1, 1)
+  # Anchor one item in A and one in C
+  res <- dropit(
+    data = dta_ptn,
+    anchor = c("A2", "C4"),
+    partition = ptn,
+    n_drop = 3, # Drops 3 from A, 3 from C
+    direction = "tail",
+    criterion = "alpha",
+    approach = "oneshot",
+    alpha_args = list(check.keys = TRUE),
+    verbose = FALSE
+  )
+  # Ensure anchors survived in their respective subsets
+  expect_true("A2" %in% colnames(res$subset$A))
+  expect_true("C4" %in% colnames(res$subset$C))
+  # Ensure they were shielded from the dropped vectors
+  expect_false("A2" %in% res$names$A)
+  expect_false("C4" %in% res$names$C)
+})
+
+test_that("dropit records warning when non-data.frame input is coerced", {
+  # Create a matrix with column names so it survives the col.names check
+  mat <- matrix(1:24, ncol = 4, dimnames = list(NULL, c("i1", "i2", "i3", "i4")))
+  res <- dropit(
+    data = mat,
+    n_drop = 1,
+    direction = "tail",
+    criterion = "alpha",
+    approach = "oneshot",
+    alpha_args = list(check.keys = TRUE),
+    verbose = FALSE
+  )
+  # The warning should be safely captured in the log
+  expect_true(any(grepl("coerced to a data.frame", res$log$warnings)))
+})

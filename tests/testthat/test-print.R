@@ -6,21 +6,21 @@
 dummy_df <- data.frame(i1 = 1:5, i2 = 1:5)
 
 obj_base <- list(
-  names = c("A1", "A2"),
-  subset = dummy_df,
-  log = list(warnings = character(0), messages = character(0))
+  names=c("A1", "A2"),
+  subset=dummy_df,
+  log=list(warnings=character(0), messages=character(0))
 )
 class(obj_base) <- c("dropit", "list")
 
 obj_part <- list(
-  names = list(F1 = "A1", F2 = "B1"),
-  subset = list(F1 = dummy_df, F2 = dummy_df),
-  log = list(warnings = character(0), messages = character(0))
+  names=list(F1 = "A1", F2 = "B1"),
+  subset=list(F1 = dummy_df, F2 = dummy_df),
+  log=list(warnings=character(0), messages=character(0))
 )
 class(obj_part) <- c("dropit", "list")
 
 obj_log <- obj_base
-obj_log$log <- list(warnings = "Test warning", messages = c("Msg 1", "Msg 2"))
+obj_log$log <- list(warnings="Test warning", messages=c("Msg 1", "Msg 2"))
 
 
 # ------------------------------------------------------------------------------
