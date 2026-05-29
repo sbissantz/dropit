@@ -16,7 +16,6 @@ naivedrop(
   dir,
   crt,
   apr,
-  out,
   alp_mtr,
   alp_args,
   mmt_mdl,
@@ -31,7 +30,6 @@ greedydrop_lambda(
   anc,
   n_drp,
   dir,
-  out,
   mmt_mdl,
   tgt_fct,
   lam_mtr,
@@ -39,14 +37,13 @@ greedydrop_lambda(
   verbose = FALSE
 )
 
-greedydrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
+greedydrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
 
 oneshotdrop_lambda(
   dta,
   anc,
   n_drp,
   dir,
-  out,
   mmt_mdl,
   tgt_fct,
   lam_mtr,
@@ -54,7 +51,7 @@ oneshotdrop_lambda(
   verbose = FALSE
 )
 
-oneshotdrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
+oneshotdrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
 }
 \arguments{
 \item{dta}{A \code{data.frame} of item responses (rows = respondents,
@@ -74,9 +71,6 @@ indicating the ranking criterion.}
 
 \item{apr}{Character string, \code{"oneshot"} or \code{"greedy"},
 selecting the removal strategy.}
-
-\item{out}{Character string, one of \code{"names"}, \code{"subset"}, or \code{"both"},
-determining the type of object returned.}
 
 \item{alp_mtr}{Character string naming the column of
 \code{psych::alpha$alpha.drop} used for ranking.}

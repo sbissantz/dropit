@@ -12,7 +12,6 @@ dropit(
   direction = c("tail", "head"),
   criterion = c("alpha", "lambda"),
   approach = c("oneshot", "greedy"),
-  output_type = c("names", "subset", "both", "debug"),
   alpha_metric = c("raw_alpha", "std.alpha", "G6(smc)", "average_r", "S/N", "alpha se",
     "var.r", "med.r"),
   alpha_args = list(),
@@ -49,16 +48,6 @@ or \code{"lambda"} (CFA loadings).}
 \item{approach}{Character string, \code{"oneshot"} (single pass)
 or \code{"greedy"} (iterative dropping and refitting).}
 
-\item{output_type}{One of \code{"names"} (default), \code{"subset"}, \code{"both"},
-or \code{"debug"}.
-\itemize{
-\item \code{"names"} – character vector of dropped item names.
-\item \code{"subset"} – reduced data frame with dropped columns removed.
-\item \code{"both"} – list with elements \code{names} and \code{subset}.
-\item \code{"debug"} – as \code{"both"} but also includes all captured messages,
-warnings, and errors.
-}}
-
 \item{alpha_metric}{Character string. Cronbach’s alpha metric to
 optimise (passed to \code{psych::alpha$alpha.drop}).}
 
@@ -83,15 +72,23 @@ to extract from \code{\link[lavaan]{inspect}}
 \item{verbose}{Logical; if \code{TRUE} (default) prints a structured,
 color-formatted report of all messages, warnings, and errors
 captured during the run.}
+
+\item{output_type}{One of \code{"names"} (default), \code{"subset"}, \code{"both"},
+or \code{"debug"}.
+\itemize{
+\item \code{"names"} – character vector of dropped item names.
+\item \code{"subset"} – reduced data frame with dropped columns removed.
+\item \code{"both"} – list with elements \code{names} and \code{subset}.
+\item \code{"debug"} – as \code{"both"} but also includes all captured messages,
+warnings, and errors.
+}}
 }
 \value{
-If \code{output_type != "debug"}, returns either a character vector, data frame,
-or list depending on the specified output type.
-If \code{output_type = "debug"}, returns a list with components:
+An object of class \code{dropit}, which is a list containing:
 \describe{
-\item{result}{The main result (or \code{NULL} if an error occurred).}
-\item{warnings}{Character vector of captured warnings.}
-\item{messages}{Character vector of informational messages.}
+\item{names}{A character vector of dropped item names (or a named list of vectors if \code{partition} is used).}
+\item{subset}{The reduced \code{data.frame} (or a named list of \code{data.frame}s if \code{partition} is used).}
+\item{log}{A list containing \code{warnings} and \code{messages} captured during execution.}
 }
 }
 \description{
