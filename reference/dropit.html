@@ -150,16 +150,6 @@ to extract from <code><a href="https://rdrr.io/pkg/lavaan/man/lavInspect.html" c
 color-formatted report of all messages, warnings, and errors
 captured during the run.</p></dd>
 
-
-<dt id="arg-output-type">output_type<a class="anchor" aria-label="anchor" href="#arg-output-type"></a></dt>
-<dd><p>One of <code>"names"</code> (default), <code>"subset"</code>, <code>"both"</code>,
-or <code>"debug"</code>.</p><ul><li><p><code>"names"</code> – character vector of dropped item names.</p></li>
-<li><p><code>"subset"</code> – reduced data frame with dropped columns removed.</p></li>
-<li><p><code>"both"</code> – list with elements <code>names</code> and <code>subset</code>.</p></li>
-<li><p><code>"debug"</code> – as <code>"both"</code> but also includes all captured messages,
-warnings, and errors.</p></li>
-</ul></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -215,7 +205,7 @@ and the internal helpers documented at <a href="miscutils.html">miscutils</a>.</
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">dropit</span><span class="op">(</span><span class="va">dat</span>, n_drop <span class="op">=</span> <span class="fl">1</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5F87AF; font-weight: bold;">Dropped Item(s):</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5F87AF; font-weight: bold;">Dropped Items:</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "i1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5F87AF; font-weight: bold;">Subset(s):</span> </span>
@@ -224,7 +214,7 @@ and the internal helpers documented at <a href="miscutils.html">miscutils</a>.</
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ i3: num  1 1 2 3 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ i4: num  4 3 2 1 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------------ </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5F87AF; font-weight: bold;">Important:</span> 3 <span style="color: #5F87AF; font-weight: bold;">warning(s)</span> and 1 <span style="color: #5F87AF; font-weight: bold;">message(s)</span> logged. Access via `$log`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5F87AF; font-weight: bold;">Run</span> ended with 3 <span style="color: #5F87AF; font-weight: bold;">warning(s)</span> and 1 <span style="color: #5F87AF; font-weight: bold;">message(s)</span> logged. Access via `$log`</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

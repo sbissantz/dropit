@@ -112,12 +112,6 @@ drop2ga <- dropit(
   alpha_args = list(check.keys = TRUE),
   verbose = FALSE
 )
-drop2ga$names
-```
-
-    [1] "E2" "E4"
-
-``` r
 
 # Manifest correlation between sum scores
 cor(rowSums(extra), rowSums(drop2ga$subset), use = "pairwise.complete.obs")

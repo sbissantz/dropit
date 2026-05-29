@@ -105,19 +105,6 @@ dropit(
   Logical; if `TRUE` (default) prints a structured, color-formatted
   report of all messages, warnings, and errors captured during the run.
 
-- output_type:
-
-  One of `"names"` (default), `"subset"`, `"both"`, or `"debug"`.
-
-  - `"names"` – character vector of dropped item names.
-
-  - `"subset"` – reduced data frame with dropped columns removed.
-
-  - `"both"` – list with elements `names` and `subset`.
-
-  - `"debug"` – as `"both"` but also includes all captured messages,
-    warnings, and errors.
-
 ## Value
 
 An object of class `dropit`, which is a list containing:
@@ -182,7 +169,7 @@ dat <- data.frame(
 )
 
 dropit(dat, n_drop = 1, verbose = FALSE)
-#> Dropped Item(s): 
+#> Dropped Items: 
 #> [1] "i1"
 #> 
 #> Subset(s): 
@@ -191,5 +178,5 @@ dropit(dat, n_drop = 1, verbose = FALSE)
 #>  $ i3: num  1 1 2 3 4
 #>  $ i4: num  4 3 2 1 1
 #> ------------ 
-#> Important: 3 warning(s) and 1 message(s) logged. Access via `$log`
+#> Run ended with 3 warning(s) and 1 message(s) logged. Access via `$log`
 ```
