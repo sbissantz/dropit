@@ -72,16 +72,6 @@ to extract from \code{\link[lavaan]{inspect}}
 \item{verbose}{Logical; if \code{TRUE} (default) prints a structured,
 color-formatted report of all messages, warnings, and errors
 captured during the run.}
-
-\item{output_type}{One of \code{"names"} (default), \code{"subset"}, \code{"both"},
-or \code{"debug"}.
-\itemize{
-\item \code{"names"} – character vector of dropped item names.
-\item \code{"subset"} – reduced data frame with dropped columns removed.
-\item \code{"both"} – list with elements \code{names} and \code{subset}.
-\item \code{"debug"} – as \code{"both"} but also includes all captured messages,
-warnings, and errors.
-}}
 }
 \value{
 An object of class \code{dropit}, which is a list containing:
