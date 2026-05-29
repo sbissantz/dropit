@@ -32,9 +32,6 @@
 #'   indicating the ranking criterion.
 #' @param apr Character string, `"oneshot"` or `"greedy"`,
 #'   selecting the removal strategy.
-#' @param out Character string, one of `"names"`, `"subset"`, or `"both"`,
-#'   determining the type of object returned.
-#'
 #' @param alp_mtr Character string naming the column of
 #'   `psych::alpha$alpha.drop` used for ranking.
 #' @param alp_args Named list of additional arguments passed to
@@ -83,8 +80,6 @@ naivedrop <- function(
   # method selection
   crt,
   apr,
-  # output type
-  out,
   # alpha-specific
   alp_mtr,
   alp_args,
@@ -106,7 +101,6 @@ naivedrop <- function(
         anc = anc,
         n_drp = n_drp,
         dir = dir,
-        out = out,
         alp_mtr = alp_mtr,
         alp_args = alp_args
       ),
@@ -115,7 +109,6 @@ naivedrop <- function(
         anc = anc,
         n_drp = n_drp,
         dir = dir,
-        out = out,
         alp_mtr = alp_mtr,
         alp_args = alp_args
       ),
@@ -129,7 +122,6 @@ naivedrop <- function(
         anc = anc,
         n_drp = n_drp,
         dir = dir,
-        out = out,
         mmt_mdl = mmt_mdl,
         tgt_fct = tgt_fct,
         lam_mtr = lam_mtr,
@@ -141,7 +133,6 @@ naivedrop <- function(
         anc = anc,
         n_drp = n_drp,
         dir = dir, 
-        out = out,
         mmt_mdl = mmt_mdl,
         tgt_fct = tgt_fct,
         lam_mtr = lam_mtr,
@@ -164,8 +155,6 @@ greedydrop_lambda <- function(
   anc, 
   n_drp,
   dir,
-  # output type
-  out,
   # lambda-specific
   mmt_mdl, 
   tgt_fct,
@@ -176,39 +165,29 @@ greedydrop_lambda <- function(
 ) {
   itm_drp <- rep(NA_character_, n_drp)
   itm_nms <- colnames(dta)
-  for (i in seq_len(n_drp)) {
-    current_items <- setdiff(itm_nms, itm_drp[nchar(itm_drp) > 0])
+for (i in seq_len(n_drp)) {
+    # current items
+    itms_cur <- setdiff(itm_nms, itm_drp[nchar(itm_drp) > 0])
     if (verbose) {
-      model_str <- paste0("F =~ ", paste0(current_items, collapse = " + "))
-      message(sprintf("Model (%d/%d)  %s", i, n_drp, model_str))
+      mdl_str <- paste0("F =~ ", paste0(itms_cur, collapse = " + "))
+      message(sprintf("Model (%d/%d)  %s", i, n_drp, mdl_str))
     }
     updatedta <- dta[, setdiff(itm_nms, stats::na.omit(itm_drp)), drop = FALSE]
-    dropped <- oneshotdrop_lambda(
+    itm_drp[i] <- oneshotdrop_lambda(
       dta = updatedta,
       anc = anc,
       n_drp = 1,
       dir = dir,
-      out = "names",
       mmt_mdl = mmt_mdl,
       tgt_fct = tgt_fct,
       lam_mtr = lam_mtr,
       cfa_args = cfa_args,
       verbose = FALSE
-    )
-    itm_drp[i] <- dropped
+    )[["names"]]
   }
-  switch(
-    out,
-    "names" = itm_drp,
-    "subset" = dta[, setdiff(itm_nms, itm_drp), drop = FALSE],
-    "both" = list(
-      "names" = itm_drp,
-      "subset" = dta[, setdiff(itm_nms, itm_drp), drop = FALSE]
-    ),
-    # Should never reached if input validation works properly 
-    stop(
-      "Debug: Invalid output type specified. Use 'names', 'subset', or 'both'."
-    )
+  list(
+    names = itm_drp,
+    subset = dta[, setdiff(colnames(dta), itm_drp), drop = FALSE]
   )
 }
 
@@ -220,42 +199,29 @@ greedydrop_alpha <- function(
   anc,
   n_drp,
   dir,
-  # output type
-  out,
   # alpha-specific 
   alp_mtr,
   alp_args 
 ) {
   itm_drp <- rep(NA_character_, n_drp)
   itm_nms <- colnames(dta)
-  for (i in seq_len(n_drp)) {
-    # positions are relative so need name-based indexing methods
+for (i in seq_len(n_drp)) {
     updatedta <- dta[, setdiff(itm_nms, stats::na.omit(itm_drp)), drop = FALSE]
-    # drop the next item greedily
     itm_drp[i] <- oneshotdrop_alpha(
       dta = updatedta,
       anc = anc,
       n_drp = 1,
-      dir,
-      out = "names",
-      alp_mtr,
-      alp_args
-    )
+      dir = dir,
+      alp_mtr = alp_mtr,
+      alp_args = alp_args
+    )[["names"]]
   }
-  switch(
-    out,
-    "names" = itm_drp,
-    "subset" = dta[, setdiff(itm_nms, itm_drp), drop = FALSE],
-    "both" = list(
-      "names" = itm_drp,
-      "subset" = dta[, setdiff(itm_nms, itm_drp), drop = FALSE]
-    ),
-    # Should never reached if input validation works properly 
-    stop(
-      "Debug: Invalid output type specified. Use 'names', 'subset', or 'both'."
-    )
+  list(
+    names = itm_drp,
+    subset = dta[, setdiff(colnames(dta), itm_drp), drop = FALSE]
   )
 }
+
 
 #' @rdname dropit-helpers 
 #' @keywords internal
@@ -265,8 +231,6 @@ oneshotdrop_lambda <- function(
   anc,
   n_drp,
   dir,
-  # output type 
-  out,
   # lambda-specific
   mmt_mdl, 
   tgt_fct,
@@ -319,26 +283,9 @@ oneshotdrop_lambda <- function(
   cand <- setdiff(nms_srt, anc)
   mf <- match.fun(dir)
   nms_drp <- mf(cand, n_drp)
-  switch(
-    out,
-    "names" = nms_drp,
-    "subset" = dta[, setdiff(colnames(dta), nms_drp), drop = FALSE],
-    "both" = list(
-      "names" = nms_drp,
-      "subset" = dta[, setdiff(colnames(dta), nms_drp), drop = FALSE]
-    ),
-  #switch(
-    #out,
-    #"names" = itm_nms[pos_drp],
-    #"subset" = dta[, -pos_drp, drop = FALSE],
-    #"both" = list(
-      #"names" = itm_nms[pos_drp],
-      #"subset" = dta[, -pos_drp, drop = FALSE]
-    #),
-    # Should never reached if the input validation works properly 
-    stop(
-      "Debug: Invalid output type specified. Use 'names', 'subset', or 'both'."
-    )
+  list(
+    names = nms_drp,
+    subset = dta[, setdiff(colnames(dta), nms_drp), drop = FALSE]
   )
 }
 
@@ -353,8 +300,6 @@ oneshotdrop_alpha <- function(
   anc,
   n_drp,
   dir,
-  # output type 
-  out,
   # alpha-specific
   alp_mtr,
   alp_args
@@ -381,28 +326,47 @@ oneshotdrop_alpha <- function(
   cand <- setdiff(nms_cln, anc)
   mf <- match.fun(dir) 
   nms_drp <- mf(cand, n_drp)
-  switch(
-    out,
-    "names" = nms_drp,
-    "subset" = dta[, setdiff(colnames(dta), nms_drp), drop = FALSE],
-    "both" = list(
-      "names" = nms_drp,
-      "subset" = dta[, setdiff(colnames(dta), nms_drp), drop = FALSE]
-    ),
-  # Removed: Issue - dropping 0 items does not work properly. 
-  #switch(
-    #out,
-    #"names" = nms_drp,
-    #"subset" = dta[, setdiff(colnames(dta), names_drp), drop = FALSE],
-    #"both" = list(
-      #"names" = nms_drp,
-      #"subset" = dta[, setdiff(colnames(dta), names_drp), drop = FALSE],
-    #),
-    # Should never be reached if the input validation works properly
-    stop(
-      "Debug: Invalid output type specified. Use 'names', 'subset', or 'both'."
-    )
+  list(
+    names = nms_drp,
+    subset = dta[, setdiff(colnames(dta), nms_drp), drop = FALSE]
   )
+}
+
+#' Print Method for dropit Objects
+#' @param x An object of class \code{dropit}.
+#' @param ... Further arguments passed to or from other methods.
+#' @export
+print.dropit <- function(x, ...) {
+  # Header for Dropped Items
+  colormsg("Dropped Item(s):", color_code = "38;5;67", bold = TRUE, newline = TRUE)
+  print(x$names)
+  # Header for Subsets
+  cat("\n")
+  colormsg("Subset(s):", color_code = "38;5;67", bold = TRUE, newline = TRUE)
+  if (is.data.frame(x$subset)) {
+    utils::str(x$subset)
+  } else if (is.list(x$subset)) {
+    for (facet in names(x$subset)) {
+      cat(sprintf("$%s\n", facet))
+      utils::str(x$subset[[facet]])
+      cat("\n")
+    }
+  }
+  # Log Hint
+  if (!is.null(x$log)) {
+    n_warn <- length(x$log$warnings)
+    n_msg <- length(x$log$messages)
+    if (n_warn > 0 || n_msg > 0) {
+      cat(strrep("-", 12), "\n")
+      colormsg("Important:", color_code = "38;5;67", bold = TRUE, newline = FALSE)
+      cat(sprintf(" %d ", n_warn))
+      colormsg("warning(s)", color_code = "38;5;67", bold = TRUE, newline = FALSE)
+      cat(sprintf(" and %d ", n_msg))
+      colormsg("message(s)", color_code = "38;5;67", bold = TRUE, newline = FALSE)
+      cat(" logged. Access via `$log`\n")
+    }
+  }
+  invisible(x)
 }
 
 # internal wrappers for lavaan calls (makes testing easier)

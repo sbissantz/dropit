@@ -74,13 +74,11 @@
 #'   formatted using the internal helper \code{colormsg()}.
 #'
 #' @return
-#' If `output_type != "debug"`, returns either a character vector, data frame,
-#' or list depending on the specified output type.  
-#' If `output_type = "debug"`, returns a list with components:
+#' An object of class \code{dropit}, which is a list containing:
 #' \describe{
-#'   \item{result}{The main result (or `NULL` if an error occurred).}
-#'   \item{warnings}{Character vector of captured warnings.}
-#'   \item{messages}{Character vector of informational messages.}
+#'   \item{names}{A character vector of dropped item names (or a named list of vectors if \code{partition} is used).}
+#'   \item{subset}{The reduced \code{data.frame} (or a named list of \code{data.frame}s if \code{partition} is used).}
+#'   \item{log}{A list containing \code{warnings} and \code{messages} captured during execution.}
 #' }
 #'
 #' @seealso
@@ -108,8 +106,6 @@ dropit <- function(
   # method selection
   criterion = c("alpha", "lambda"),
   approach = c("oneshot", "greedy"),
-  # output type
-  output_type = c("names", "subset", "both", "debug"),
   # alpha-specific
   alpha_metric = c(
     "raw_alpha",
@@ -139,25 +135,9 @@ dropit <- function(
   ## ---- variables with special needs ----
 
   # verbose
-  # output_type
   # ---
   # msgs
   # wrns
-
-  ## ---- output_type ----
-
-  output_type <- match.arg(output_type)
-  checkmate::assert_character(
-    output_type,
-    len = 1,
-    any.missing = FALSE
-  )
-  out <- match.arg(output_type) 
-  out_tmp <- switch(
-    out,
-    debug = "both",
-    out # default: same as input
-  )
 
   ## ---- verbose ----
 
@@ -185,7 +165,6 @@ dropit <- function(
         # direction
         # criterion
         # approach
-        # output_type
 
         ## ---- data ----
         if (!is.data.frame(data)) {
@@ -427,18 +406,17 @@ dropit <- function(
         # criterion
         # verbose
 
-        ## ---- main work ----
+## ---- main work ----
 
         if (!is.null(prtn)) {
-          res <- lapply(splt_pos, function(idx) {
-            naivedrop(
-              dta = dta[, idx, drop = FALSE],
+          res_raw <- lapply(splt_pos, function(x) {
+            naivedrop( # (or greedydrop, depending on your logic)
+              dta = dta[, x, drop = FALSE],
               anc = anc,
               n_drp = n_drp,
               dir = dir,
               crt = crt,
               apr = apr,
-              out = out_tmp,
               alp_mtr = alp_mtr,
               alp_args = alp_args,
               mmt_mdl = mmt_mdl,
@@ -448,17 +426,20 @@ dropit <- function(
               verbose = vbs
             )
           })
-          names(res) <- names(splt_pos)
-          res
+          names(res_raw) <- names(splt_pos)
+          # Return transposed list OUT of the tryCatch block
+          list(
+            names = lapply(res_raw, `[[`, "names"),
+            subset = lapply(res_raw, `[[`, "subset")
+          )
         } else {
-          naivedrop(
+          res_raw <- naivedrop(
             dta = dta,
             anc = anc,
             n_drp = n_drp,
             dir = dir,
             crt = crt,
             apr = apr,
-            out = out_tmp,
             alp_mtr = alp_mtr,
             alp_args = alp_args,
             mmt_mdl = mmt_mdl,
@@ -466,6 +447,11 @@ dropit <- function(
             lam_mtr = lam_mtr,
             cfa_args = cfa_args,
             verbose = vbs
+          )    
+          # Return the flat list OUT of the tryCatch block
+          list(
+            names = res_raw$names,
+            subset = res_raw$subset
           )
         }
       },
@@ -481,54 +467,50 @@ dropit <- function(
     error = function(e) {
       stop(conditionMessage(e), call. = FALSE)
     }
-  )
+  ) # Returned list from above is now saved into 'rtrn'
 
   ## ---- Final report ----
 
-if (isTRUE(vbs) && length(c(msgs, wrns)) > 0) {
+  # simply deduplicate and remove ugly internal newlines
+  cln_msgs <- unique(gsub("\\s*\\n\\s*", " ", trim_newlines(msgs)))
+  cln_wrns <- unique(gsub("\\s*\\n\\s*", " ", trim_newlines(wrns)))
 
-  # header
-  colormsg(strrep("-", 10), color_code = "38;5;245", newline = TRUE)
-  colormsg(
-    "Run ended with the following issues:",
-    color_code = "38;5;247",
-    bold = TRUE,
-    newline = TRUE
-  )
-  colormsg(strrep("-", 3), color_code = "38;5;245", newline = TRUE)
+  if (isTRUE(vbs) && length(c(cln_msgs, cln_wrns)) > 0) {
 
-  # warnings 
-  if (length(wrns)) {
-    wrn_text <- paste0(" * ", trim_newlines(unique(wrns)), collapse = "\n")
-    colormsg("Warnings", color_code = "38;5;187", bold = TRUE, newline = TRUE)
-    colormsg(wrn_text, color_code = "38;5;245", newline = TRUE)
-  }
-
-  # divider before msgs if both sections exist
-  if (length(wrns) && length(msgs)) {
+    colormsg(strrep("-", 10), color_code = "38;5;245", newline = TRUE)
+    colormsg("Run ended with the following issues:", color_code = "38;5;247", bold = TRUE, newline = TRUE)
     colormsg(strrep("-", 3), color_code = "38;5;245", newline = TRUE)
-  }
-  
-  # messages
-  if (length(msgs)) {
-    msg_text <- paste0(" * ", trim_newlines(unique(msgs)), collapse = "\n")
-    colormsg("Messages", color_code = "38;5;151", bold = TRUE, newline = TRUE)
-    colormsg(msg_text, color_code = "38;5;245", newline = TRUE)
-  }
 
-  # footer
-  colormsg(strrep("-", 10), color_code = "38;5;245", newline = TRUE)
-}
+    if (length(cln_wrns)) {
+      wrn_text <- paste0(" * ", cln_wrns, collapse = "\n")
+      colormsg("Warnings", color_code = "38;5;187", bold = TRUE, newline = TRUE)
+      colormsg(wrn_text, color_code = "38;5;245", newline = TRUE)
+    }
+
+    if (length(cln_wrns) && length(cln_msgs)) {
+      colormsg(strrep("-", 3), color_code = "38;5;245", newline = TRUE)
+    }
+    
+    if (length(cln_msgs)) {
+      msg_text <- paste0(" * ", cln_msgs, collapse = "\n")
+      colormsg("Messages", color_code = "38;5;151", bold = TRUE, newline = TRUE)
+      colormsg(msg_text, color_code = "38;5;245", newline = TRUE)
+    }
+
+    colormsg(strrep("-", 10), color_code = "38;5;245", newline = TRUE)
+  }
 
   ## ---- Return structured output ----
 
-  if (out == "debug") {
-    return(list(
-      result = rtrn,
-      warnings = wrns,
-      messages = msgs
-    ))
-  } else {
-    rtrn
-  }
+  rtrn_final <- list(
+    names = rtrn$names,
+    subset = rtrn$subset,
+    log = list(
+      warnings = cln_wrns,
+      messages = cln_msgs
+    )
+  )
+  
+  class(rtrn_final) <- c("dropit", "list")
+  rtrn_final
 }
