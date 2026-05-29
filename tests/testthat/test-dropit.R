@@ -399,3 +399,24 @@ test_that("dropit records warning when non-data.frame input is coerced", {
   # The warning should be safely captured in the log
   expect_true(any(grepl("coerced to a data.frame", res$log$warnings)))
 })
+
+test_that("dropit() errors when a partition has fewer columns than n_drop", {
+  # The dummy 'dta' has 5 columns (A1 through A5).
+  # We create a partition where "Group3" only has 1 item.
+  bad_partition <- c("Group1", "Group1", "Group2", "Group2", "Group3")
+  
+  expect_error(
+    dropit(
+      data = dta,
+      partition = bad_partition,
+      n_drop = 2L, # Attempting to drop 2 items from each partition
+      direction = "tail",
+      criterion = "alpha",
+      approach = "oneshot",
+      alpha_metric = "raw_alpha",
+      alpha_args = list(check.keys = TRUE),
+      verbose = FALSE
+    ),
+    regexp = "Partition\\(s\\) have fewer columns than n_drop=2: Group3"
+  )
+})
