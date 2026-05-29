@@ -337,13 +337,10 @@ oneshotdrop_alpha <- function(
 #' @param ... Further arguments passed to or from other methods.
 #' @export
 print.dropit <- function(x, ...) {
-  
   colormsg("Dropped Items:", color_code = "38;5;67", bold = TRUE, newline = TRUE)
   print(x$names)
-  
   cat("\n")
   colormsg("Subset(s):", color_code = "38;5;67", bold = TRUE, newline = TRUE)
-  
   if (is.data.frame(x$subset)) {
     utils::str(x$subset)
   } else if (is.list(x$subset)) {
@@ -353,7 +350,6 @@ print.dropit <- function(x, ...) {
       cat("\n")
     }
   }
-  
   if (!is.null(x$log)) {
     n_warn <- length(x$log$warnings)
     n_msg <- length(x$log$messages)
@@ -368,7 +364,6 @@ print.dropit <- function(x, ...) {
       cat(" logged. Access via `$log`\n")
     }
   }
-  
   invisible(x)
 }
 
@@ -377,16 +372,13 @@ print.dropit <- function(x, ...) {
 #' @param ... Further arguments passed to or from other methods.
 #' @export
 print.dropit_log <- function(x, ...) {
-  
   has_warn <- length(x$warnings) > 0
   has_msg <- length(x$messages) > 0
-  
   # If the user explicitly asks for the log but it's empty
   if (!has_warn && !has_msg) {
     cat("Log is empty (0 warnings, 0 messages).\n")
     return(invisible(x))
   }
-  
   # Print warnings if they exist
   if (has_warn) {
     cat(strrep("-", 12), "\n")
