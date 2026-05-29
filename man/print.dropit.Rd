@@ -2,7 +2,7 @@
 % Please edit documentation in R/droputils.R
 \name{print.dropit}
 \alias{print.dropit}
-\title{Print Method for dropit Objects}
+\title{Print method for dropit objects}
 \usage{
 \method{print}{dropit}(x, ...)
 }
@@ -12,5 +12,5 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Print Method for dropit Objects
+Print method for dropit objects
 }
