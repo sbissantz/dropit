@@ -3,13 +3,6 @@
 ``` r
 
 library(dropit)
-```
-
-    dropit
-    Version: 0.0.0.9000
-
-``` r
-
 library(psych)
 ```
 
@@ -29,7 +22,7 @@ xcld_pat <- colnames(dta) %in% xcld
 # Store the data in a matrix
 bfi <- as.matrix(dta[, !xcld_pat])
 
-# Numer of respondents
+# Number of respondents
 N <- nrow(bfi)
 
 # Number of items
@@ -56,23 +49,22 @@ Q <- matrix(0, nrow = I, ncol = D)
 rownames(Q) <- colnames(bfi)
 colnames(Q) <- c("a", "c", "e", "n", "o")
 
-Q[1:5, "a"] <- 1 # Extraversion
-Q[6:10, "c"] <- 1 # Agreeableness
-Q[11:15, "e"] <- 1 # Conscientiousness
-Q[16:20, "n"] <- 1 # Neuroticism
-Q[21:25, "o"] <- 1 # Openness
+Q[1:5, "a"]   <- 1 # Agreeableness (A1-A5)
+Q[6:10, "c"]  <- 1 # Conscientiousness (C1-C5)
+Q[11:15, "e"] <- 1 # Extraversion (E1-E5)
+Q[16:20, "n"] <- 1 # Neuroticism (N1-N5)
+Q[21:25, "o"] <- 1 # Openness (O1-O5)
 
 # Sumscores (original)
 bfi %*% Q |> head()
+#>     a  c  e  n  o
+#> p1 17 16 17 14 19
+#> p2 18 20 15 19 16
+#> p3 22 20 19 18 18
+#> p4 24 21 20 14 18
+#> p5 17 18 18 16 16
+#> p6 28 22 20 15 19
 ```
-
-        a  c  e  n  o
-    p1 17 16 17 14 19
-    p2 18 20 15 19 16
-    p3 22 20 19 18 18
-    p4 24 21 20 14 18
-    p5 17 18 18 16 16
-    p6 28 22 20 15 19
 
 ## Extraversion Domain
 
@@ -83,19 +75,18 @@ For now, let’s focus on the Extraversion items:
 # Extraversion items
 extra <- bfi[,Q[,"e"] == 1]
 extra |> head()
+#>    E1 E2 E3 E4 E5
+#> p1  3  3  3  4  4
+#> p2  1  1  6  4  3
+#> p3  2  4  4  4  5
+#> p4  5  3  4  4  4
+#> p5  2  2  5  4  5
+#> p6  2  1  6  5  6
 ```
-
-       E1 E2 E3 E4 E5
-    p1  3  3  3  4  4
-    p2  1  1  6  4  3
-    p3  2  4  4  4  5
-    p4  5  3  4  4  4
-    p5  2  2  5  4  5
-    p6  2  1  6  5  6
 
 ## Drop It!
 
-What happens, when we greadily drop, say the 2 worst-performing items
+What happens, when we greedily drop, say the 2 worst-performing items
 from the extraversion scale based on their alpha values? The
 [`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
 function allows us to explore that question.
@@ -103,7 +94,7 @@ function allows us to explore that question.
 ``` r
 
 drop2ga <- dropit(
-  extra,
+  data = extra,
   n_drop = 2L,
   direction = "tail",
   criterion = "alpha",
@@ -115,9 +106,48 @@ drop2ga <- dropit(
 
 # Manifest correlation between sum scores
 cor(rowSums(extra), rowSums(drop2ga$subset), use = "pairwise.complete.obs")
+#> [1] 0.8282344
 ```
 
-    [1] 0.8282344
+## Retaining Facets
+
+Most domains in modern psychological inventories are multifaceted. If we
+apply an abbreviation algorithm to the entire dimension at once, it
+might disproportionately decimate one facet while leaving another
+completely untouched, destroying the theoretical structure of the scale.
+
+The partition argument solves this by applying the dropping algorithm
+independently across user-defined subscales. Since the built-in bfi
+dataset does not specify official Extraversion facets, let’s arbitrarily
+divide our five items into two imaginary sub-components: “S” (E1, E2,
+E3) and “A” (E4, E5). We can then instruct
+[`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md) to
+drop the single weakest item from each facet simultaneously.
+
+``` r
+
+# Arbitrarily assign the 5 Extraversion items to two facets
+extra_facets <- c("S", "S", "S", "A", "A")
+# Drop 1 item from each facet
+drop_multi <- dropit(
+  data = extra,
+  partition = extra_facets,
+  n_drop = 1L,
+  direction = "tail",
+  criterion = "alpha",
+  approach = "oneshot",
+  alpha_metric = "raw_alpha",
+  alpha_args = list(check.keys = TRUE),
+  verbose = FALSE
+)
+# The result is now organized by facet
+drop_multi$names
+#> $A
+#> [1] "E5"
+#> 
+#> $S
+#> [1] "E2"
+```
 
 ## Anchoring Items
 
@@ -130,8 +160,8 @@ setting them as anchors, we ensure they remain protected.
 
 ``` r
 
-drop2_anc <- dropit(
-  extra,
+drop2ga_anc <- dropit(
+  data = extra,
   anchor = c("E2", "E4"),
   n_drop = 2L,
   direction = "tail",
@@ -144,13 +174,77 @@ drop2_anc <- dropit(
 
 # Compare dropped items against unanchored baseline
 cat("Unanchored:", paste0(drop2ga$names, collapse = ", "), "\n")
+#> Unanchored: E2, E4
+cat("Anchored:", paste0(drop2ga_anc, collapse = ", "), "\n")
+#> Anchored: E1, E3
 ```
 
-    Unanchored: E2, E4 
+## Missing Data
+
+Missing data is a common issue in psychometric datasets, and how it is
+handled can significantly impact the results of item dropping
+procedures. The
+[`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
+function provides flexibility in managing missing data through the
+`alpha_args` and `cfa_args` parameters, which allow you to specify the
+method for handling missing values when calculating Cronbach’s alpha or
+fitting CFA models, respectively.
+
+### Alpha Dropping with Missing Data
+
+When using `criterion = "alpha"`, the internal rankings are calculated
+via [`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html). By
+default, this function handles missing values by using pairwise deletion
+(`use = "pairwise"`) to construct the underlying correlation matrix. For
+most survey data, this default is methodologically sound and requires no
+extra configuration.
+
+However, if you want to strictly enforce complete cases (listwise
+deletion) to ensure the alpha is computed on the exact same respondents
+for every item, you can pass the `use` argument directly into the
+`alpha_args` list:
 
 ``` r
 
-cat("Anchored:", paste0(drop2_anc, collapse = ", "), "\n")
+drop2oa_co <- dropit(
+  data = extra,
+  n_drop = 2,
+  criterion = "alpha",
+  approach = "oneshot",
+  verbose = FALSE,
+  alpha_args = list(
+    check.keys = TRUE, 
+    use = "complete.obs"  # change strategy
+  )
+)
 ```
 
-    Anchored: E1, E3 
+### Lambda Dropping with Missing Data
+
+Missing data handling requires careful attention when using
+`criterion = "lambda"`. The internal CFA models are fitted using
+[`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html), which
+defaults to **listwise deletion**. If your dataset contains scattered
+missing values, this default will drop any participant who skipped even
+a single item, severely reducing your sample size before the factor
+loadings are estimated.
+
+To prevent this and retain your full dataset, you should leverage Full
+Information Maximum Likelihood (FIML). Because `dropit` acts as a
+seamless wrapper, you can pass `missing = "fiml"` directly into
+`cfa_args`:
+
+``` r
+
+drop2_fiml<- dropit(
+  data = extra,
+  n_drop = 2,
+  criterion = "lambda",
+  approach = "greedy",
+  verbose = FALSE,
+  cfa_args = list(
+    std.lv = TRUE, 
+    missing = "fiml"  # full information maximum likelihood
+  )
+)
+```
