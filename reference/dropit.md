@@ -16,7 +16,6 @@ dropit(
   direction = c("tail", "head"),
   criterion = c("alpha", "lambda"),
   approach = c("oneshot", "greedy"),
-  output_type = c("names", "subset", "both", "debug"),
   alpha_metric = c("raw_alpha", "std.alpha", "G6(smc)", "average_r", "S/N", "alpha se",
     "var.r", "med.r"),
   alpha_args = list(),
@@ -68,19 +67,6 @@ dropit(
   Character string, `"oneshot"` (single pass) or `"greedy"` (iterative
   dropping and refitting).
 
-- output_type:
-
-  One of `"names"` (default), `"subset"`, `"both"`, or `"debug"`.
-
-  - `"names"` – character vector of dropped item names.
-
-  - `"subset"` – reduced data frame with dropped columns removed.
-
-  - `"both"` – list with elements `names` and `subset`.
-
-  - `"debug"` – as `"both"` but also includes all captured messages,
-    warnings, and errors.
-
 - alpha_metric:
 
   Character string. Cronbach’s alpha metric to optimise (passed to
@@ -119,23 +105,36 @@ dropit(
   Logical; if `TRUE` (default) prints a structured, color-formatted
   report of all messages, warnings, and errors captured during the run.
 
+- output_type:
+
+  One of `"names"` (default), `"subset"`, `"both"`, or `"debug"`.
+
+  - `"names"` – character vector of dropped item names.
+
+  - `"subset"` – reduced data frame with dropped columns removed.
+
+  - `"both"` – list with elements `names` and `subset`.
+
+  - `"debug"` – as `"both"` but also includes all captured messages,
+    warnings, and errors.
+
 ## Value
 
-If `output_type != "debug"`, returns either a character vector, data
-frame, or list depending on the specified output type. If
-`output_type = "debug"`, returns a list with components:
+An object of class `dropit`, which is a list containing:
 
-- result:
+- names:
 
-  The main result (or `NULL` if an error occurred).
+  A character vector of dropped item names (or a named list of vectors
+  if `partition` is used).
 
-- warnings:
+- subset:
 
-  Character vector of captured warnings.
+  The reduced `data.frame` (or a named list of `data.frame`s if
+  `partition` is used).
 
-- messages:
+- log:
 
-  Character vector of informational messages.
+  A list containing `warnings` and `messages` captured during execution.
 
 ## Details
 
@@ -183,5 +182,14 @@ dat <- data.frame(
 )
 
 dropit(dat, n_drop = 1, verbose = FALSE)
+#> Dropped Item(s): 
 #> [1] "i1"
+#> 
+#> Subset(s): 
+#> 'data.frame':    5 obs. of  3 variables:
+#>  $ i2: num  2 2 3 4 4
+#>  $ i3: num  1 1 2 3 4
+#>  $ i4: num  4 3 2 1 1
+#> ------------ 
+#> Important: 3 warning(s) and 1 message(s) logged. Access via `$log`
 ```

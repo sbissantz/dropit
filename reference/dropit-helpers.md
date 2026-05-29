@@ -16,7 +16,6 @@ naivedrop(
   dir,
   crt,
   apr,
-  out,
   alp_mtr,
   alp_args,
   mmt_mdl,
@@ -31,7 +30,6 @@ greedydrop_lambda(
   anc,
   n_drp,
   dir,
-  out,
   mmt_mdl,
   tgt_fct,
   lam_mtr,
@@ -39,14 +37,13 @@ greedydrop_lambda(
   verbose = FALSE
 )
 
-greedydrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
+greedydrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
 
 oneshotdrop_lambda(
   dta,
   anc,
   n_drp,
   dir,
-  out,
   mmt_mdl,
   tgt_fct,
   lam_mtr,
@@ -54,7 +51,7 @@ oneshotdrop_lambda(
   verbose = FALSE
 )
 
-oneshotdrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
+oneshotdrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
 ```
 
 ## Arguments
@@ -90,11 +87,6 @@ oneshotdrop_alpha(dta, anc, n_drp, dir, out, alp_mtr, alp_args)
 
   Character string, `"oneshot"` or `"greedy"`, selecting the removal
   strategy.
-
-- out:
-
-  Character string, one of `"names"`, `"subset"`, or `"both"`,
-  determining the type of object returned.
 
 - alp_mtr:
 

@@ -57,7 +57,6 @@ algorithm.</p>
 <span>  <span class="va">dir</span>,</span>
 <span>  <span class="va">crt</span>,</span>
 <span>  <span class="va">apr</span>,</span>
-<span>  <span class="va">out</span>,</span>
 <span>  <span class="va">alp_mtr</span>,</span>
 <span>  <span class="va">alp_args</span>,</span>
 <span>  <span class="va">mmt_mdl</span>,</span>
@@ -72,7 +71,6 @@ algorithm.</p>
 <span>  <span class="va">anc</span>,</span>
 <span>  <span class="va">n_drp</span>,</span>
 <span>  <span class="va">dir</span>,</span>
-<span>  <span class="va">out</span>,</span>
 <span>  <span class="va">mmt_mdl</span>,</span>
 <span>  <span class="va">tgt_fct</span>,</span>
 <span>  <span class="va">lam_mtr</span>,</span>
@@ -80,14 +78,13 @@ algorithm.</p>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">greedydrop_alpha</span><span class="op">(</span><span class="va">dta</span>, <span class="va">anc</span>, <span class="va">n_drp</span>, <span class="va">dir</span>, <span class="va">out</span>, <span class="va">alp_mtr</span>, <span class="va">alp_args</span><span class="op">)</span></span>
+<span><span class="fu">greedydrop_alpha</span><span class="op">(</span><span class="va">dta</span>, <span class="va">anc</span>, <span class="va">n_drp</span>, <span class="va">dir</span>, <span class="va">alp_mtr</span>, <span class="va">alp_args</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">oneshotdrop_lambda</span><span class="op">(</span></span>
 <span>  <span class="va">dta</span>,</span>
 <span>  <span class="va">anc</span>,</span>
 <span>  <span class="va">n_drp</span>,</span>
 <span>  <span class="va">dir</span>,</span>
-<span>  <span class="va">out</span>,</span>
 <span>  <span class="va">mmt_mdl</span>,</span>
 <span>  <span class="va">tgt_fct</span>,</span>
 <span>  <span class="va">lam_mtr</span>,</span>
@@ -95,7 +92,7 @@ algorithm.</p>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">oneshotdrop_alpha</span><span class="op">(</span><span class="va">dta</span>, <span class="va">anc</span>, <span class="va">n_drp</span>, <span class="va">dir</span>, <span class="va">out</span>, <span class="va">alp_mtr</span>, <span class="va">alp_args</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">oneshotdrop_alpha</span><span class="op">(</span><span class="va">dta</span>, <span class="va">anc</span>, <span class="va">n_drp</span>, <span class="va">dir</span>, <span class="va">alp_mtr</span>, <span class="va">alp_args</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -130,11 +127,6 @@ indicating the ranking criterion.</p></dd>
 <dt id="arg-apr">apr<a class="anchor" aria-label="anchor" href="#arg-apr"></a></dt>
 <dd><p>Character string, <code>"oneshot"</code> or <code>"greedy"</code>,
 selecting the removal strategy.</p></dd>
-
-
-<dt id="arg-out">out<a class="anchor" aria-label="anchor" href="#arg-out"></a></dt>
-<dd><p>Character string, one of <code>"names"</code>, <code>"subset"</code>, or <code>"both"</code>,
-determining the type of object returned.</p></dd>
 
 
 <dt id="arg-alp-mtr">alp_mtr<a class="anchor" aria-label="anchor" href="#arg-alp-mtr"></a></dt>
