@@ -33,14 +33,6 @@
 #'   or `"lambda"` (CFA loadings).
 #' @param approach Character string, `"oneshot"` (single pass)
 #'   or `"greedy"` (iterative dropping and refitting).
-#' @param output_type One of `"names"` (default), `"subset"`, `"both"`,
-#'   or `"debug"`.
-#'   * `"names"` – character vector of dropped item names.
-#'   * `"subset"` – reduced data frame with dropped columns removed.
-#'   * `"both"` – list with elements `names` and `subset`.
-#'   * `"debug"` – as `"both"` but also includes all captured messages,
-#'     warnings, and errors.
-#'
 #' @param alpha_metric Character string. Cronbach’s alpha metric to
 #'   optimise (passed to `psych::alpha$alpha.drop`).
 #' @param alpha_args Named list of extra arguments for
@@ -471,46 +463,35 @@ dropit <- function(
 
   ## ---- Final report ----
 
-  # simply deduplicate and remove ugly internal newlines
   cln_msgs <- unique(gsub("\\s*\\n\\s*", " ", trim_newlines(msgs)))
   cln_wrns <- unique(gsub("\\s*\\n\\s*", " ", trim_newlines(wrns)))
-
-  if (isTRUE(vbs) && length(c(cln_msgs, cln_wrns)) > 0) {
-
-    colormsg(strrep("-", 10), color_code = "38;5;245", newline = TRUE)
-    colormsg("Run ended with the following issues:", color_code = "38;5;247", bold = TRUE, newline = TRUE)
-    colormsg(strrep("-", 3), color_code = "38;5;245", newline = TRUE)
-
-    if (length(cln_wrns)) {
-      wrn_text <- paste0(" * ", cln_wrns, collapse = "\n")
-      colormsg("Warnings", color_code = "38;5;187", bold = TRUE, newline = TRUE)
-      colormsg(wrn_text, color_code = "38;5;245", newline = TRUE)
-    }
-
-    if (length(cln_wrns) && length(cln_msgs)) {
-      colormsg(strrep("-", 3), color_code = "38;5;245", newline = TRUE)
-    }
-    
-    if (length(cln_msgs)) {
-      msg_text <- paste0(" * ", cln_msgs, collapse = "\n")
-      colormsg("Messages", color_code = "38;5;151", bold = TRUE, newline = TRUE)
-      colormsg(msg_text, color_code = "38;5;245", newline = TRUE)
-    }
-
-    colormsg(strrep("-", 10), color_code = "38;5;245", newline = TRUE)
+  
+  if (isTRUE(vbs)) {
+    n_warn <- length(cln_wrns)
+    n_msg <- length(cln_msgs)
+    if (n_warn > 0 || n_msg > 0) {
+      colormsg("Run", color_code = "38;5;67", bold = TRUE, newline = FALSE)
+      cat(sprintf(" ended with %d ", n_warn))
+      colormsg("warning(s)", color_code = "38;5;67", bold = TRUE, newline = FALSE)
+      cat(sprintf(" and %d ", n_msg))
+      colormsg("message(s)", color_code = "38;5;67", bold = TRUE, newline = FALSE)
+      cat(". Access via `$log`\n")
+    } 
   }
 
   ## ---- Return structured output ----
 
-  rtrn_final <- list(
+rtrn_final <- list(
     names = rtrn$names,
     subset = rtrn$subset,
-    log = list(
-      warnings = cln_wrns,
-      messages = cln_msgs
+    log = structure(
+      list(
+        warnings = cln_wrns,
+        messages = cln_msgs
+      ),
+      class = c("dropit_log", "list")
     )
   )
-  
   class(rtrn_final) <- c("dropit", "list")
   rtrn_final
 }
