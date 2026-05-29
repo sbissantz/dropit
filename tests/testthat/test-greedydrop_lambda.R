@@ -90,3 +90,20 @@ test_that("greedydrop_lambda() respects anchor items", {
   expect_false("A1" %in% res$names)
   expect_length(res$names, 2)
 })
+
+test_that("greedydrop_lambda() prints messages when verbose = TRUE", {
+  expect_message(
+    greedydrop_lambda(
+      dta = dta,
+      anc = NULL,
+      n_drp = 1,
+      dir = "tail",
+      mmt_mdl = NULL,
+      tgt_fct = NULL,
+      lam_mtr = "std.all",
+      cfa_args = list(std.lv = TRUE),
+      verbose = TRUE
+    ),
+    "Model \\(1/1\\)"
+  )
+})

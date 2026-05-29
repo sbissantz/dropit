@@ -185,3 +185,23 @@ test_that("naivedrop() respects anchor items", {
   expect_false("A3" %in% res$names)
   expect_length(res$names, 2)
 })
+
+test_that("naivedrop() invalid 'apr' for lambda throws error", {
+  expect_error(
+    naivedrop(
+      dta = dta, 
+      anc = NULL, 
+      n_drp = 1, 
+      dir = "tail",
+      crt = "lambda", 
+      apr = "foobar",
+      alp_mtr = "raw_alpha", 
+      alp_args = list(),
+      mmt_mdl = NULL, 
+      tgt_fct = NULL, 
+      lam_mtr = "std.all", 
+      cfa_args = list()
+    ),
+    "Use 'oneshot' or 'greedy'"
+  )
+})
