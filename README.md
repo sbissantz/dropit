@@ -39,8 +39,8 @@ library(dropit)
 dropit(
   data = psych::bfi[, 1:5], 
   n_drop = 1, 
-  criterion = "lambda",
-  direction = "tail"
+  direction = "tail",
+  criterion = "lambda"
 )
 ```
 
