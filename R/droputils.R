@@ -125,8 +125,7 @@ naivedrop <- function(
         mmt_mdl = mmt_mdl,
         tgt_fct = tgt_fct,
         lam_mtr = lam_mtr,
-        cfa_args = cfa_args,
-        verbose = verbose
+        cfa_args = cfa_args
       ),
       "greedy" = greedydrop_lambda(
         dta = dta, 
@@ -136,8 +135,7 @@ naivedrop <- function(
         mmt_mdl = mmt_mdl,
         tgt_fct = tgt_fct,
         lam_mtr = lam_mtr,
-        cfa_args = cfa_args,
-        verbose = verbose
+        cfa_args = cfa_args
       ),
       # Should never reached if input validation works properly 
       stop("Debug: Invalid criterion specified. Use 'oneshot' or 'greedy'.")
@@ -181,8 +179,7 @@ for (i in seq_len(n_drp)) {
       mmt_mdl = mmt_mdl,
       tgt_fct = tgt_fct,
       lam_mtr = lam_mtr,
-      cfa_args = cfa_args,
-      verbose = FALSE
+      cfa_args = cfa_args
     )[["names"]]
   }
   list(
@@ -235,9 +232,7 @@ oneshotdrop_lambda <- function(
   mmt_mdl, 
   tgt_fct,
   lam_mtr,
-  cfa_args,
-  # reporting
-  verbose = FALSE
+  cfa_args
 ) {
   itm_nms <- colnames(dta)
   if (is.null(mmt_mdl)) {
