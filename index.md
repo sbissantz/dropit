@@ -37,3 +37,17 @@ remotes::install_github("sbissantz/dropit")
 
 Contributions, suggestions, and bug reports are welcome. Please open an
 issue or submit a pull request on GitHub.
+
+### Quick Start
+
+``` r
+
+library(dropit)
+
+# Drop  weakest item from agreeableness scale based on CFA loadings
+dropit(
+  data = psych::bfi[, 1:5], 
+  n_drop = 1, 
+  criterion = "lambda"
+)
+```

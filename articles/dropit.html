@@ -66,7 +66,7 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sbissantz.github.io/dropit/">dropit</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://personality-project.org/r/psych/" class="external-link">psych</a></span><span class="op">)</span></span></code></pre></div>
 </div>
-<p>We will use the BFI data from the <code>psych</code> package to illustrate the <code><a href="../reference/dropit.html">dropit()</a></code> function for item dropping based on Cronbach’s alpha.</p>
+<p>We will use the BFI data from the <code>psych</code> package to illustrate the <code><a href="../reference/dropit.html">dropit()</a></code> function for scale modifications. The BFI is a personality inventory that measures the Big Five traits: agreeableness, conscientiousness, extraversion, neuroticism, and openness. Each trait is assessed with 5 items, resulting in a total of 25 items.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load BFI data</span></span>
@@ -134,7 +134,7 @@
 </div>
 </section><section class="level2"><h2 id="drop-it">Drop It!<a class="anchor" aria-label="anchor" href="#drop-it"></a>
 </h2>
-<p>What happens, when we greedily drop, say the 2 worst-performing items from the extraversion scale based on their alpha values? The <code><a href="../reference/dropit.html">dropit()</a></code> function allows us to explore that question.</p>
+<p>What happens when we drop the two worst-performing items from the extraversion scale in a single pass based on their alpha values? The <code><a href="../reference/dropit.html">dropit()</a></code> function allows us to explore that question.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drop2ga</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
@@ -142,7 +142,7 @@
 <span>  n_drop <span class="op">=</span> <span class="fl">2L</span>,</span>
 <span>  direction <span class="op">=</span> <span class="st">"tail"</span>,</span>
 <span>  criterion <span class="op">=</span> <span class="st">"alpha"</span>,</span>
-<span>  approach <span class="op">=</span> <span class="st">"greedy"</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"oneshot"</span>,</span>
 <span>  alpha_metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw_alpha"</span><span class="op">)</span>,</span>
 <span>  alpha_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>check.keys <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -152,18 +152,112 @@
 <span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">extra</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">drop2ga</span><span class="op">$</span><span class="va">subset</span><span class="op">)</span>, use <span class="op">=</span> <span class="st">"pairwise.complete.obs"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.8282344</span></span></code></pre></div>
 </div>
+</section><section class="level2"><h2 id="the-dropping-criterion-alpha-vs--lambda">The Dropping Criterion: Alpha vs. Lambda<a class="anchor" aria-label="anchor" href="#the-dropping-criterion-alpha-vs--lambda"></a>
+</h2>
+<p>With the <code>criterion</code> argument, the user specifies the metric to score items. The two options are:</p>
+<ul>
+<li><p><strong><code>criterion = "alpha"</code> (Internal Consistency):</strong> This approach relies on <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>. The algorithm drops the item whose removal <em>least</em> reduces (or most increases) the scale’s overall Cronbach’s alpha.</p></li>
+<li><p><strong><code>criterion = "lambda"</code> (Latent Variable Modeling):</strong> This approach relies on <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>. It fits a one-factor Confirmatory Factor Analysis model and ranks items based on their absolute standardized factor loadings (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>). It drops the item with the weakest (or strongest) relationship to the underlying trait.</p></li>
+</ul>
+<p>Let’s compare dropping a single item from our extraversion scale using both methods:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Drop weakest item based on Cronbach's alpha</span></span>
+<span><span class="va">drop_alpha</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
+<span>  n_drop <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  criterion <span class="op">=</span> <span class="st">"alpha"</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Drop weakest item based on CFA factor loadings</span></span>
+<span><span class="va">drop_lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
+<span>  n_drop <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Alpha:"</span>, <span class="va">drop_alpha</span><span class="op">$</span><span class="va">names</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Alpha: E3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Lambda:"</span>, <span class="va">drop_lambda</span><span class="op">$</span><span class="va">names</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Lambda: E5</span></span></code></pre></div>
+</div>
+</section><section class="level2"><h2 id="greedy-vs--one-shot">Greedy vs. One-Shot<a class="anchor" aria-label="anchor" href="#greedy-vs--one-shot"></a>
+</h2>
+<p>When dropping multiple items (<code>n_drop &gt; 1</code>), the approach used to select them becomes more critical. <code>dropit</code> offers two approaches:</p>
+<ul>
+<li>
+<strong><code>approach = "oneshot"</code> (Fast):</strong> The algorithm evaluates the full scale, ranks all items simultaneously, and drops the bottom <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> items in a single pass.</li>
+<li>
+<strong><code>approach = "greedy"</code> (Rigorous):</strong> The algorithm evaluates the scale and drops only the single worst item. It then <em>refits</em> the alpha or CFA model on the remaining items, recalculates the rankings, and drops the next “worst” item. This repeats <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> times.</li>
+</ul>
+<p>Why does this matter? Well let’s compare the two approaches when dropping 3 items from our extraversion scale using CFA loadings:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># One-shot dropping</span></span>
+<span><span class="va">drop3_oneshot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
+<span>  n_drop <span class="op">=</span> <span class="fl">3L</span>,</span>
+<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"oneshot"</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Greedy dropping</span></span>
+<span><span class="va">drop3_greedy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
+<span>  n_drop <span class="op">=</span> <span class="fl">3L</span>,</span>
+<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"greedy"</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"One-shot:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">drop3_oneshot</span><span class="op">$</span><span class="va">names</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; One-shot: E1, E3, E5</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Greedy:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">drop3_greedy</span><span class="op">$</span><span class="va">names</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Greedy: E5, E3, E4</span></span></code></pre></div>
+</div>
+</section><section class="level2"><h2 id="adversarial-modifications">Adversarial Modifications<a class="anchor" aria-label="anchor" href="#adversarial-modifications"></a>
+</h2>
+<p>While scale abbreviation typically aims to maximize retained information by dropping the weakest items (<code>direction = "tail"</code>), <code>dropit</code> also allows you to establish worst-case scenarios. Setting <code>direction = "head"</code> forces the algorithm to drop the <em>strongest</em> items—those with the highest absolute CFA loadings or whose removal most severely reduces Cronbach’s alpha.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Maximized abbreviation (lowest)</span></span>
+<span><span class="va">bestcase</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>, </span>
+<span>  n_drop <span class="op">=</span> <span class="fl">2</span>, </span>
+<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>, </span>
+<span>  direction <span class="op">=</span> <span class="st">"tail"</span>, </span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Adversarial abbreviation (highest)</span></span>
+<span><span class="va">worstcase</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>, </span>
+<span>  n_drop <span class="op">=</span> <span class="fl">2</span>, </span>
+<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>, </span>
+<span>  direction <span class="op">=</span> <span class="st">"head"</span>, </span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Best-case:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">bestcase</span><span class="op">$</span><span class="va">names</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Best-case: E3, E5</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Worst-case:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">worstcase</span><span class="op">$</span><span class="va">names</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Worst-case: E2, E4</span></span></code></pre></div>
+</div>
 </section><section class="level2"><h2 id="retaining-facets">Retaining Facets<a class="anchor" aria-label="anchor" href="#retaining-facets"></a>
 </h2>
 <p>Most domains in modern psychological inventories are multifaceted. If we apply an abbreviation algorithm to the entire dimension at once, it might disproportionately decimate one facet while leaving another completely untouched, destroying the theoretical structure of the scale.</p>
-<p>The partition argument solves this by applying the dropping algorithm independently across user-defined subscales. Since the built-in bfi dataset does not specify official Extraversion facets, let’s arbitrarily divide our five items into two imaginary sub-components: “S” (E1, E2, E3) and “A” (E4, E5). We can then instruct <code><a href="../reference/dropit.html">dropit()</a></code> to drop the single weakest item from each facet simultaneously.</p>
+<p>The <code>partition</code> argument solves this by applying the dropping algorithm independently across user-defined subscales. Since the built-in <code>bfi</code> dataset does not specify official extraversion facets, let’s arbitrarily divide our five items into two imaginary sub-components: “S” (E1, E2, E3) and “A” (E4, E5). We can then instruct <code><a href="../reference/dropit.html">dropit()</a></code> to drop the single weakest item from each facet simultaneously.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Arbitrarily assign the 5 Extraversion items to two facets</span></span>
-<span><span class="va">extra_facets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"S"</span>, <span class="st">"S"</span>, <span class="st">"A"</span>, <span class="st">"A"</span><span class="op">)</span></span>
+<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Arbitrarily assign: 5 extraversion items to 2 facets</span></span>
+<span><span class="va">fcts_extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"S"</span>, <span class="st">"S"</span>, <span class="st">"A"</span>, <span class="st">"A"</span><span class="op">)</span></span>
 <span><span class="co"># Drop 1 item from each facet</span></span>
 <span><span class="va">drop_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
-<span>  partition <span class="op">=</span> <span class="va">extra_facets</span>,</span>
+<span>  partition <span class="op">=</span> <span class="va">fcts_extra</span>,</span>
 <span>  n_drop <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  direction <span class="op">=</span> <span class="st">"tail"</span>,</span>
 <span>  criterion <span class="op">=</span> <span class="st">"alpha"</span>,</span>
@@ -172,7 +266,7 @@
 <span>  alpha_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>check.keys <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co"># The result is now organized by facet</span></span>
+<span><span class="co"># Result is now organized by facet</span></span>
 <span><span class="va">drop_multi</span><span class="op">$</span><span class="va">names</span></span>
 <span><span class="co">#&gt; $A</span></span>
 <span><span class="co">#&gt; [1] "E5"</span></span>
@@ -182,16 +276,16 @@
 </div>
 </section><section class="level2"><h2 id="anchoring-items">Anchoring Items<a class="anchor" aria-label="anchor" href="#anchoring-items"></a>
 </h2>
-<p>Researchers often need to retain specific items to ensure strict comparability against an established baseline. The <code>anchor</code> argument allows you to define a set of items that are immune to dropping. Let’s assume items <code>E2</code> and <code>E4</code> are theoretically vital to the Extraversion scale. However, in the previous run, the algorithm dropped them. By setting them as anchors, we ensure they remain protected.</p>
+<p>Researchers often need to retain specific items to ensure strict comparability against an established baseline. The <code>anchor</code> argument allows you to define a set of items that are immune to dropping. Let’s assume items <code>E2</code> and <code>E4</code> are theoretically vital to the extraversion scale. However, in the previous run, the algorithm dropped them. By setting them as anchors, we ensure they remain protected.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drop2ga_anc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
 <span>  anchor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"E2"</span>, <span class="st">"E4"</span><span class="op">)</span>,</span>
 <span>  n_drop <span class="op">=</span> <span class="fl">2L</span>,</span>
 <span>  direction <span class="op">=</span> <span class="st">"tail"</span>,</span>
 <span>  criterion <span class="op">=</span> <span class="st">"alpha"</span>,</span>
-<span>  approach <span class="op">=</span> <span class="st">"greedy"</span>,</span>
+<span>  approach <span class="op">=</span> <span class="st">"oneshot"</span>,</span>
 <span>  alpha_metric <span class="op">=</span> <span class="st">"raw_alpha"</span>,</span>
 <span>  alpha_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>check.keys <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -199,19 +293,18 @@
 <span></span>
 <span><span class="co"># Compare dropped items against unanchored baseline</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Unanchored:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">drop2ga</span><span class="op">$</span><span class="va">names</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Unanchored: E2, E4</span></span>
+<span><span class="co">#&gt; Unanchored: E4, E2</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Anchored:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">drop2ga_anc</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Anchored: E1, E3</span></span></code></pre></div>
+<span><span class="co">#&gt; Anchored: E3, E1</span></span></code></pre></div>
 </div>
 </section><section class="level2"><h2 id="missing-data">Missing Data<a class="anchor" aria-label="anchor" href="#missing-data"></a>
 </h2>
 <p>Missing data is a common issue in psychometric datasets, and how it is handled can significantly impact the results of item dropping procedures. The <code><a href="../reference/dropit.html">dropit()</a></code> function provides flexibility in managing missing data through the <code>alpha_args</code> and <code>cfa_args</code> parameters, which allow you to specify the method for handling missing values when calculating Cronbach’s alpha or fitting CFA models, respectively.</p>
 <section class="level3"><h3 id="alpha-dropping-with-missing-data">Alpha Dropping with Missing Data<a class="anchor" aria-label="anchor" href="#alpha-dropping-with-missing-data"></a>
 </h3>
-<p>When using <code>criterion = "alpha"</code>, the internal rankings are calculated via <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>. By default, this function handles missing values by using pairwise deletion (<code>use = "pairwise"</code>) to construct the underlying correlation matrix. For most survey data, this default is methodologically sound and requires no extra configuration.</p>
-<p>However, if you want to strictly enforce complete cases (listwise deletion) to ensure the alpha is computed on the exact same respondents for every item, you can pass the <code>use</code> argument directly into the <code>alpha_args</code> list:</p>
+<p>When using <code>criterion = "alpha"</code>, the internal rankings are calculated via <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>. By default, this function handles missing values by using pairwise deletion (<code>use = "pairwise"</code>) to construct the underlying correlation matrix. However, if you want to enforce complete cases (listwise deletion), you can pass the <code>use</code> argument directly into the <code>alpha_args</code> list:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drop2oa_co</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
 <span>  n_drop <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -226,10 +319,9 @@
 </div>
 </section><section class="level3"><h3 id="lambda-dropping-with-missing-data">Lambda Dropping with Missing Data<a class="anchor" aria-label="anchor" href="#lambda-dropping-with-missing-data"></a>
 </h3>
-<p>Missing data handling requires careful attention when using <code>criterion = "lambda"</code>. The internal CFA models are fitted using <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>, which defaults to <strong>listwise deletion</strong>. If your dataset contains scattered missing values, this default will drop any participant who skipped even a single item, severely reducing your sample size before the factor loadings are estimated.</p>
-<p>To prevent this and retain your full dataset, you should leverage Full Information Maximum Likelihood (FIML). Because <code>dropit</code> acts as a seamless wrapper, you can pass <code>missing = "fiml"</code> directly into <code>cfa_args</code>:</p>
+<p>With <code>criterion = "lambda"</code>, the internal CFA models are fitted using <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>, which defaults to <strong>listwise deletion</strong>. If your dataset contains scattered missing values, you might want to leverage Full Information Maximum Likelihood (FIML). Because <code>dropit</code> acts as a seamless wrapper, you can pass <code>missing = "fiml"</code> directly into <code>cfa_args</code>:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drop2_fiml</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
 <span>  n_drop <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -242,9 +334,59 @@
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-</section></section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
+</section></section><section class="level2"><h2 id="simulation-baselines">Simulation Baselines<a class="anchor" aria-label="anchor" href="#simulation-baselines"></a>
 </h2>
-<p>If your abbreviation strategy relies on, say, stochastic lavaan arguments (e.g., bootstrap standard errors or random starting values), you can pass a <code>seed</code> argument directly to <code><a href="../reference/dropit.html">dropit()</a></code> to ensure exact reproducibility without permanently altering the R session’s global random state.</p>
+<p>Because <code>dropit</code> is designed for experimental modifications, users might want to compare abbreviated scales against the full, unmodified scale. To facilitate seamless programmatic loops, passing <code>n_drop = 0</code> acts as a “no-operation.” It bypasses the dropping algorithms and safely returns the original dataset wrapped in the standard <code>dropit</code> object structure. This prevents automated pipelines from crashing at the zero-drop baseline.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Dropping 0-3 items</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">3</span>, <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">extra</span>, </span>
+<span>    n_drop <span class="op">=</span> <span class="va">k</span>, </span>
+<span>    criterion <span class="op">=</span> <span class="st">"lambda"</span>, </span>
+<span>    verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Extract retained datasets</span></span>
+<span><span class="va">base</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">`[[`</span>, <span class="st">"subset"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># View dims to confirm decay</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">base</span>, <span class="va">dim</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,] 2800 2800 2800 2800</span></span>
+<span><span class="co">#&gt; [2,]    5    4    3    2</span></span></code></pre></div>
+</div>
+</section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
+</h2>
+<p>If your abbreviation strategy relies on stochastic <code>lavaan</code> arguments (e.g., bootstrap standard errors or random starting values), you can pass a <code>seed</code> argument directly to <code><a href="../reference/dropit.html">dropit()</a></code>. Crucially, <code>dropit</code> takes a snapshot of your global random state (<code>.Random.seed</code>), applies your exact seed for the internal mechanics, and then safely restores the original state upon exit. This guarantees reproducibility for the abbreviation baselines without permanently side-effecting your R session’s broader simulation environment.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Run CFA with bootstrapping twice; same seed</span></span>
+<span><span class="va">res1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>, </span>
+<span>  n_drop <span class="op">=</span> <span class="fl">1L</span>, </span>
+<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>, </span>
+<span>  seed <span class="op">=</span> <span class="fl">42</span>, </span>
+<span>  <span class="co"># Note: bootstrap iterations kept intentionally low for vignette compilation speed</span></span>
+<span>  cfa_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>se <span class="op">=</span> <span class="st">"bootstrap"</span>, bootstrap <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>, </span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>, </span>
+<span>  n_drop <span class="op">=</span> <span class="fl">1L</span>, </span>
+<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>, </span>
+<span>  seed <span class="op">=</span> <span class="fl">42</span>, </span>
+<span>  cfa_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>se <span class="op">=</span> <span class="st">"bootstrap"</span>, bootstrap <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Verify subsets are identical</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">res1</span><span class="op">$</span><span class="va">subset</span>, <span class="va">res2</span><span class="op">$</span><span class="va">subset</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
