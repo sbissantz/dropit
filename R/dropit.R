@@ -25,8 +25,12 @@
 #' @param partition Optional character vector of length `ncol(data)`
 #'   giving a partition label for each column. Dropping is performed
 #'   independently within each partition.
-#' @param n_drop Integer scalar. Number of items to remove in each
-#'   partition.
+#' @param n_drop Integer scalar. The number of items to remove. Behavior 
+#'   depends on the `partition` argument: if `partition = NULL` (the default), 
+#'   this is the total number of items dropped from the full dataset. If 
+#'   `partition` is specified, this is the number of items dropped from 
+#'   *each* partition independently. Setting `n_drop = 0` acts as a safe 
+#'   no-operation, returning the original dataset unmodified.
 #' @param direction Character string, `"tail"` (default) or `"head"`.
 #'   `"tail"` drops the weakest items; `"head"` drops the strongest.
 #' @param criterion Character string, `"alpha"` (Cronbach’s alpha)
@@ -37,7 +41,6 @@
 #'   optimise (passed to `psych::alpha$alpha.drop`).
 #' @param alpha_args Named list of extra arguments for
 #'   \code{\link[psych]{alpha}}.
-#'
 #' @param measurement_model Optional character string containing a
 #'   \link[lavaan]{model.syntax} specification. If `NULL`, a single-factor
 #'   model with all items loading on one latent factor is used.
@@ -49,7 +52,10 @@
 #'   (e.g., `"est"`, `"std"`, `"std.lv"`, `"std.nox"`, `"std.all"`).
 #' @param cfa_args Named list of additional arguments passed to
 #'   \code{\link[lavaan]{cfa}}.
-#'
+#' @param seed Optional integer scalar. Sets the random seed for stochastic 
+#'   operations (e.g., CFA bootstrapping) to ensure reproducibility. The global 
+#'   RNG state is temporarily modified and safely restored upon exit. 
+#'   Defaults to `NULL`.
 #' @param verbose Logical; if `TRUE` (default) prints a structured,
 #'   color-formatted report of all messages, warnings, and errors
 #'   captured during the run.
@@ -115,6 +121,8 @@ dropit <- function(
   target_factor = NULL,
   lambda_metric = c("est", "std", "std.lv", "std.nox", "std.all"),
   cfa_args = list(),
+  # reproducibility
+  seed = NULL,
   # reporting
   verbose = TRUE
 ) {
@@ -181,22 +189,12 @@ dropit <- function(
         dta <- data # assign after validation
 
         ## ---- n_drop ----
-        if (!is.integer(n_drop)) {
-          # safely get the variable name, not the full expression
-          n_drop_nme <- deparse(substitute(n_drop))
-          # issue a single warning
-          warning(
-            sprintf("The value of '%s' was coerced to an integer.", n_drop_nme),
-            call. = FALSE
-          )
-          n_drop <- as.integer(n_drop)
-        }
-        checkmate::assert_integer(
+        checkmate::assert_integerish(
           n_drop,
-          len = 1,
-          lower = 0,
-          upper = ncol(dta)-1,
-          any.missing = FALSE
+          lower = 0,             # Allow the 0 special case
+          len = 1,               # Must be a single value
+          any.missing = FALSE,   # No NAs allowed
+          null.ok = FALSE
         )
         # short name
         n_drp <- n_drop
@@ -204,8 +202,42 @@ dropit <- function(
         # special case : n_drop = 0
         if (n_drp == 0L) {
           if (isTRUE(vbs)) {
-            message("No items were dropped (n_drop = 0). Returning input unchanged.")
+            message("No items were dropped (n_drop = 0). Returning original.")
           }
+          # Format 'names' output
+          if (!is.null(partition)) {
+            nms_orig <- lapply(
+              split(seq_along(partition), partition), 
+              function(x) character(0)
+            )
+          } else {
+            nms_orig <- character(0)
+          }
+          # Format 'subset' output
+          if (!is.null(partition)) {
+            sub_orig <- lapply(
+              split(seq_along(partition), partition), 
+              function(x) dta[, x, drop = FALSE]
+            )
+          } else {
+            sub_orig <- dta
+          }
+          # Format empty 'log' output
+          log_orig <- structure(
+            list(
+              warnings = character(0), 
+              messages = character(0)
+            ), 
+            class = c("dropit_log", "list")
+          )
+          # Assemble final object and exit immediately
+          rtrn_orig <- list(
+            names = nms_orig,
+            subset = sub_orig,
+            log = log_orig
+          )
+          class(rtrn_orig) <- c("dropit", "list")
+          return(rtrn_orig)
         }
 
         ## ---- anchor ----
@@ -221,8 +253,6 @@ dropit <- function(
         anc <- anchor
 
         ## ---- partition ----
-
-        # TODO: debug with example partition, to see if it works.
         # note: 'partition' is validated after(!) 'n_drop' because I want the
         # validated 'n_drp' for the split (see below).
 
@@ -237,18 +267,27 @@ dropit <- function(
             splt_pos,
             function(x) {
               cols_in_part <- colnames(dta[, x, drop = FALSE])
-              # Count how many items in this partition are NOT anchors
               n_drpbl <- length(setdiff(cols_in_part, anc))
-              # ensure each partition has enough droppable (non-anchor) items
               n_drpbl < n_drp
             },
             logical(1)
           )
           if (any(bad_prts)) {
+            item_label <- if (is.null(anc)) "items" else "non-anchor items"
+            # Formatted to match checkmate's exact style
             stop(sprintf(
-              "Partition(s) have fewer columns than n_drop=%d: %s",
-              n_drp,
-              paste0(names(bad_prts)[bad_prts], collapse = ", ")
+              "Assertion on 'n_drop' failed: Partition(s) have fewer available %s than n_drop (%d): %s",
+              item_label, n_drp, paste0(names(bad_prts)[bad_prts], collapse = ", ")
+            ))
+          }
+        } else {
+          n_drpbl <- ncol(dta) - length(anc)
+          if (n_drp > n_drpbl) {
+            item_label <- if (is.null(anc)) "items" else "non-anchor items"
+            # Formatted to match checkmate's exact style
+            stop(sprintf(
+              "Assertion on 'n_drop' failed: n_drop (%d) exceeds the number of available %s (%d).",
+              n_drp, item_label, n_drpbl
             ))
           }
         }
@@ -393,12 +432,31 @@ dropit <- function(
         # short name
         # note: name is identical to input argument, so no need to reassign.
 
+        ## ---- seed ----
+        checkmate::assert_integerish(
+          seed, 
+          len = 1, 
+          null.ok = TRUE, 
+          any.missing = FALSE
+        )
+        
+        if (!is.null(seed)) {
+          # Safely manage the global seed state
+          if (exists(".Random.seed", envir = .GlobalEnv)) {
+            old_seed <- get(".Random.seed", envir = .GlobalEnv)
+            on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv), add = TRUE)
+          } else {
+            on.exit(rm(".Random.seed", envir = .GlobalEnv), add = TRUE)
+          }
+          set.seed(seed)
+        }
+
         ## --- general input validation (again) ---
 
         # criterion
         # verbose
-
-## ---- main work ----
+         
+        ## ---- main work ----
 
         if (!is.null(prtn)) {
           res_raw <- lapply(splt_pos, function(x) {
@@ -448,6 +506,10 @@ dropit <- function(
         }
       },
       message = function(m) {
+        # vip pass for the early exit message 
+        if (grepl("No items were dropped", conditionMessage(m))) {
+          return()
+        }
         msgs <<- c(msgs, conditionMessage(m))
         invokeRestart("muffleMessage")
       },
