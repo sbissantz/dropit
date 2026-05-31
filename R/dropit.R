@@ -298,22 +298,14 @@ dropit <- function(
         ## ---- direction ----
 
         direction <- match.arg(direction)
-        checkmate::assert_character(
-          direction,
-          len = 1,
-          any.missing = FALSE
-        )
+
         # short name
         dir <- direction
 
         ## ---- criterion ----
 
         criterion <- match.arg(criterion)
-        checkmate::assert_character(
-          criterion,
-          len = 1,
-          any.missing = FALSE
-        )
+
         # short name
         crt <- criterion
 
@@ -332,11 +324,7 @@ dropit <- function(
         ## ---- approach ----
 
         approach <- match.arg(approach)
-        checkmate::assert_character(
-          approach,
-          len = 1,
-          any.missing = FALSE
-        )
+
         # short name
         apr <- approach
 
@@ -348,11 +336,7 @@ dropit <- function(
         ## ---- alpha_metric ----
 
         alpha_metric <- match.arg(alpha_metric)
-        checkmate::assert_character(
-          alpha_metric,
-          len = 1,
-          any.missing = FALSE
-        )
+
         # short name
         alp_mtr <- alpha_metric
 
@@ -414,11 +398,7 @@ dropit <- function(
         ## ---- lambda_metric ----
 
         lambda_metric <- match.arg(lambda_metric)
-        checkmate::assert_character(
-          lambda_metric,
-          len = 1,
-          any.missing = FALSE
-        )
+
         # short name
         lam_mtr <- lambda_metric
 
