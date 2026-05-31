@@ -39,17 +39,7 @@ greedydrop_lambda(
 
 greedydrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
 
-oneshotdrop_lambda(
-  dta,
-  anc,
-  n_drp,
-  dir,
-  mmt_mdl,
-  tgt_fct,
-  lam_mtr,
-  cfa_args,
-  verbose = FALSE
-)
+oneshotdrop_lambda(dta, anc, n_drp, dir, mmt_mdl, tgt_fct, lam_mtr, cfa_args)
 
 oneshotdrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
 }
