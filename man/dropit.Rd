@@ -19,6 +19,7 @@ dropit(
   target_factor = NULL,
   lambda_metric = c("est", "std", "std.lv", "std.nox", "std.all"),
   cfa_args = list(),
+  seed = NULL,
   verbose = TRUE
 )
 }
@@ -36,8 +37,12 @@ statistical performance. Defaults to \code{NULL}.}
 giving a partition label for each column. Dropping is performed
 independently within each partition.}
 
-\item{n_drop}{Integer scalar. Number of items to remove in each
-partition.}
+\item{n_drop}{Integer scalar. The number of items to remove. Behavior
+depends on the \code{partition} argument: if \code{partition = NULL} (the default),
+this is the total number of items dropped from the full dataset. If
+\code{partition} is specified, this is the number of items dropped from
+\emph{each} partition independently. Setting \code{n_drop = 0} acts as a safe
+no-operation, returning the original dataset unmodified.}
 
 \item{direction}{Character string, \code{"tail"} (default) or \code{"head"}.
 \code{"tail"} drops the weakest items; \code{"head"} drops the strongest.}
@@ -68,6 +73,11 @@ to extract from \code{\link[lavaan]{inspect}}
 
 \item{cfa_args}{Named list of additional arguments passed to
 \code{\link[lavaan]{cfa}}.}
+
+\item{seed}{Optional integer scalar. Sets the random seed for stochastic
+operations (e.g., CFA bootstrapping) to ensure reproducibility. The global
+RNG state is temporarily modified and safely restored upon exit.
+Defaults to \code{NULL}.}
 
 \item{verbose}{Logical; if \code{TRUE} (default) prints a structured,
 color-formatted report of all messages, warnings, and errors
