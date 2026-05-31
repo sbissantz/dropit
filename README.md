@@ -30,10 +30,6 @@ install.packages("remotes")
 remotes::install_github("sbissantz/dropit") 
 ```
 
-### Contributing
-
-Contributions, suggestions, and bug reports are welcome. Please open an issue or submit a pull request on GitHub.
-
 ### Quick Start
 
 ```r
@@ -46,3 +42,7 @@ dropit(
   criterion = "lambda"
 )
 ```
+
+### Contributing
+
+Contributions, suggestions, and bug reports are welcome. Please open an issue or submit a pull request on GitHub.
