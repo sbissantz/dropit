@@ -289,9 +289,6 @@ oneshotdrop_lambda <- function(
   )
 }
 
-# TODO: Missingness treatment in lavaan::cfa()?
-# Add '...' For further arguments to cfa() or do.call() with list()?
-
 #' @rdname dropit-helpers
 #' @keywords internal
 oneshotdrop_alpha <- function(
@@ -332,7 +329,7 @@ oneshotdrop_alpha <- function(
   )
 }
 
-#' Print method for dropit objects
+#' Print Method for Dropit Objects
 #' @param x An object of class \code{dropit}.
 #' @param ... Further arguments passed to or from other methods.
 #' @export
@@ -394,7 +391,7 @@ print.dropit_log <- function(x, ...) {
   invisible(x)
 }
 
-# internal wrappers for lavaan calls (makes testing easier)
+# Internal Wrappers for lavaan Calls to Simplify Testing
 
 #' @keywords internal
 #' @noRd
