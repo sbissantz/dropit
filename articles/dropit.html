@@ -242,7 +242,10 @@
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-</section></section><script id="quarto-html-after-body" type="application/javascript">
+</section></section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
+</h2>
+<p>If your abbreviation strategy relies on, say, stochastic lavaan arguments (e.g., bootstrap standard errors or random starting values), you can pass a <code>seed</code> argument directly to <code><a href="../reference/dropit.html">dropit()</a></code> to ensure exact reproducibility without permanently altering the R session’s global random state.</p>
+</section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);

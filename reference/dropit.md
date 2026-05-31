@@ -23,6 +23,7 @@ dropit(
   target_factor = NULL,
   lambda_metric = c("est", "std", "std.lv", "std.nox", "std.all"),
   cfa_args = list(),
+  seed = NULL,
   verbose = TRUE
 )
 ```
@@ -50,7 +51,12 @@ dropit(
 
 - n_drop:
 
-  Integer scalar. Number of items to remove in each partition.
+  Integer scalar. The number of items to remove. Behavior depends on the
+  `partition` argument: if `partition = NULL` (the default), this is the
+  total number of items dropped from the full dataset. If `partition` is
+  specified, this is the number of items dropped from *each* partition
+  independently. Setting `n_drop = 0` acts as a safe no-operation,
+  returning the original dataset unmodified.
 
 - direction:
 
@@ -99,6 +105,13 @@ dropit(
 
   Named list of additional arguments passed to
   [`cfa`](https://rdrr.io/pkg/lavaan/man/cfa.html).
+
+- seed:
+
+  Optional integer scalar. Sets the random seed for stochastic
+  operations (e.g., CFA bootstrapping) to ensure reproducibility. The
+  global RNG state is temporarily modified and safely restored upon
+  exit. Defaults to `NULL`.
 
 - verbose:
 
@@ -178,5 +191,5 @@ dropit(dat, n_drop = 1, verbose = FALSE)
 #>  $ i3: num  1 1 2 3 4
 #>  $ i4: num  4 3 2 1 1
 #> ------------ 
-#> Run ended with 3 warning(s) and 1 message(s) logged. Access via `$log`
+#> Run ended with 2 warning(s) and 1 message(s) logged. Access via `$log`
 ```

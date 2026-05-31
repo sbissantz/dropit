@@ -248,3 +248,12 @@ drop2_fiml<- dropit(
   )
 )
 ```
+
+## Reproducibility
+
+If your abbreviation strategy relies on, say, stochastic lavaan
+arguments (e.g., bootstrap standard errors or random starting values),
+you can pass a `seed` argument directly to
+[`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md) to
+ensure exact reproducibility without permanently altering the R
+session’s global random state.

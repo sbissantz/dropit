@@ -1,6 +1,6 @@
-# Print method for dropit objects
+# Print Method for Dropit Objects
 
-Print method for dropit objects
+Print Method for Dropit Objects
 
 ## Usage
 
