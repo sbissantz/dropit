@@ -127,3 +127,23 @@ test_that("print.dropit_log() returns the object invisibly", {
   expect_invisible(res <- print(log_both))
   expect_identical(res, log_both)
 })
+
+# ------------------------------------------------------------------------------
+# colormsg() -- the ANSI styling primitive the print methods build on
+# ------------------------------------------------------------------------------
+
+test_that("colormsg() wraps text in the right ANSI codes", {
+  out <- capture.output(res <- colormsg("Hello", color_code = 31, bold = TRUE, newline = TRUE))
+  expect_true(any(grepl("\033[1;31mHello\033[0m", out, fixed = TRUE)))
+  expect_null(res)
+
+  out <- capture.output(colormsg("Hello", color_code = 31, bold = FALSE, newline = FALSE))
+  expect_true(any(grepl("\033[31mHello\033[0m", out, fixed = TRUE)))
+})
+
+test_that("colormsg() handles the bold/newline combinations", {
+  out1 <- capture.output(colormsg("Hi", color_code = 32, bold = TRUE, newline = FALSE))
+  expect_true(any(grepl("\033[1;32mHi\033[0m", out1, fixed = TRUE)))
+  out2 <- capture.output(colormsg("Hi", color_code = 32, bold = FALSE, newline = TRUE))
+  expect_true(any(grepl("\033[32mHi\033[0m", out2, fixed = TRUE)))
+})
