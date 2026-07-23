@@ -37,10 +37,37 @@
 #'   or `"lambda"` (CFA loadings).
 #' @param approach Character string, `"oneshot"` (single pass)
 #'   or `"greedy"` (iterative dropping and refitting).
-#' @param alpha_metric Character string. Cronbach’s alpha metric to
-#'   optimise (passed to `psych::alpha$alpha.drop`).
+#' @param alpha_metric Character string naming the column of
+#'   `psych::alpha$alpha.drop` used to rank items. Defaults to `"raw_alpha"`.
+#'
+#'   The two common choices answer different questions, and they can disagree:
+#'
+#'   * `"raw_alpha"` is the reliability of the **raw sum** of item responses,
+#'     computed from the covariance matrix. This is the reliability of the
+#'     score an administered form actually produces, so it is usually the
+#'     decision-relevant quantity when abbreviating an instrument that will be
+#'     scored by summing or averaging raw responses.
+#'   * `"std.alpha"` is the reliability of the **standardized** composite,
+#'     computed from the correlation matrix, i.e. of a score formed after
+#'     z-scoring each item.
+#'
+#'   Because `"raw_alpha"` is variance-weighted, items that spread respondents
+#'   more contribute more to it. That is appropriate for a raw-scored form —
+#'   such items genuinely carry more of the total score variance — but it means
+#'   the two metrics can rank items differently when item variances differ,
+#'   even on a shared response scale. Pick the one that matches how the final
+#'   form will be scored, and state the choice; do not switch metrics after
+#'   inspecting results.
+#'
+#'   Note that below three items no `alpha.drop` column is interpretable: with
+#'   two items every item-total correlation is the same single correlation, so
+#'   the items are formally indistinguishable and any ordering reflects an
+#'   artefact rather than a real difference between items. `dropit()` warns in
+#'   that case.
 #' @param alpha_args Named list of extra arguments for
-#'   \code{\link[psych]{alpha}}.
+#'   \code{\link[psych]{alpha}}. This is also where missing-data handling for
+#'   the alpha criterion is set, via `use` (e.g. `use = "complete.obs"`) or
+#'   `impute`; see the "Missing data" section.
 #' @param measurement_model Optional character string containing a
 #'   \link[lavaan]{model.syntax} specification. If `NULL`, a single-factor
 #'   model with all items loading on one latent factor is used.
@@ -51,11 +78,20 @@
 #'   to extract from \code{\link[lavaan]{inspect}}
 #'   (e.g., `"est"`, `"std"`, `"std.lv"`, `"std.nox"`, `"std.all"`).
 #' @param cfa_args Named list of additional arguments passed to
-#'   \code{\link[lavaan]{cfa}}.
-#' @param seed Optional integer scalar. Sets the random seed for stochastic 
+#'   \code{\link[lavaan]{cfa}}. This is also where missing-data handling for
+#'   the lambda criterion is set, via `missing` (e.g. `missing = "fiml"`);
+#'   see the "Missing data" section.
+#' @param seed Optional integer scalar. Sets the random seed for stochastic
 #'   operations (e.g., CFA bootstrapping) to ensure reproducibility. The global 
 #'   RNG state is temporarily modified and safely restored upon exit. 
 #'   Defaults to `NULL`.
+#' @param checks Logical; if `TRUE` (default) the advisory guards run — the
+#'   boundary-tie, small-scale, and greedy-with-missing-data warnings. Set
+#'   `FALSE` in a simulation loop, once you have validated the design, to skip
+#'   them and avoid re-emitting the same advisories on every iteration. Note
+#'   that `verbose = FALSE` does **not** do this: it only hides the printed
+#'   summary, while the guards still run and still collect into `$log`. Hard
+#'   input validation is unaffected by `checks` and always runs.
 #' @param verbose Logical; if `TRUE` (default) prints a structured,
 #'   color-formatted report of all messages, warnings, and errors
 #'   captured during the run.
@@ -71,6 +107,25 @@
 #'   captured and printed together at the end when `verbose = TRUE`,
 #'   formatted using the internal helper \code{colormsg()}.
 #'
+#' @section Missing data:
+#' `dropit()` never deletes respondents itself. Missing values are handled by
+#' the ranking engine, through its own native arguments, so the treatment is
+#' visible in the call rather than hidden behind a wrapper option: pass `use`
+#' or `impute` via `alpha_args` for the alpha criterion, and `missing` (for
+#' example `missing = "fiml"`) via `cfa_args` for the lambda criterion. The two
+#' engines default differently — \code{\link[psych]{alpha}} to pairwise
+#' deletion, \code{\link[lavaan]{cfa}} to listwise — so a ranking's sample
+#' follows whichever engine the chosen criterion uses. To compare alpha and
+#' lambda on one identical sample, set matching options in both lists (or
+#' restrict `data` to complete cases before calling).
+#'
+#' Under `approach = "greedy"` each round refits on a smaller set of items, so
+#' with incomplete data the sample can shift from round to round as the engine
+#' re-derives it. `dropit()` warns when this combination is requested (unless
+#' `checks = FALSE`). If a fixed sample across rounds matters, choose your
+#' missing-data method beforehand — for instance by restricting `data` to
+#' complete cases before the call.
+#'
 #' @return
 #' An object of class \code{dropit}, which is a list containing:
 #' \describe{
@@ -80,8 +135,7 @@
 #' }
 #'
 #' @seealso
-#' [psych::alpha()], [lavaan::cfa()], [lavaan::lavInspect()],
-#' and the internal helpers documented at [miscutils].
+#' [psych::alpha()], [lavaan::cfa()], [lavaan::lavInspect()].
 #'
 #' @examples
 #' dat <- data.frame(
@@ -102,7 +156,7 @@ dropit <- function(
   n_drop = 1L,
   direction = c("tail", "head"),
   # method selection
-  criterion = c("alpha", "lambda"),
+  criterion = names(criterion_registry),
   approach = c("oneshot", "greedy"),
   # alpha-specific
   alpha_metric = c(
@@ -123,6 +177,8 @@ dropit <- function(
   cfa_args = list(),
   # reproducibility
   seed = NULL,
+  # guards
+  checks = TRUE,
   # reporting
   verbose = TRUE
 ) {
@@ -149,6 +205,17 @@ dropit <- function(
   )
   # short name
  vbs <- verbose
+
+  ## ---- checks ----
+
+  checkmate::assert_logical(
+    checks,
+    any.missing = FALSE,
+    all.missing = FALSE,
+    len = 1
+  )
+  # short name
+  check <- checks
 
   # collectors for report
   msgs <- character()
@@ -304,7 +371,7 @@ dropit <- function(
 
         ## ---- criterion ----
 
-        criterion <- match.arg(criterion)
+        criterion <- match.arg(criterion, names(criterion_registry))
 
         # short name
         crt <- criterion
@@ -327,6 +394,13 @@ dropit <- function(
 
         # short name
         apr <- approach
+
+        # Advisory guards derivable from the inputs, run once, up front. The
+        # in-flight boundary-tie check is gated by the same `check` flag, threaded
+        # into naivedrop() below. Hard input validation above always runs.
+        if (check) {
+          preflight_checks(dta, prtn, n_drp, apr, crt)
+        }
 
         ## ---- alpha-specific input validation ----
 
@@ -453,6 +527,7 @@ dropit <- function(
               tgt_fct = tgt_fct,
               lam_mtr = lam_mtr,
               cfa_args = cfa_args,
+              check = check,
               verbose = vbs
             )
           })
@@ -476,6 +551,7 @@ dropit <- function(
             tgt_fct = tgt_fct,
             lam_mtr = lam_mtr,
             cfa_args = cfa_args,
+            check = check,
             verbose = vbs
           )    
           # Return the flat list OUT of the tryCatch block
@@ -536,4 +612,39 @@ rtrn_final <- list(
   )
   class(rtrn_final) <- c("dropit", "list")
   rtrn_final
+}
+
+# ------------------------------------------------------------------------------
+# Internal reporting helpers for dropit()
+# ------------------------------------------------------------------------------
+
+#' Trim Leading and Trailing Newlines
+#'
+#' Removes leading and trailing newline characters from a string, used to tidy
+#' collected warnings and messages before they are reported.
+#'
+#' @param x Character vector or scalar to process.
+#' @return A character vector with leading/trailing newlines removed.
+#' @keywords internal
+trim_newlines <- function(x) {
+  gsub("(^\\n+|\\n+$)", "", x)
+}
+
+#' Report Ignored Arguments
+#'
+#' Emits an informational message when the user supplied arguments that do not
+#' apply to the chosen method (e.g. `cfa_args` with `criterion = "alpha"`).
+#'
+#' @param usr_sup Character vector of argument names the user supplied.
+#' @param ign_nms Character vector of argument names not applicable here.
+#' @return Invisibly `NULL`; called for the side effect of messaging.
+#' @keywords internal
+check_ignored <- function(usr_sup, ign_nms) {
+  bad <- intersect(usr_sup, ign_nms)
+  if (length(bad)) {
+    message(sprintf(
+      "Argument(s) %s not applicable and ignored.",
+      paste0("'", bad, "'", collapse = ", ")
+    ))
+  }
 }
