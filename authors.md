@@ -10,6 +10,9 @@
 
 ## Citation
 
+Source:
+[`DESCRIPTION`](https://github.com/sbissantz/dropit/blob/master/DESCRIPTION)
+
 Bißantz S (2026). *dropit: Tools for Reproducible Psychometric
 Experimentation*. R package version 0.0.0.9000,
 <https://sbissantz.github.io/dropit/>.

@@ -1,6 +1,6 @@
 # Internal Helper Functions for Item Dropping
 
-Low-level utilities used internally by
+High-level utilities used internally by
 [`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md) to
 implement the different item–removal strategies. These functions are
 **not** intended for direct use by end-users but are documented for
@@ -22,7 +22,33 @@ naivedrop(
   tgt_fct,
   lam_mtr,
   cfa_args,
+  check = TRUE,
   verbose = FALSE
+)
+
+oneshotdrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args, check = TRUE)
+
+greedydrop_alpha(
+  dta,
+  anc,
+  n_drp,
+  dir,
+  alp_mtr,
+  alp_args,
+  check = TRUE,
+  verbose = FALSE
+)
+
+oneshotdrop_lambda(
+  dta,
+  anc,
+  n_drp,
+  dir,
+  mmt_mdl,
+  tgt_fct,
+  lam_mtr,
+  cfa_args,
+  check = TRUE
 )
 
 greedydrop_lambda(
@@ -34,14 +60,9 @@ greedydrop_lambda(
   tgt_fct,
   lam_mtr,
   cfa_args,
+  check = TRUE,
   verbose = FALSE
 )
-
-greedydrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
-
-oneshotdrop_lambda(dta, anc, n_drp, dir, mmt_mdl, tgt_fct, lam_mtr, cfa_args)
-
-oneshotdrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
 ```
 
 ## Arguments
@@ -109,6 +130,12 @@ oneshotdrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args)
 
   Named list of additional arguments passed to
   [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html).
+
+- check:
+
+  Logical; when `FALSE`, the in-flight boundary-tie check is skipped.
+  Threaded down from `dropit(checks = ...)`; input-derivable checks are
+  handled separately by `preflight_checks()`.
 
 ## Value
 

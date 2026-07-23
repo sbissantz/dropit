@@ -14,7 +14,7 @@ dropit(
   partition = NULL,
   n_drop = 1L,
   direction = c("tail", "head"),
-  criterion = c("alpha", "lambda"),
+  criterion = names(criterion_registry),
   approach = c("oneshot", "greedy"),
   alpha_metric = c("raw_alpha", "std.alpha", "G6(smc)", "average_r", "S/N", "alpha se",
     "var.r", "med.r"),
@@ -24,6 +24,7 @@ dropit(
   lambda_metric = c("est", "std", "std.lv", "std.nox", "std.all"),
   cfa_args = list(),
   seed = NULL,
+  checks = TRUE,
   verbose = TRUE
 )
 ```
@@ -75,13 +76,44 @@ dropit(
 
 - alpha_metric:
 
-  Character string. Cronbach’s alpha metric to optimise (passed to
-  `psych::alpha$alpha.drop`).
+  Character string naming the column of `psych::alpha$alpha.drop` used
+  to rank items. Defaults to `"raw_alpha"`.
+
+  The two common choices answer different questions, and they can
+  disagree:
+
+  - `"raw_alpha"` is the reliability of the **raw sum** of item
+    responses, computed from the covariance matrix. This is the
+    reliability of the score an administered form actually produces, so
+    it is usually the decision-relevant quantity when abbreviating an
+    instrument that will be scored by summing or averaging raw
+    responses.
+
+  - `"std.alpha"` is the reliability of the **standardized** composite,
+    computed from the correlation matrix, i.e. of a score formed after
+    z-scoring each item.
+
+  Because `"raw_alpha"` is variance-weighted, items that spread
+  respondents more contribute more to it. That is appropriate for a
+  raw-scored form — such items genuinely carry more of the total score
+  variance — but it means the two metrics can rank items differently
+  when item variances differ, even on a shared response scale. Pick the
+  one that matches how the final form will be scored, and state the
+  choice; do not switch metrics after inspecting results.
+
+  Note that below three items no `alpha.drop` column is interpretable:
+  with two items every item-total correlation is the same single
+  correlation, so the items are formally indistinguishable and any
+  ordering reflects an artefact rather than a real difference between
+  items. `dropit()` warns in that case.
 
 - alpha_args:
 
   Named list of extra arguments for
-  [`alpha`](https://rdrr.io/pkg/psych/man/alpha.html).
+  [`alpha`](https://rdrr.io/pkg/psych/man/alpha.html). This is also
+  where missing-data handling for the alpha criterion is set, via `use`
+  (e.g. `use = "complete.obs"`) or `impute`; see the "Missing data"
+  section.
 
 - measurement_model:
 
@@ -104,7 +136,9 @@ dropit(
 - cfa_args:
 
   Named list of additional arguments passed to
-  [`cfa`](https://rdrr.io/pkg/lavaan/man/cfa.html).
+  [`cfa`](https://rdrr.io/pkg/lavaan/man/cfa.html). This is also where
+  missing-data handling for the lambda criterion is set, via `missing`
+  (e.g. `missing = "fiml"`); see the "Missing data" section.
 
 - seed:
 
@@ -112,6 +146,17 @@ dropit(
   operations (e.g., CFA bootstrapping) to ensure reproducibility. The
   global RNG state is temporarily modified and safely restored upon
   exit. Defaults to `NULL`.
+
+- checks:
+
+  Logical; if `TRUE` (default) the advisory guards run — the
+  boundary-tie, small-scale, and greedy-with-missing-data warnings. Set
+  `FALSE` in a simulation loop, once you have validated the design, to
+  skip them and avoid re-emitting the same advisories on every
+  iteration. Note that `verbose = FALSE` does **not** do this: it only
+  hides the printed summary, while the guards still run and still
+  collect into `$log`. Hard input validation is unaffected by `checks`
+  and always runs.
 
 - verbose:
 
@@ -163,13 +208,33 @@ An object of class `dropit`, which is a list containing:
   [`cfa`](https://rdrr.io/pkg/lavaan/man/cfa.html) and ranks items by
   absolute standardized loadings.
 
+## Missing data
+
+`dropit()` never deletes respondents itself. Missing values are handled
+by the ranking engine, through its own native arguments, so the
+treatment is visible in the call rather than hidden behind a wrapper
+option: pass `use` or `impute` via `alpha_args` for the alpha criterion,
+and `missing` (for example `missing = "fiml"`) via `cfa_args` for the
+lambda criterion. The two engines default differently —
+[`alpha`](https://rdrr.io/pkg/psych/man/alpha.html) to pairwise
+deletion, [`cfa`](https://rdrr.io/pkg/lavaan/man/cfa.html) to listwise —
+so a ranking's sample follows whichever engine the chosen criterion
+uses. To compare alpha and lambda on one identical sample, set matching
+options in both lists (or restrict `data` to complete cases before
+calling).
+
+Under `approach = "greedy"` each round refits on a smaller set of items,
+so with incomplete data the sample can shift from round to round as the
+engine re-derives it. `dropit()` warns when this combination is
+requested (unless `checks = FALSE`). If a fixed sample across rounds
+matters, choose your missing-data method beforehand — for instance by
+restricting `data` to complete cases before the call.
+
 ## See also
 
 [`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html),
 [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html),
-[`lavaan::lavInspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html),
-and the internal helpers documented at
-[miscutils](https://sbissantz.github.io/dropit/reference/miscutils.md).
+[`lavaan::lavInspect()`](https://rdrr.io/pkg/lavaan/man/lavInspect.html).
 
 ## Examples
 
@@ -183,13 +248,13 @@ dat <- data.frame(
 
 dropit(dat, n_drop = 1, verbose = FALSE)
 #> Dropped Items: 
-#> [1] "i1"
+#> [1] "i4"
 #> 
 #> Subset(s): 
 #> 'data.frame':    5 obs. of  3 variables:
+#>  $ i1: num  1 2 3 4 5
 #>  $ i2: num  2 2 3 4 4
 #>  $ i3: num  1 1 2 3 4
-#>  $ i4: num  4 3 2 1 1
 #> ------------ 
 #> Run ended with 2 warning(s) and 1 message(s) logged. Access via `$log`
 ```

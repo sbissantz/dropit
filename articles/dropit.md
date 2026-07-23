@@ -40,11 +40,10 @@ D <- 5
 
 ## Assignment
 
-The Q-matrix is a binary matrix that specifies the mapping of an item to
-its respective latent construct(s). Here, it helps us define which BFI
-items belong to which domain. A nice feature of this representation is
-that it allows easy computation of sum scores for each domain by matrix
-multiplication.
+The Q-matrix is a binary matrix that specifies which items measure which
+construct(s). Here, it helps us define which BFI items belong to which
+domain. A nice feature of this representation is that it allows easy
+computation of sum scores for each domain by matrix multiplication.
 
 ``` r
 
@@ -109,7 +108,7 @@ drop2ga <- dropit(
 
 # Manifest correlation between sum scores
 cor(rowSums(extra), rowSums(drop2ga$subset), use = "pairwise.complete.obs")
-#> [1] 0.8282344
+#> [1] 0.6150422
 ```
 
 ## The Dropping Criterion: Alpha vs. Lambda
@@ -151,7 +150,7 @@ drop_lambda <- dropit(
 )
 
 cat("Alpha:", drop_alpha$names, "\n")
-#> Alpha: E3
+#> Alpha: E2
 cat("Lambda:", drop_lambda$names, "\n")
 #> Lambda: E5
 ```
@@ -161,13 +160,13 @@ cat("Lambda:", drop_lambda$names, "\n")
 When dropping multiple items (`n_drop > 1`), the approach used to select
 them becomes more critical. `dropit` offers two approaches:
 
-- **`approach = "oneshot"` (Fast):** The algorithm evaluates the full
-  scale, ranks all items simultaneously, and drops the bottom $`n`$
-  items in a single pass.
-- **`approach = "greedy"` (Rigorous):** The algorithm evaluates the
-  scale and drops only the single worst item. It then *refits* the alpha
-  or CFA model on the remaining items, recalculates the rankings, and
-  drops the next “worst” item. This repeats $`n`$ times.
+- **`approach = "oneshot"`:** The algorithm evaluates the full scale,
+  ranks all items simultaneously, and drops the bottom $`n`$ items in a
+  single pass.
+- **`approach = "greedy"`:** The algorithm evaluates the scale and drops
+  only the single worst item. It then *refits* the alpha or CFA model on
+  the remaining items, recalculates the rankings, and drops the next
+  “worst” item. This repeats $`n`$ times.
 
 Why does this matter? Well let’s compare the two approaches when
 dropping 3 items from our extraversion scale using CFA loadings:
@@ -267,10 +266,10 @@ drop_multi <- dropit(
 # Result is now organized by facet
 drop_multi$names
 #> $A
-#> [1] "E5"
+#> [1] "E4"
 #> 
 #> $S
-#> [1] "E2"
+#> [1] "E3"
 ```
 
 ## Anchoring Items
@@ -298,21 +297,27 @@ drop2ga_anc <- dropit(
 
 # Compare dropped items against unanchored baseline
 cat("Unanchored:", paste0(drop2ga$names, collapse = ", "), "\n")
-#> Unanchored: E4, E2
+#> Unanchored: E3, E5
 cat("Anchored:", paste0(drop2ga_anc, collapse = ", "), "\n")
-#> Anchored: E3, E1
+#> Anchored: E3, E5
 ```
 
 ## Missing Data
 
 Missing data is a common issue in psychometric datasets, and how it is
 handled can significantly impact the results of item dropping
-procedures. The
+procedures.
 [`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
-function provides flexibility in managing missing data through the
-`alpha_args` and `cfa_args` parameters, which allow you to specify the
-method for handling missing values when calculating Cronbach’s alpha or
-fitting CFA models, respectively.
+never deletes respondents on your behalf. Instead, it hands the missing
+values straight to the ranking engine and lets you steer the treatment
+through that engine’s own arguments: `alpha_args` for
+[`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html) and
+`cfa_args` for
+[`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html). The choice
+therefore stays visible in the call rather than hidden behind a wrapper
+option—and, because the two engines are configured through their own
+native arguments, it is plain to any reader that the alpha path and the
+lambda path handle missingness by different mechanisms.
 
 ### Alpha Dropping with Missing Data
 
@@ -356,10 +361,71 @@ drop2_fiml<- dropit(
   approach = "greedy",
   verbose = FALSE,
   cfa_args = list(
-    std.lv = TRUE, 
+    std.lv = TRUE,
     missing = "fiml"  # full information maximum likelihood
   )
 )
+```
+
+### Greedy Dropping and Sample Stability
+
+There is one combination worth pausing on: greedy dropping on data that
+still contains missing values. Recall that the greedy approach refits
+the model after every removal. Each of those refits runs on a smaller
+set of items, so the engine re-derives its working sample each round
+from whichever rows are usable for the items that remain. With scattered
+missingness, that sample can quietly grow or shift from one round to the
+next, and the ranking in round two is then computed on a slightly
+different set of respondents than the ranking in round one. Because this
+happens inside the loop, it leaves no trace in the returned object.
+
+[`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
+therefore raises a warning whenever `approach = "greedy"` meets a
+dataset with missing values, so the drift is stated rather than silent.
+As with every warning
+[`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
+collects, it is retained on the returned object and reachable through
+`$log`:
+
+``` r
+
+# Introduce some scattered missingness
+extra_na <- extra
+extra_na[sample(nrow(extra_na), 20), "E2"] <- NA
+
+drop2_drift <- dropit(
+  data = extra_na,
+  n_drop = 2,
+  criterion = "lambda",
+  approach = "greedy",
+  verbose = FALSE
+)
+
+# The warning is kept in the log
+drop2_drift$log$warnings
+#> [1] "The value of 'extra_na' was coerced to a data.frame."                                                                                                                                                                                                                                                    
+#> [2] "Greedy dropping and missing data: each round refits on a smaller item set, so the sample the ranking uses can change from round to round as the engine re-derives it. Resolve the missing values before calling (for instance by restricting `data` to complete cases) for a fixed sample across rounds."
+```
+
+If a fixed sample across rounds matters—and for a comparison against a
+baseline it usually does—resolve the missingness *before* the call, most
+simply by restricting to complete cases.
+[`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
+then has nothing to warn about, and every round ranks the same
+respondents:
+
+``` r
+
+drop2_stable <- dropit(
+  data = extra_na[complete.cases(extra_na), ],
+  n_drop = 2,
+  criterion = "lambda",
+  approach = "greedy",
+  verbose = FALSE
+)
+
+cat("Dropped:", paste(drop2_stable$names, collapse = ", "), "\n")
+#> Dropped: E5, E3
 ```
 
 ## Simulation Baselines
@@ -389,6 +455,36 @@ base <- lapply(res, `[[`, "subset")
 
 # View dims to confirm decay
 sapply(base, dim)
+#>      [,1] [,2] [,3] [,4]
+#> [1,] 2800 2800 2800 2800
+#> [2,]    5    4    3    2
+```
+
+Inside a loop like this,
+[`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
+re-runs its advisory guards—the boundary-tie, small-scale, and
+greedy-with-missing-data warnings—on every single iteration, quietly
+re-collecting the same messages into each `$log`. Once you have
+validated your design and know those advisories no longer tell you
+anything new, `checks = FALSE` switches them off for the whole run. Note
+that `verbose = FALSE` will *not* do this: it only hides the printed
+summary, while the guards still fire and still land in the log. The
+switch changes nothing about which items are dropped—only whether the
+guards run.
+
+``` r
+
+res <- lapply(0:3, function(k) {
+  dropit(
+    data = extra,
+    n_drop = k,
+    criterion = "lambda",
+    checks = FALSE,  # skip the advisory guards across the simulation
+    verbose = FALSE
+  )
+})
+
+sapply(lapply(res, `[[`, "subset"), dim)
 #>      [,1] [,2] [,3] [,4]
 #> [1,] 2800 2800 2800 2800
 #> [2,]    5    4    3    2

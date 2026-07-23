@@ -1,8 +1,7 @@
 # Trim Leading and Trailing Newlines
 
-Removes any leading and trailing newline (`\\n`) characters from a
-character string. Useful for cleaning up collected messages or warnings
-before printing.
+Removes leading and trailing newline characters from a string, used to
+tidy collected warnings and messages before they are reported.
 
 ## Usage
 
@@ -18,4 +17,4 @@ trim_newlines(x)
 
 ## Value
 
-A character vector with newlines removed from the start and end.
+A character vector with leading/trailing newlines removed.

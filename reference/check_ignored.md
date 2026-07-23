@@ -1,7 +1,8 @@
-# Warn About Ignored Arguments
+# Report Ignored Arguments
 
-Internal helper used to emit a message when user-specified arguments are
-not applicable to the current method (e.g., alpha vs. lambda mode).
+Emits an informational message when the user supplied arguments that do
+not apply to the chosen method (e.g. `cfa_args` with
+`criterion = "alpha"`).
 
 ## Usage
 
@@ -13,20 +14,12 @@ check_ignored(usr_sup, ign_nms)
 
 - usr_sup:
 
-  Character vector of argument names that were explicitly supplied by
-  the user.
+  Character vector of argument names the user supplied.
 
 - ign_nms:
 
-  Character vector of argument names that are not applicable in the
-  current context.
+  Character vector of argument names not applicable here.
 
 ## Value
 
-Invisibly returns `NULL`. Called for its side effect of printing a
-message.
-
-## Details
-
-This function prints an informative message rather than a warning,
-indicating that some arguments have been ignored intentionally.
+Invisibly `NULL`; called for the side effect of messaging.

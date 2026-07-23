@@ -27,6 +27,7 @@ user-defined column partitions."></head><body>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/sbissantz/dropit/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -36,7 +37,7 @@ user-defined column partitions."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Drop Items from a Psychometric Scale</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/sbissantz/dropit/blob/master/R/dropit.R" class="external-link"><code>R/dropit.R</code></a></small>
       <div class="d-none name"><code>dropit.Rd</code></div>
     </div>
 
@@ -56,7 +57,7 @@ user-defined column partitions.</p>
 <span>  partition <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_drop <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tail"</span>, <span class="st">"head"</span><span class="op">)</span>,</span>
-<span>  criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"alpha"</span>, <span class="st">"lambda"</span><span class="op">)</span>,</span>
+<span>  criterion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">criterion_registry</span><span class="op">)</span>,</span>
 <span>  approach <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"oneshot"</span>, <span class="st">"greedy"</span><span class="op">)</span>,</span>
 <span>  alpha_metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw_alpha"</span>, <span class="st">"std.alpha"</span>, <span class="st">"G6(smc)"</span>, <span class="st">"average_r"</span>, <span class="st">"S/N"</span>, <span class="st">"alpha se"</span>,</span>
 <span>    <span class="st">"var.r"</span>, <span class="st">"med.r"</span><span class="op">)</span>,</span>
@@ -66,6 +67,7 @@ user-defined column partitions.</p>
 <span>  lambda_metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"est"</span>, <span class="st">"std"</span>, <span class="st">"std.lv"</span>, <span class="st">"std.nox"</span>, <span class="st">"std.all"</span><span class="op">)</span>,</span>
 <span>  cfa_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  checks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -118,13 +120,35 @@ or <code>"greedy"</code> (iterative dropping and refitting).</p></dd>
 
 
 <dt id="arg-alpha-metric">alpha_metric<a class="anchor" aria-label="anchor" href="#arg-alpha-metric"></a></dt>
-<dd><p>Character string. Cronbach’s alpha metric to
-optimise (passed to <code>psych::alpha$alpha.drop</code>).</p></dd>
+<dd><p>Character string naming the column of
+<code>psych::alpha$alpha.drop</code> used to rank items. Defaults to <code>"raw_alpha"</code>.</p>
+<p>The two common choices answer different questions, and they can disagree:</p><ul><li><p><code>"raw_alpha"</code> is the reliability of the <strong>raw sum</strong> of item responses,
+computed from the covariance matrix. This is the reliability of the
+score an administered form actually produces, so it is usually the
+decision-relevant quantity when abbreviating an instrument that will be
+scored by summing or averaging raw responses.</p></li>
+<li><p><code>"std.alpha"</code> is the reliability of the <strong>standardized</strong> composite,
+computed from the correlation matrix, i.e. of a score formed after
+z-scoring each item.</p></li>
+</ul><p>Because <code>"raw_alpha"</code> is variance-weighted, items that spread respondents
+more contribute more to it. That is appropriate for a raw-scored form —
+such items genuinely carry more of the total score variance — but it means
+the two metrics can rank items differently when item variances differ,
+even on a shared response scale. Pick the one that matches how the final
+form will be scored, and state the choice; do not switch metrics after
+inspecting results.</p>
+<p>Note that below three items no <code>alpha.drop</code> column is interpretable: with
+two items every item-total correlation is the same single correlation, so
+the items are formally indistinguishable and any ordering reflects an
+artefact rather than a real difference between items. <code>dropit()</code> warns in
+that case.</p></dd>
 
 
 <dt id="arg-alpha-args">alpha_args<a class="anchor" aria-label="anchor" href="#arg-alpha-args"></a></dt>
 <dd><p>Named list of extra arguments for
-<code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">alpha</a></code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">alpha</a></code>. This is also where missing-data handling for
+the alpha criterion is set, via <code>use</code> (e.g. <code>use = "complete.obs"</code>) or
+<code>impute</code>; see the "Missing data" section.</p></dd>
 
 
 <dt id="arg-measurement-model">measurement_model<a class="anchor" aria-label="anchor" href="#arg-measurement-model"></a></dt>
@@ -147,7 +171,9 @@ to extract from <code><a href="https://rdrr.io/pkg/lavaan/man/lavInspect.html" c
 
 <dt id="arg-cfa-args">cfa_args<a class="anchor" aria-label="anchor" href="#arg-cfa-args"></a></dt>
 <dd><p>Named list of additional arguments passed to
-<code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">cfa</a></code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">cfa</a></code>. This is also where missing-data handling for
+the lambda criterion is set, via <code>missing</code> (e.g. <code>missing = "fiml"</code>);
+see the "Missing data" section.</p></dd>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
@@ -155,6 +181,16 @@ to extract from <code><a href="https://rdrr.io/pkg/lavaan/man/lavInspect.html" c
 operations (e.g., CFA bootstrapping) to ensure reproducibility. The global
 RNG state is temporarily modified and safely restored upon exit.
 Defaults to <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-checks">checks<a class="anchor" aria-label="anchor" href="#arg-checks"></a></dt>
+<dd><p>Logical; if <code>TRUE</code> (default) the advisory guards run — the
+boundary-tie, small-scale, and greedy-with-missing-data warnings. Set
+<code>FALSE</code> in a simulation loop, once you have validated the design, to skip
+them and avoid re-emitting the same advisories on every iteration. Note
+that <code>verbose = FALSE</code> does <strong>not</strong> do this: it only hides the printed
+summary, while the guards still run and still collect into <code>$log</code>. Hard
+input validation is unaffected by <code>checks</code> and always runs.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -202,9 +238,29 @@ holds).</p></li>
 loadings.</p></li>
 </ul></div>
     <div class="section level2">
+    <h2 id="missing-data">Missing data<a class="anchor" aria-label="anchor" href="#missing-data"></a></h2>
+
+
+<p><code>dropit()</code> never deletes respondents itself. Missing values are handled by
+the ranking engine, through its own native arguments, so the treatment is
+visible in the call rather than hidden behind a wrapper option: pass <code>use</code>
+or <code>impute</code> via <code>alpha_args</code> for the alpha criterion, and <code>missing</code> (for
+example <code>missing = "fiml"</code>) via <code>cfa_args</code> for the lambda criterion. The two
+engines default differently — <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">alpha</a></code> to pairwise
+deletion, <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">cfa</a></code> to listwise — so a ranking's sample
+follows whichever engine the chosen criterion uses. To compare alpha and
+lambda on one identical sample, set matching options in both lists (or
+restrict <code>data</code> to complete cases before calling).</p>
+<p>Under <code>approach = "greedy"</code> each round refits on a smaller set of items, so
+with incomplete data the sample can shift from round to round as the engine
+re-derives it. <code>dropit()</code> warns when this combination is requested (unless
+<code>checks = FALSE</code>). If a fixed sample across rounds matters, choose your
+missing-data method beforehand — for instance by restricting <code>data</code> to
+complete cases before the call.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>, <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>, <code><a href="https://rdrr.io/pkg/lavaan/man/lavInspect.html" class="external-link">lavaan::lavInspect()</a></code>,
-and the internal helpers documented at <a href="miscutils.html">miscutils</a>.</p></div>
+    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>, <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>, <code><a href="https://rdrr.io/pkg/lavaan/man/lavInspect.html" class="external-link">lavaan::lavInspect()</a></code>.</p></div>
     </div>
 
     <div class="section level2">
@@ -218,13 +274,13 @@ and the internal helpers documented at <a href="miscutils.html">miscutils</a>.</
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">dropit</span><span class="op">(</span><span class="va">dat</span>, n_drop <span class="op">=</span> <span class="fl">1</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5F87AF; font-weight: bold;">Dropped Items:</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "i1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "i4"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5F87AF; font-weight: bold;">Subset(s):</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 'data.frame':	5 obs. of  3 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ i1: num  1 2 3 4 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ i2: num  2 2 3 4 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ i3: num  1 1 2 3 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ i4: num  4 3 2 1 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ------------ </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #5F87AF; font-weight: bold;">Run</span> ended with 2 <span style="color: #5F87AF; font-weight: bold;">warning(s)</span> and 1 <span style="color: #5F87AF; font-weight: bold;">message(s)</span> logged. Access via `$log`</span>
 <span class="r-in"><span></span></span>
@@ -239,7 +295,7 @@ and the internal helpers documented at <a href="miscutils.html">miscutils</a>.</
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
