@@ -10,7 +10,7 @@ dropit(
   partition = NULL,
   n_drop = 1L,
   direction = c("tail", "head"),
-  criterion = c("alpha", "lambda"),
+  criterion = names(criterion_registry),
   approach = c("oneshot", "greedy"),
   alpha_metric = c("raw_alpha", "std.alpha", "G6(smc)", "average_r", "S/N", "alpha se",
     "var.r", "med.r"),
@@ -20,6 +20,7 @@ dropit(
   lambda_metric = c("est", "std", "std.lv", "std.nox", "std.all"),
   cfa_args = list(),
   seed = NULL,
+  checks = TRUE,
   verbose = TRUE
 )
 }
@@ -53,11 +54,39 @@ or \code{"lambda"} (CFA loadings).}
 \item{approach}{Character string, \code{"oneshot"} (single pass)
 or \code{"greedy"} (iterative dropping and refitting).}
 
-\item{alpha_metric}{Character string. Cronbach’s alpha metric to
-optimise (passed to \code{psych::alpha$alpha.drop}).}
+\item{alpha_metric}{Character string naming the column of
+\code{psych::alpha$alpha.drop} used to rank items. Defaults to \code{"raw_alpha"}.
+
+The two common choices answer different questions, and they can disagree:
+\itemize{
+\item \code{"raw_alpha"} is the reliability of the \strong{raw sum} of item responses,
+computed from the covariance matrix. This is the reliability of the
+score an administered form actually produces, so it is usually the
+decision-relevant quantity when abbreviating an instrument that will be
+scored by summing or averaging raw responses.
+\item \code{"std.alpha"} is the reliability of the \strong{standardized} composite,
+computed from the correlation matrix, i.e. of a score formed after
+z-scoring each item.
+}
+
+Because \code{"raw_alpha"} is variance-weighted, items that spread respondents
+more contribute more to it. That is appropriate for a raw-scored form —
+such items genuinely carry more of the total score variance — but it means
+the two metrics can rank items differently when item variances differ,
+even on a shared response scale. Pick the one that matches how the final
+form will be scored, and state the choice; do not switch metrics after
+inspecting results.
+
+Note that below three items no \code{alpha.drop} column is interpretable: with
+two items every item-total correlation is the same single correlation, so
+the items are formally indistinguishable and any ordering reflects an
+artefact rather than a real difference between items. \code{dropit()} warns in
+that case.}
 
 \item{alpha_args}{Named list of extra arguments for
-\code{\link[psych]{alpha}}.}
+\code{\link[psych]{alpha}}. This is also where missing-data handling for
+the alpha criterion is set, via \code{use} (e.g. \code{use = "complete.obs"}) or
+\code{impute}; see the "Missing data" section.}
 
 \item{measurement_model}{Optional character string containing a
 \link[lavaan]{model.syntax} specification. If \code{NULL}, a single-factor
@@ -72,12 +101,22 @@ to extract from \code{\link[lavaan]{inspect}}
 (e.g., \code{"est"}, \code{"std"}, \code{"std.lv"}, \code{"std.nox"}, \code{"std.all"}).}
 
 \item{cfa_args}{Named list of additional arguments passed to
-\code{\link[lavaan]{cfa}}.}
+\code{\link[lavaan]{cfa}}. This is also where missing-data handling for
+the lambda criterion is set, via \code{missing} (e.g. \code{missing = "fiml"});
+see the "Missing data" section.}
 
 \item{seed}{Optional integer scalar. Sets the random seed for stochastic
 operations (e.g., CFA bootstrapping) to ensure reproducibility. The global
 RNG state is temporarily modified and safely restored upon exit.
 Defaults to \code{NULL}.}
+
+\item{checks}{Logical; if \code{TRUE} (default) the advisory guards run — the
+boundary-tie, small-scale, and greedy-with-missing-data warnings. Set
+\code{FALSE} in a simulation loop, once you have validated the design, to skip
+them and avoid re-emitting the same advisories on every iteration. Note
+that \code{verbose = FALSE} does \strong{not} do this: it only hides the printed
+summary, while the guards still run and still collect into \verb{$log}. Hard
+input validation is unaffected by \code{checks} and always runs.}
 
 \item{verbose}{Logical; if \code{TRUE} (default) prints a structured,
 color-formatted report of all messages, warnings, and errors
@@ -124,6 +163,27 @@ loadings.
 }
 }
 
+\section{Missing data}{
+
+\code{dropit()} never deletes respondents itself. Missing values are handled by
+the ranking engine, through its own native arguments, so the treatment is
+visible in the call rather than hidden behind a wrapper option: pass \code{use}
+or \code{impute} via \code{alpha_args} for the alpha criterion, and \code{missing} (for
+example \code{missing = "fiml"}) via \code{cfa_args} for the lambda criterion. The two
+engines default differently — \code{\link[psych]{alpha}} to pairwise
+deletion, \code{\link[lavaan]{cfa}} to listwise — so a ranking's sample
+follows whichever engine the chosen criterion uses. To compare alpha and
+lambda on one identical sample, set matching options in both lists (or
+restrict \code{data} to complete cases before calling).
+
+Under \code{approach = "greedy"} each round refits on a smaller set of items, so
+with incomplete data the sample can shift from round to round as the engine
+re-derives it. \code{dropit()} warns when this combination is requested (unless
+\code{checks = FALSE}). If a fixed sample across rounds matters, choose your
+missing-data method beforehand — for instance by restricting \code{data} to
+complete cases before the call.
+}
+
 \examples{
 dat <- data.frame(
   i1 = c(1, 2, 3, 4, 5),
@@ -136,6 +196,5 @@ dropit(dat, n_drop = 1, verbose = FALSE)
 
 }
 \seealso{
-\code{\link[psych:alpha]{psych::alpha()}}, \code{\link[lavaan:cfa]{lavaan::cfa()}}, \code{\link[lavaan:lavInspect]{lavaan::lavInspect()}},
-and the internal helpers documented at \link{miscutils}.
+\code{\link[psych:alpha]{psych::alpha()}}, \code{\link[lavaan:cfa]{lavaan::cfa()}}, \code{\link[lavaan:lavInspect]{lavaan::lavInspect()}}.
 }
