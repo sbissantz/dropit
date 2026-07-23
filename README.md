@@ -1,7 +1,7 @@
 # dropit – R Tools for Reproducible Psychometric Experimentation <img src="man/figures/sticker.png" align="right" width="120"/>
 
 <!-- badges: start -->
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Project Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![License](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![R-CMD-check](https://github.com/sbissantz/dropit/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sbissantz/dropit/actions/workflows/R-CMD-check.yaml)
@@ -10,7 +10,9 @@
 
 ## Description
 
-The `dropit` package provides tools for reproducible psychometric experiments. It is built to explore how structural modifications of an item-based measurement instrument — or scale — affect different outcome metrics. The core function `dropit()` systematically removes items from the given scale based on Cronbach’s alpha or confirmatory factor analysis (CFA) loadings.
+The `dropit` package provides tools for reproducible psychometric experiments. It is built to explore how structural modifications of an item-based measurement instrument — or scale — affect different outcome metrics.
+
+The core function `dropit()` scores items by Cronbach’s alpha (via `psych`) or by confirmatory factor analysis (CFA) loadings (via `lavaan`), and drops the weakest or strongest. Dropping runs in a single pass or greedily, refitting the model after each round. Items can be organized into subscales and dropped independently within each of them. Either way, important items can be anchored so they are never dropped.
 
 All procedures are fully traceable, with strict input validation, detailed message handling, and informative console output to support transparent and iterative research workflows.
 
