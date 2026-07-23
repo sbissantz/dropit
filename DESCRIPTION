@@ -10,20 +10,21 @@ Authors@R:
              email="jan.killisch@rptu.de", 
              role="ctb",
              comment = c(ORCID = "0009-0003-7123-1885")))
-Description: 
-    A toolbox for conducting reproducible psychometric experiments to explore 
-    how structural modifications in item-based measurements affect outcome 
-    metrics. The core function 'dropit()' systematically removes items from 
-    questionnaire data to examine their impact on Cronbach’s alpha or 
-    confirmatory factor analysis (CFA) loadings. All procedures are fully 
-    traceable, with strict input validation, detailed message handling, and 
-    informative console output to support transparent and iterative research 
-    workflows.
+Description:
+    A toolbox for conducting reproducible psychometric experiments to explore
+    how structural modifications of an item-based measurement instrument or
+    scale affect different outcome metrics. The core function 'dropit()'
+    scores items by coefficient alpha (via 'psych') or by factor loadings
+    (via 'lavaan') and drops the weakest or strongest. Dropping can be done in
+    a single pass or greedily, refitting the model after each round. Items
+    can be organized into subscales and dropped independently within each of
+    them. Either way, important items can be anchored so they are never
+    dropped.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Depends: 
-    R (>= 4.6)
+Depends:
+    R (>= 4.1)
 Imports:
     utils,
     psych (>= 2.5.6),
@@ -32,11 +33,10 @@ Imports:
 Suggests:
     quarto,
     knitr,
-    shiny,
     withr,
     testthat (>= 3.0.0)
 VignetteBuilder: quarto
-LazyData: true
 Config/testthat/edition: 3
 URL: https://sbissantz.github.io/dropit/
+BugReports: https://github.com/sbissantz/dropit/issues
 Config/roxygen2/version: 8.0.0
