@@ -23,7 +23,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Depends: 
-    R (>= 4.5)
+    R (>= 4.6)
 Imports:
     utils,
     psych (>= 2.5.6),
@@ -33,7 +33,7 @@ Suggests:
     quarto,
     knitr,
     shiny,
-    knitr,
+    withr,
     testthat (>= 3.0.0)
 VignetteBuilder: quarto
 LazyData: true
