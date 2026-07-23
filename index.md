@@ -5,10 +5,16 @@
 The `dropit` package provides tools for reproducible psychometric
 experiments. It is built to explore how structural modifications of an
 item-based measurement instrument — or scale — affect different outcome
-metrics. The core function
+metrics.
+
+The core function
 [`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
-systematically removes items from the given scale based on Cronbach’s
-alpha or confirmatory factor analysis (CFA) loadings.
+scores items by Cronbach’s alpha (via `psych`) or by confirmatory factor
+analysis (CFA) loadings (via `lavaan`), and drops the weakest or
+strongest. Dropping runs in a single pass or greedily, refitting the
+model after each round. Items can be organized into subscales and
+dropped independently within each of them. Either way, important items
+can be anchored so they are never dropped.
 
 All procedures are fully traceable, with strict input validation,
 detailed message handling, and informative console output to support

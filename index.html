@@ -54,7 +54,8 @@
 <div class="section level2">
 <h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
 </h2>
-<p>The <code>dropit</code> package provides tools for reproducible psychometric experiments. It is built to explore how structural modifications of an item-based measurement instrument — or scale — affect different outcome metrics. The core function <code><a href="reference/dropit.html">dropit()</a></code> systematically removes items from the given scale based on Cronbach’s alpha or confirmatory factor analysis (CFA) loadings.</p>
+<p>The <code>dropit</code> package provides tools for reproducible psychometric experiments. It is built to explore how structural modifications of an item-based measurement instrument — or scale — affect different outcome metrics.</p>
+<p>The core function <code><a href="reference/dropit.html">dropit()</a></code> scores items by Cronbach’s alpha (via <code>psych</code>) or by confirmatory factor analysis (CFA) loadings (via <code>lavaan</code>), and drops the weakest or strongest. Dropping runs in a single pass or greedily, refitting the model after each round. Items can be organized into subscales and dropped independently within each of them. Either way, important items can be anchored so they are never dropped.</p>
 <p>All procedures are fully traceable, with strict input validation, detailed message handling, and informative console output to support transparent and iterative research workflows.</p>
 </div>
 <div class="section level2">
@@ -133,7 +134,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://www.repostatus.org/#active" class="external-link"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="Project Status"></a></li>
 <li><a href="https://www.gnu.org/licenses/gpl-3.0" class="external-link"><img src="https://img.shields.io/badge/license-GPL--3-blue.svg" alt="License"></a></li>
 <li><a href="https://github.com/sbissantz/dropit/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/sbissantz/dropit/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
