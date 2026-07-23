@@ -75,13 +75,19 @@ test_that("no tie warning on clean data at any boundary", {
   }
 })
 
-test_that("a tied boundary really does make the result column-order dependent", {
+test_that("a tied boundary really does make the result input-order dependent", {
   # Demonstrates the thing the warning is warning about: with the tie split,
-  # reversing the column order changes which item is dropped. This is why the
-  # warning has to exist rather than being a nicety.
-  dta <- toy_with_exact_tie()
-  a <- suppressWarnings(drop_alpha(dta, 4))
-  b <- suppressWarnings(drop_alpha(dta[, rev(names(dta))], 4))
+  # the input order alone decides which of the tied items is cut. This is why
+  # the warning has to exist rather than being a nicety.
+  #
+  # The tie is built by hand rather than derived from psych::alpha() on a
+  # duplicated column: that route needs the two alpha-if-dropped values to come
+  # out bit-identical, which holds only if the two submatrices sum in the same
+  # floating-point order. That is BLAS-dependent, so it holds on some platforms
+  # and not others.
+  scr <- c(i1 = 3, i2 = 1, i3 = 2, i2_copy = 1)
+  a <- suppressWarnings(trim_items(rank_items(scr, anc = NULL), 1, "tail"))
+  b <- suppressWarnings(trim_items(rank_items(rev(scr), anc = NULL), 1, "tail"))
   expect_false(setequal(a, b))
 })
 
