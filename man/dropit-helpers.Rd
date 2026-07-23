@@ -105,7 +105,7 @@ to extract (e.g., \code{"std"}).}
 
 \item{check}{Logical; when \code{FALSE}, the in-flight boundary-tie check is
 skipped. Threaded down from \code{dropit(checks = ...)}; input-derivable
-checks are handled separately by \code{\link[=preflight_checks]{preflight_checks()}}.}
+checks are handled separately by \code{preflight_checks()}.}
 }
 \value{
 Depending on \code{out}:
