@@ -4,7 +4,7 @@
 #' items in rank order, values their scores. The scores travel with the ranking
 #' so the trimming step can both take the ends and inspect the cut for a tie.
 #' Every item score is on the common **item score (higher means 'keep')** scale;
-#' see [score_items()].
+#' see `score_items()`.
 #'
 #' @keywords internal
 #' @noRd
@@ -15,7 +15,7 @@ rank_items <- function(itmscr, anc) {
 
 #' Trim the n weakest (or strongest) items from a ranked vector.
 #'
-#' Given items already ranked strongest to weakest (see [rank_items()]),
+#' Given items already ranked strongest to weakest (see `rank_items()`),
 #' `dir = "tail"` cuts the weakest `n_drp`, `dir = "head"` the strongest. The
 #' boundary-tie check lives here because a tie only matters *at the cut*;
 #' `check` gates it, so `dropit(checks = FALSE)` can skip it in simulation
@@ -56,7 +56,7 @@ criterion_registry <- list(
 
 #' Score items under a criterion by applying its scoring rule.
 #'
-#' Looks up the criterion in [criterion_registry] and applies its `score_rule`
+#' Looks up the criterion in `criterion_registry` and applies its `score_rule`
 #' to the raw metric `x`, returning item scores on the common scale where
 #' **higher means 'keep'**.
 #' @keywords internal
@@ -164,7 +164,7 @@ warn_greedy_missing <- function(dta, apr) {
 #' The guards split into two kinds. Checks that depend only on the inputs
 #' (`data`, `partition`, `n_drop`, `approach`, `criterion`) can run up front,
 #' and live here; the boundary-tie check needs the computed rankings and so
-#' stays in-flight in [trim_items()]. `dropit()` calls this once when
+#' stays in-flight in `trim_items()`. `dropit()` calls this once when
 #' `checks = TRUE`, and skips it (and the in-flight check) when `FALSE` — the
 #' switch a simulation loop flips to avoid re-emitting the same advisories on
 #' every iteration.

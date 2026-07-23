@@ -49,7 +49,7 @@
 #'   [lavaan::cfa()].
 #' @param check Logical; when `FALSE`, the in-flight boundary-tie check is
 #'   skipped. Threaded down from `dropit(checks = ...)`; input-derivable
-#'   checks are handled separately by [preflight_checks()].
+#'   checks are handled separately by `preflight_checks()`.
 #'
 #' @details
 #' * Alpha methods call [psych::alpha()] with `check.keys = TRUE`.
