@@ -51,31 +51,32 @@
 </h1></div>
 <!-- badges: start -->
 
-<div class="section level3">
-<h3 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
-</h3>
-<p>The <code>dropit</code> package provides tools for reproducible psychometric experiments to explore how structural modifications in item-based measurements affect outcome metrics. The core function <code><a href="reference/dropit.html">dropit()</a></code> systematically removes items from questionnaire data to examine their impact on Cronbach’s alpha or confirmatory factor analysis (CFA) loadings. All procedures are fully traceable, with strict input validation, detailed message handling, and informative console output to support transparent and iterative research workflows.</p>
+<div class="section level2">
+<h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
+</h2>
+<p>The <code>dropit</code> package provides tools for reproducible psychometric experiments. It is built to explore how structural modifications of an item-based measurement instrument — or scale — affect different outcome metrics. The core function <code><a href="reference/dropit.html">dropit()</a></code> systematically removes items from the given scale based on Cronbach’s alpha or confirmatory factor analysis (CFA) loadings.</p>
+<p>All procedures are fully traceable, with strict input validation, detailed message handling, and informative console output to support transparent and iterative research workflows.</p>
 </div>
-<div class="section level3">
-<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h3>
-<p>The <code>dropit</code> package is not available on CRAN. You can install the development version from GitHub.</p>
-<p>Using <strong>pak</strong> (recommended):</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>The <code>dropit</code> package is not available on CRAN — but you can install the development version from GitHub.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"sbissantz/dropit"</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, using <strong>remotes</strong>:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sbissantz/dropit"</span><span class="op">)</span> </span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># with pak (recommended)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"sbissantz/dropit"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># or with remotes</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sbissantz/dropit"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="section level2">
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sbissantz.github.io/dropit/">dropit</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Drop  weakest item from agreeableness scale based on CFA loadings</span></span>
+<span><span class="co"># Drop the weakest item from the agreeableness scale based on CFA loadings</span></span>
 <span><span class="fu"><a href="reference/dropit.html">dropit</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="fu">psych</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/psych/man/bfi.html" class="external-link">bfi</a></span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>, </span>
 <span>  n_drop <span class="op">=</span> <span class="fl">1</span>, </span>
@@ -83,10 +84,19 @@
 <span>  criterion <span class="op">=</span> <span class="st">"lambda"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
-</h3>
-<p>Contributions, suggestions, and bug reports are welcome. Please open an issue or submit a pull request on GitHub.</p>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Contributions, suggestions, and bug reports are welcome. Please <a href="https://github.com/sbissantz/dropit/issues" class="external-link">open an issue</a> or submit a pull request on GitHub.</p>
+</div>
+<div class="section level2">
+<h2 id="generative-ai-statement">Generative AI Statement<a class="anchor" aria-label="anchor" href="#generative-ai-statement"></a>
+</h2>
+<p>We use generative AI to streamline and optimize this package.</p>
+<p>Most importantly, we let it run regularly through the code base to catch bugs or inconsistencies before they reach a release (with more or less success, to be honest).</p>
+<p>In addition, it helps us keep naming and coding conventions consistent, so everything stays easy to follow and build on. Reliably, it tweaks our vignettes, tunes the docs to match the code, and sharpens our error and warning messages (in the hope of a better user experience). To our astonishment and horror, it always finds typos, spots grammar issues, and detects awkward phrasing that slips past us non-native speakers.</p>
+<p>Beyond that, we use it extensively to improve the robustness of our package. For instance, it assists us in extending our test suite and has successfully hunted down multiple dirty little edge cases (we would probably have missed). More than once, it has suggested structures that we now find easier to test and maintain. Without complaining, it handles all GitHub Actions chores, helping the package build on most systems and stay backward compatible.</p>
+<p>We invest a great deal of time reviewing, modifying, discussing, and approving the suggestions. That said, if something gets past us, feel free to <a href="https://github.com/sbissantz/dropit/issues" class="external-link">let us know</a>. In any case, we take full responsibility for the final code and documentation. Our tools are <a href="https://claude.com/claude-code" class="external-link">Claude Code</a>, <a href="https://github.com/features/copilot" class="external-link">GitHub Copilot</a>, and <a href="https://www.deepl.com/write" class="external-link">DeepL Write</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
