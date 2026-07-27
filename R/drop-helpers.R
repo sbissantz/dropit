@@ -50,6 +50,11 @@
 #' @param check Logical; when `FALSE`, the in-flight boundary-tie check is
 #'   skipped. Threaded down from `dropit(checks = ...)`; input-derivable
 #'   checks are handled separately by `preflight_checks()`.
+#' @param trace Logical; when `TRUE`, the greedy strategies emit one message
+#'   per round naming the items still in play (lambda reports the model
+#'   syntax it fits). Threaded down from `dropit(trace = ...)`, which collects
+#'   the messages into `$log$messages`. Only the greedy strategies trace:
+#'   one-shot fits a single model, so there is no history to record.
 #'
 #' @details
 #' * Alpha methods call [psych::alpha()] with `check.keys = TRUE`.
@@ -93,8 +98,8 @@ naivedrop <- function(
   cfa_args,
   # guards
   check = TRUE,
-  # reporting
-  verbose = FALSE
+  # tracing
+  trace = FALSE
 ) {
   switch(
     crt,
@@ -116,7 +121,8 @@ naivedrop <- function(
         dir = dir,
         alp_mtr = alp_mtr,
         alp_args = alp_args,
-        check = check
+        check = check,
+        trace = trace
       ),
       # Should never reached if input validation works properly
       stop("Debug: Invalid criterion specified. Use 'oneshot' or 'greedy'.")
@@ -143,7 +149,8 @@ naivedrop <- function(
         tgt_fct = tgt_fct,
         lam_mtr = lam_mtr,
         cfa_args = cfa_args,
-        check = check
+        check = check,
+        trace = trace
       ),
       # Should never reached if input validation works properly
       stop("Debug: Invalid criterion specified. Use 'oneshot' or 'greedy'.")
@@ -219,15 +226,15 @@ greedydrop_alpha <- function(
   alp_args,
   # guards
   check = TRUE,
-  # reporting
-  verbose = FALSE
+  # tracing
+  trace = FALSE
 ) {
   itm_drp <- rep(NA_character_, n_drp)
   itm_nms <- colnames(dta)
 for (i in seq_len(n_drp)) {
     # current items
     itms_cur <- setdiff(itm_nms, stats::na.omit(itm_drp))
-    if (verbose) {
+    if (trace) {
       message(sprintf(
         "Scale (%d/%d)  %s", i, n_drp, paste0(itms_cur, collapse = ", ")
       ))
@@ -327,15 +334,15 @@ greedydrop_lambda <- function(
   cfa_args,
   # guards
   check = TRUE,
-  # reporting
-  verbose = FALSE
+  # tracing
+  trace = FALSE
 ) {
   itm_drp <- rep(NA_character_, n_drp)
   itm_nms <- colnames(dta)
 for (i in seq_len(n_drp)) {
     # current items
     itms_cur <- setdiff(itm_nms, stats::na.omit(itm_drp))
-    if (verbose) {
+    if (trace) {
       mdl_str <- paste0("F =~ ", paste0(itms_cur, collapse = " + "))
       message(sprintf("Model (%d/%d)  %s", i, n_drp, mdl_str))
     }
