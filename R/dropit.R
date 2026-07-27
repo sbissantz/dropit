@@ -92,6 +92,13 @@
 #'   that `verbose = FALSE` does **not** do this: it only hides the printed
 #'   summary, while the guards still run and still collect into `$log`. Hard
 #'   input validation is unaffected by `checks` and always runs.
+#' @param trace Logical; if `TRUE`, records what the machinery did internally
+#'   into `$log$messages` — one entry per greedy round, naming the items still
+#'   in play (for `criterion = "lambda"`, the model syntax actually fitted).
+#'   Defaults to `FALSE`, since a greedy run over several partitions produces
+#'   one entry per round per arm. Only `approach = "greedy"` has a history to
+#'   record; one-shot fits a single model. Distinct from `verbose`, which
+#'   governs the printed end-of-run summary rather than what is collected.
 #' @param verbose Logical; if `TRUE` (default) prints a structured,
 #'   color-formatted report of all messages, warnings, and errors
 #'   captured during the run.
@@ -180,6 +187,7 @@ dropit <- function(
   # guards
   checks = TRUE,
   # reporting
+  trace = FALSE,
   verbose = TRUE
 ) {
 
@@ -216,6 +224,17 @@ dropit <- function(
   )
   # short name
   check <- checks
+
+  ## ---- trace ----
+
+  checkmate::assert_logical(
+    trace,
+    any.missing = FALSE,
+    all.missing = FALSE,
+    len = 1
+  )
+  # short name
+  trc <- trace
 
   # collectors for report
   msgs <- character()
@@ -528,7 +547,7 @@ dropit <- function(
               lam_mtr = lam_mtr,
               cfa_args = cfa_args,
               check = check,
-              verbose = vbs
+              trace = trc
             )
           })
           names(res_raw) <- names(splt_pos)
@@ -552,7 +571,7 @@ dropit <- function(
             lam_mtr = lam_mtr,
             cfa_args = cfa_args,
             check = check,
-            verbose = vbs
+            trace = trc
           )    
           # Return the flat list OUT of the tryCatch block
           list(
@@ -581,8 +600,8 @@ dropit <- function(
 
   ## ---- Final report ----
 
-  cln_msgs <- unique(gsub("\\s*\\n\\s*", " ", trim_newlines(msgs)))
-  cln_wrns <- unique(gsub("\\s*\\n\\s*", " ", trim_newlines(wrns)))
+  cln_msgs <- tally_conditions(msgs)
+  cln_wrns <- tally_conditions(wrns)
   
   if (isTRUE(vbs)) {
     n_warn <- length(cln_wrns)
@@ -628,6 +647,31 @@ rtrn_final <- list(
 #' @keywords internal
 trim_newlines <- function(x) {
   gsub("(^\\n+|\\n+$)", "", x)
+}
+
+#' Condense Repeated Conditions into a Counted, Unique Set
+#'
+#' A run may call the ranking engine many times — once per greedy round, and
+#' again for every partition arm — so the same warning can surface dozens of
+#' times. Reporting each occurrence buries the signal, but plain deduplication
+#' hides how often a problem struck: a model that failed to converge once and
+#' one that failed every round would read identically. This keeps one line per
+#' distinct condition and appends a count when it occurred more than once.
+#'
+#' Conditions are flattened to a single line first: engine messages often wrap
+#' across lines, so two textually identical conditions would otherwise fail to
+#' match on line breaks alone.
+#'
+#' @param x Character vector of collected condition messages.
+#' @return A character vector of unique messages in order of first occurrence,
+#'   each suffixed with `(xN)` when it occurred `N > 1` times.
+#' @keywords internal
+tally_conditions <- function(x) {
+  if (length(x) == 0L) return(character(0))
+  flat <- gsub("\\s*\\n\\s*", " ", trim_newlines(x))
+  uniq <- unique(flat)                      # order of first occurrence
+  n <- tabulate(match(flat, uniq), nbins = length(uniq))
+  ifelse(n > 1L, sprintf("%s (x%d)", uniq, n), uniq)
 }
 
 #' Report Ignored Arguments
