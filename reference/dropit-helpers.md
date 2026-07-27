@@ -23,7 +23,7 @@ naivedrop(
   lam_mtr,
   cfa_args,
   check = TRUE,
-  verbose = FALSE
+  trace = FALSE
 )
 
 oneshotdrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args, check = TRUE)
@@ -36,7 +36,7 @@ greedydrop_alpha(
   alp_mtr,
   alp_args,
   check = TRUE,
-  verbose = FALSE
+  trace = FALSE
 )
 
 oneshotdrop_lambda(
@@ -61,7 +61,7 @@ greedydrop_lambda(
   lam_mtr,
   cfa_args,
   check = TRUE,
-  verbose = FALSE
+  trace = FALSE
 )
 ```
 
@@ -136,6 +136,14 @@ greedydrop_lambda(
   Logical; when `FALSE`, the in-flight boundary-tie check is skipped.
   Threaded down from `dropit(checks = ...)`; input-derivable checks are
   handled separately by `preflight_checks()`.
+
+- trace:
+
+  Logical; when `TRUE`, the greedy strategies emit one message per round
+  naming the items still in play (lambda reports the model syntax it
+  fits). Threaded down from `dropit(trace = ...)`, which collects the
+  messages into `$log$messages`. Only the greedy strategies trace:
+  one-shot fits a single model, so there is no history to record.
 
 ## Value
 

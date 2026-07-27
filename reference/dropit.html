@@ -68,6 +68,7 @@ user-defined column partitions.</p>
 <span>  cfa_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  checks <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  trace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -191,6 +192,16 @@ them and avoid re-emitting the same advisories on every iteration. Note
 that <code>verbose = FALSE</code> does <strong>not</strong> do this: it only hides the printed
 summary, while the guards still run and still collect into <code>$log</code>. Hard
 input validation is unaffected by <code>checks</code> and always runs.</p></dd>
+
+
+<dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>
+<dd><p>Logical; if <code>TRUE</code>, records what the machinery did internally
+into <code>$log$messages</code> — one entry per greedy round, naming the items still
+in play (for <code>criterion = "lambda"</code>, the model syntax actually fitted).
+Defaults to <code>FALSE</code>, since a greedy run over several partitions produces
+one entry per round per arm. Only <code>approach = "greedy"</code> has a history to
+record; one-shot fits a single model. Distinct from <code>verbose</code>, which
+governs the printed end-of-run summary rather than what is collected.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

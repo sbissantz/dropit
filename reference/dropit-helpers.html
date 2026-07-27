@@ -65,7 +65,7 @@ algorithm.</p>
 <span>  <span class="va">lam_mtr</span>,</span>
 <span>  <span class="va">cfa_args</span>,</span>
 <span>  check <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  trace <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">oneshotdrop_alpha</span><span class="op">(</span><span class="va">dta</span>, <span class="va">anc</span>, <span class="va">n_drp</span>, <span class="va">dir</span>, <span class="va">alp_mtr</span>, <span class="va">alp_args</span>, check <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -78,7 +78,7 @@ algorithm.</p>
 <span>  <span class="va">alp_mtr</span>,</span>
 <span>  <span class="va">alp_args</span>,</span>
 <span>  check <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  trace <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">oneshotdrop_lambda</span><span class="op">(</span></span>
@@ -103,7 +103,7 @@ algorithm.</p>
 <span>  <span class="va">lam_mtr</span>,</span>
 <span>  <span class="va">cfa_args</span>,</span>
 <span>  check <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  trace <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -177,6 +177,14 @@ to extract (e.g., <code>"std"</code>).</p></dd>
 <dd><p>Logical; when <code>FALSE</code>, the in-flight boundary-tie check is
 skipped. Threaded down from <code>dropit(checks = ...)</code>; input-derivable
 checks are handled separately by <code>preflight_checks()</code>.</p></dd>
+
+
+<dt id="arg-trace">trace<a class="anchor" aria-label="anchor" href="#arg-trace"></a></dt>
+<dd><p>Logical; when <code>TRUE</code>, the greedy strategies emit one message
+per round naming the items still in play (lambda reports the model
+syntax it fits). Threaded down from <code>dropit(trace = ...)</code>, which collects
+the messages into <code>$log$messages</code>. Only the greedy strategies trace:
+one-shot fits a single model, so there is no history to record.</p></dd>
 
 </dl></div>
     <div class="section level2">

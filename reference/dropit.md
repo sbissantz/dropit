@@ -25,6 +25,7 @@ dropit(
   cfa_args = list(),
   seed = NULL,
   checks = TRUE,
+  trace = FALSE,
   verbose = TRUE
 )
 ```
@@ -157,6 +158,17 @@ dropit(
   hides the printed summary, while the guards still run and still
   collect into `$log`. Hard input validation is unaffected by `checks`
   and always runs.
+
+- trace:
+
+  Logical; if `TRUE`, records what the machinery did internally into
+  `$log$messages` — one entry per greedy round, naming the items still
+  in play (for `criterion = "lambda"`, the model syntax actually
+  fitted). Defaults to `FALSE`, since a greedy run over several
+  partitions produces one entry per round per arm. Only
+  `approach = "greedy"` has a history to record; one-shot fits a single
+  model. Distinct from `verbose`, which governs the printed end-of-run
+  summary rather than what is collected.
 
 - verbose:
 
