@@ -21,6 +21,7 @@ dropit(
   cfa_args = list(),
   seed = NULL,
   checks = TRUE,
+  trace = FALSE,
   verbose = TRUE
 )
 }
@@ -117,6 +118,14 @@ them and avoid re-emitting the same advisories on every iteration. Note
 that \code{verbose = FALSE} does \strong{not} do this: it only hides the printed
 summary, while the guards still run and still collect into \verb{$log}. Hard
 input validation is unaffected by \code{checks} and always runs.}
+
+\item{trace}{Logical; if \code{TRUE}, records what the machinery did internally
+into \verb{$log$messages} — one entry per greedy round, naming the items still
+in play (for \code{criterion = "lambda"}, the model syntax actually fitted).
+Defaults to \code{FALSE}, since a greedy run over several partitions produces
+one entry per round per arm. Only \code{approach = "greedy"} has a history to
+record; one-shot fits a single model. Distinct from \code{verbose}, which
+governs the printed end-of-run summary rather than what is collected.}
 
 \item{verbose}{Logical; if \code{TRUE} (default) prints a structured,
 color-formatted report of all messages, warnings, and errors

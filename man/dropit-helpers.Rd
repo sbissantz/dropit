@@ -23,7 +23,7 @@ naivedrop(
   lam_mtr,
   cfa_args,
   check = TRUE,
-  verbose = FALSE
+  trace = FALSE
 )
 
 oneshotdrop_alpha(dta, anc, n_drp, dir, alp_mtr, alp_args, check = TRUE)
@@ -36,7 +36,7 @@ greedydrop_alpha(
   alp_mtr,
   alp_args,
   check = TRUE,
-  verbose = FALSE
+  trace = FALSE
 )
 
 oneshotdrop_lambda(
@@ -61,7 +61,7 @@ greedydrop_lambda(
   lam_mtr,
   cfa_args,
   check = TRUE,
-  verbose = FALSE
+  trace = FALSE
 )
 }
 \arguments{
@@ -106,6 +106,12 @@ to extract (e.g., \code{"std"}).}
 \item{check}{Logical; when \code{FALSE}, the in-flight boundary-tie check is
 skipped. Threaded down from \code{dropit(checks = ...)}; input-derivable
 checks are handled separately by \code{preflight_checks()}.}
+
+\item{trace}{Logical; when \code{TRUE}, the greedy strategies emit one message
+per round naming the items still in play (lambda reports the model
+syntax it fits). Threaded down from \code{dropit(trace = ...)}, which collects
+the messages into \verb{$log$messages}. Only the greedy strategies trace:
+one-shot fits a single model, so there is no history to record.}
 }
 \value{
 Depending on \code{out}:
