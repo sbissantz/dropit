@@ -5,3 +5,11 @@
 ^pkgdown$
 ^\.github$
 ^vignettes/_quarto\.yml$
+^\.claude$
+# Rendered vignette output: regenerated at build time, must not ship in the
+# tarball (causes "hidden files" and "non-portable file paths" NOTEs).
+^vignettes/\.quarto$
+^vignettes/dropit_files$
+^vignettes/dropit\.html$
+\.DS_Store$
+^data-raw$
