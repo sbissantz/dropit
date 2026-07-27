@@ -171,3 +171,90 @@ test_that("seed makes stochastic runs reproducible without leaking RNG state", {
     expect_equal(get(".Random.seed", envir = .GlobalEnv), seed_init)
   }
 })
+
+# ------------------------------------------------------------------------------
+# Condition reporting -- one line per distinct problem, with its count
+# ------------------------------------------------------------------------------
+
+test_that("repeated conditions are condensed and counted", {
+  # Deduplication alone would make "failed once" and "failed every round"
+  # indistinguishable, so the count has to survive the condensing.
+  expect_equal(tally_conditions(c("a", "a", "b")), c("a (x2)", "b"))
+  expect_equal(tally_conditions(c("solo")), "solo")
+  expect_equal(tally_conditions(character(0)), character(0))
+})
+
+test_that("condition tally keeps order of first occurrence", {
+  # Chronological order is more informative than alphabetical: the first
+  # problem reported is usually the one that explains the others.
+  expect_equal(tally_conditions(c("z", "a", "z")), c("z (x2)", "a"))
+})
+
+test_that("multi-line conditions are flattened before matching", {
+  # Engine warnings wrap across lines; two identical conditions must not fail
+  # to match merely because of line breaks.
+  expect_equal(tally_conditions(c("one\n  two", "one two")), "one two (x2)")
+  expect_equal(tally_conditions("\nleading and trailing\n"), "leading and trailing")
+})
+
+test_that("trace records the greedy fit history, one entry per round", {
+  # The point of tracing: greedy refits on a shrinking item set, and without
+  # this the sequence of models is invisible to the user.
+  dta <- toy_scale(n = 150, k = 5)
+  res <- dropit(dta, n_drop = 3, criterion = "lambda", approach = "greedy",
+                trace = TRUE, verbose = FALSE)
+  expect_length(res$log$messages, 3)
+  expect_match(res$log$messages[1], "Model \\(1/3\\)")
+  # each round fits one fewer item than the last
+  n_items <- lengths(regmatches(res$log$messages, gregexpr("i[0-9]", res$log$messages)))
+  expect_equal(n_items, c(5L, 4L, 3L))
+})
+
+test_that("trace works for the alpha criterion too", {
+  dta <- toy_scale(n = 150, k = 5)
+  res <- suppressWarnings(dropit(
+    dta, n_drop = 2, criterion = "alpha", approach = "greedy", trace = TRUE,
+    alpha_args = list(check.keys = TRUE), verbose = FALSE
+  ))
+  expect_length(res$log$messages, 2)
+  expect_match(res$log$messages[1], "Scale \\(1/2\\)")
+})
+
+test_that("trace defaults to FALSE and is independent of verbose", {
+  # verbose governs the printed summary; trace governs what gets collected.
+  # Leaving trace at its default must not populate the log.
+  dta <- toy_scale(n = 150, k = 5)
+  quiet <- dropit(dta, n_drop = 3, criterion = "lambda", approach = "greedy",
+                  verbose = FALSE)
+  expect_length(quiet$log$messages, 0)
+  # verbose = TRUE alone still records nothing
+  loud <- dropit(dta, n_drop = 3, criterion = "lambda", approach = "greedy",
+                 verbose = TRUE)
+  expect_length(loud$log$messages, 0)
+})
+
+test_that("trace is only meaningful for greedy, and one-shot stays silent", {
+  # One-shot fits a single model, so there is no history to record.
+  dta <- toy_scale(n = 150, k = 5)
+  res <- dropit(dta, n_drop = 3, criterion = "lambda", approach = "oneshot",
+                trace = TRUE, verbose = FALSE)
+  expect_length(res$log$messages, 0)
+})
+
+test_that("trace must be a single logical", {
+  dta <- toy_scale(n = 100, k = 4)
+  expect_error(dropit(dta, n_drop = 1, trace = "yes", verbose = FALSE))
+  expect_error(dropit(dta, n_drop = 1, trace = c(TRUE, FALSE), verbose = FALSE))
+})
+
+test_that("a warning repeated across greedy rounds is logged once, with a count", {
+  # The real case the tally exists for: greedy refits per round, so a
+  # reverse-keying warning fires on every round rather than once.
+  dta <- toy_scale(n = 200, k = 5)
+  dta[["i2"]] <- 6L - dta[["i2"]]   # reverse-keyed: psych warns on each fit
+  res <- dropit(dta, n_drop = 3, criterion = "alpha", approach = "greedy",
+                alpha_args = list(check.keys = TRUE), verbose = FALSE)
+  keyed <- grep("check.keys", res$log$warnings, value = TRUE)
+  expect_length(keyed, 1)                  # condensed to a single line ...
+  expect_match(keyed, "\\(x[0-9]+\\)")     # ... carrying its occurrence count
+})
