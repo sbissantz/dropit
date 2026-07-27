@@ -103,7 +103,7 @@ drop2ga <- dropit(
   approach = "oneshot",
   alpha_metric = c("raw_alpha"),
   alpha_args = list(check.keys = TRUE),
-  verbose = FALSE
+  verbose = FALSE 
 )
 
 # Manifest correlation between sum scores
@@ -116,17 +116,17 @@ cor(rowSums(extra), rowSums(drop2ga$subset), use = "pairwise.complete.obs")
 With the `criterion` argument, the user specifies the metric to score
 items. The two options are:
 
-- **`criterion = "alpha"` (Internal Consistency):** This approach relies
-  on [`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html). The
+- **`criterion = "alpha"` (Coefficient Alpha):** This approach relies on
+  [`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html). The
   algorithm drops the item whose removal *least* reduces (or most
   increases) the scale’s overall Cronbach’s alpha.
 
-- **`criterion = "lambda"` (Latent Variable Modeling):** This approach
-  relies on [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html).
-  It fits a one-factor Confirmatory Factor Analysis model and ranks
-  items based on their absolute standardized factor loadings
-  ($`\lambda`$). It drops the item with the weakest (or strongest)
-  relationship to the underlying trait.
+- **`criterion = "lambda"` (Factor Loading):** This approach relies on
+  [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html). It fits a
+  one-factor Confirmatory Factor Analysis model and ranks items based on
+  their absolute standardized factor loadings ($`\lambda`$). It drops
+  the item with the weakest (or strongest) loadings on the underlying
+  trait.
 
 Let’s compare dropping a single item from our extraversion scale using
 both methods:
@@ -161,15 +161,16 @@ When dropping multiple items (`n_drop > 1`), the approach used to select
 them becomes more critical. `dropit` offers two approaches:
 
 - **`approach = "oneshot"`:** The algorithm evaluates the full scale,
-  ranks all items simultaneously, and drops the bottom $`n`$ items in a
-  single pass.
+  ranks all items simultaneously, and, by default, drops the $`n`$ items
+  ranked worst under the chosen criterion, in a single pass.
 - **`approach = "greedy"`:** The algorithm evaluates the scale and drops
-  only the single worst item. It then *refits* the alpha or CFA model on
+  only the single worst item. It then *recomputes* alpha or lambda of
   the remaining items, recalculates the rankings, and drops the next
-  “worst” item. This repeats $`n`$ times.
+  worst item. This repeats $`n`$ times.
 
 Why does this matter? Well let’s compare the two approaches when
-dropping 3 items from our extraversion scale using CFA loadings:
+dropping three items from our extraversion scale using the lambda
+criterion:
 
 ``` r
 
@@ -199,25 +200,25 @@ cat("Greedy:", paste(drop3_greedy$names, collapse = ", "), "\n")
 
 ## Adversarial Modifications
 
-While scale abbreviation typically aims to maximize retained information
-by dropping the weakest items (`direction = "tail"`), `dropit` also
-allows you to establish worst-case scenarios. Setting
-`direction = "head"` forces the algorithm to drop the *strongest*
-items—those with the highest absolute CFA loadings or whose removal most
-severely reduces Cronbach’s alpha.
+While scale abbreviation typically aims to minimize information loss by
+dropping the weakest items (`direction = "tail"`), `dropit` also allows
+you to establish worst-case scenarios. Setting `direction = "head"`
+forces the algorithm to drop the *strongest* items—those with the
+highest absolute CFA loadings or whose removal most severely reduces
+Cronbach’s alpha.
 
 ``` r
 
-# Maximized abbreviation (lowest)
+# Best-case abbreviation (lowest)
 bestcase <- dropit(
-  data = extra, 
-  n_drop = 2, 
-  criterion = "lambda", 
-  direction = "tail", 
+  data = extra,
+  n_drop = 2,
+  criterion = "lambda",
+  direction = "tail",
   verbose = FALSE
 )
 
-# Adversarial abbreviation (highest)
+# Worst-case abbreviation (highest)
 worstcase <- dropit(
   data = extra, 
   n_drop = 2, 
@@ -304,20 +305,20 @@ cat("Anchored:", paste0(drop2ga_anc, collapse = ", "), "\n")
 
 ## Missing Data
 
-Missing data is a common issue in psychometric datasets, and how it is
-handled can significantly impact the results of item dropping
-procedures.
+Missing data are a common problem in most empirical datasets, and how
+they are handled can substantially affect the results of any procedure
+or analysis.
 [`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
-never deletes respondents on your behalf. Instead, it hands the missing
-values straight to the ranking engine and lets you steer the treatment
-through that engine’s own arguments: `alpha_args` for
+does not have its own approach to missing data handling; instead, it
+hands these values straight to the ranking engine via two arguments:
+`alpha_args` for
 [`psych::alpha()`](https://rdrr.io/pkg/psych/man/alpha.html) and
 `cfa_args` for
 [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html). The choice
-therefore stays visible in the call rather than hidden behind a wrapper
+should stay visible to the user rather than hidden behind a wrapper
 option—and, because the two engines are configured through their own
 native arguments, it is plain to any reader that the alpha path and the
-lambda path handle missingness by different mechanisms.
+lambda path handle missingness in different ways.
 
 ### Alpha Dropping with Missing Data
 
@@ -348,13 +349,13 @@ drop2oa_co <- dropit(
 With `criterion = "lambda"`, the internal CFA models are fitted using
 [`lavaan::cfa()`](https://rdrr.io/pkg/lavaan/man/cfa.html), which
 defaults to **listwise deletion**. If your dataset contains scattered
-missing values, you might want to leverage Full Information Maximum
-Likelihood (FIML). Because `dropit` acts as a seamless wrapper, you can
-pass `missing = "fiml"` directly into `cfa_args`:
+missing values, you might want to use Full Information Maximum
+Likelihood (FIML) instead. Because `dropit` acts as a seamless wrapper,
+you can pass `missing = "fiml"` directly into `cfa_args`:
 
 ``` r
 
-drop2_fiml<- dropit(
+drop2_fiml <- dropit(
   data = extra,
   n_drop = 2,
   criterion = "lambda",
@@ -374,10 +375,9 @@ still contains missing values. Recall that the greedy approach refits
 the model after every removal. Each of those refits runs on a smaller
 set of items, so the engine re-derives its working sample each round
 from whichever rows are usable for the items that remain. With scattered
-missingness, that sample can quietly grow or shift from one round to the
-next, and the ranking in round two is then computed on a slightly
-different set of respondents than the ranking in round one. Because this
-happens inside the loop, it leaves no trace in the returned object.
+missingness, that sample can quietly shift from one round to the next.
+Because this happens inside the loop, it leaves no trace in the returned
+object.
 
 [`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
 therefore raises a warning whenever `approach = "greedy"` meets a
@@ -408,11 +408,8 @@ drop2_drift$log$warnings
 ```
 
 If a fixed sample across rounds matters—and for a comparison against a
-baseline it usually does—resolve the missingness *before* the call, most
-simply by restricting to complete cases.
-[`dropit()`](https://sbissantz.github.io/dropit/reference/dropit.md)
-then has nothing to warn about, and every round ranks the same
-respondents:
+baseline it usually does—treat the missingness *before* the call. In the
+simplest case, you can just restrict the dataset to complete cases.
 
 ``` r
 

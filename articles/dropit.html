@@ -146,7 +146,7 @@
 <span>  approach <span class="op">=</span> <span class="st">"oneshot"</span>,</span>
 <span>  alpha_metric <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"raw_alpha"</span><span class="op">)</span>,</span>
 <span>  alpha_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>check.keys <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span> </span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Manifest correlation between sum scores</span></span>
@@ -157,8 +157,8 @@
 </h2>
 <p>With the <code>criterion</code> argument, the user specifies the metric to score items. The two options are:</p>
 <ul>
-<li><p><strong><code>criterion = "alpha"</code> (Internal Consistency):</strong> This approach relies on <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>. The algorithm drops the item whose removal <em>least</em> reduces (or most increases) the scale’s overall Cronbach’s alpha.</p></li>
-<li><p><strong><code>criterion = "lambda"</code> (Latent Variable Modeling):</strong> This approach relies on <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>. It fits a one-factor Confirmatory Factor Analysis model and ranks items based on their absolute standardized factor loadings (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>). It drops the item with the weakest (or strongest) relationship to the underlying trait.</p></li>
+<li><p><strong><code>criterion = "alpha"</code> (Coefficient Alpha):</strong> This approach relies on <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>. The algorithm drops the item whose removal <em>least</em> reduces (or most increases) the scale’s overall Cronbach’s alpha.</p></li>
+<li><p><strong><code>criterion = "lambda"</code> (Factor Loading):</strong> This approach relies on <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>. It fits a one-factor Confirmatory Factor Analysis model and ranks items based on their absolute standardized factor loadings (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>). It drops the item with the weakest (or strongest) loadings on the underlying trait.</p></li>
 </ul>
 <p>Let’s compare dropping a single item from our extraversion scale using both methods:</p>
 <div class="cell">
@@ -189,11 +189,11 @@
 <p>When dropping multiple items (<code>n_drop &gt; 1</code>), the approach used to select them becomes more critical. <code>dropit</code> offers two approaches:</p>
 <ul>
 <li>
-<strong><code>approach = "oneshot"</code>:</strong> The algorithm evaluates the full scale, ranks all items simultaneously, and drops the bottom <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> items in a single pass.</li>
+<strong><code>approach = "oneshot"</code>:</strong> The algorithm evaluates the full scale, ranks all items simultaneously, and, by default, drops the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> items ranked worst under the chosen criterion, in a single pass.</li>
 <li>
-<strong><code>approach = "greedy"</code>:</strong> The algorithm evaluates the scale and drops only the single worst item. It then <em>refits</em> the alpha or CFA model on the remaining items, recalculates the rankings, and drops the next “worst” item. This repeats <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> times.</li>
+<strong><code>approach = "greedy"</code>:</strong> The algorithm evaluates the scale and drops only the single worst item. It then <em>recomputes</em> alpha or lambda of the remaining items, recalculates the rankings, and drops the next worst item. This repeats <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> times.</li>
 </ul>
-<p>Why does this matter? Well let’s compare the two approaches when dropping 3 items from our extraversion scale using CFA loadings:</p>
+<p>Why does this matter? Well let’s compare the two approaches when dropping three items from our extraversion scale using the lambda criterion:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># One-shot dropping</span></span>
@@ -221,19 +221,19 @@
 </div>
 </section><section class="level2"><h2 id="adversarial-modifications">Adversarial Modifications<a class="anchor" aria-label="anchor" href="#adversarial-modifications"></a>
 </h2>
-<p>While scale abbreviation typically aims to maximize retained information by dropping the weakest items (<code>direction = "tail"</code>), <code>dropit</code> also allows you to establish worst-case scenarios. Setting <code>direction = "head"</code> forces the algorithm to drop the <em>strongest</em> items—those with the highest absolute CFA loadings or whose removal most severely reduces Cronbach’s alpha.</p>
+<p>While scale abbreviation typically aims to minimize information loss by dropping the weakest items (<code>direction = "tail"</code>), <code>dropit</code> also allows you to establish worst-case scenarios. Setting <code>direction = "head"</code> forces the algorithm to drop the <em>strongest</em> items—those with the highest absolute CFA loadings or whose removal most severely reduces Cronbach’s alpha.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Maximized abbreviation (lowest)</span></span>
+<code class="sourceCode R"><span><span class="co"># Best-case abbreviation (lowest)</span></span>
 <span><span class="va">bestcase</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">extra</span>, </span>
-<span>  n_drop <span class="op">=</span> <span class="fl">2</span>, </span>
-<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>, </span>
-<span>  direction <span class="op">=</span> <span class="st">"tail"</span>, </span>
+<span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
+<span>  n_drop <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>,</span>
+<span>  direction <span class="op">=</span> <span class="st">"tail"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Adversarial abbreviation (highest)</span></span>
+<span><span class="co"># Worst-case abbreviation (highest)</span></span>
 <span><span class="va">worstcase</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">extra</span>, </span>
 <span>  n_drop <span class="op">=</span> <span class="fl">2</span>, </span>
@@ -300,7 +300,7 @@
 </div>
 </section><section class="level2"><h2 id="missing-data">Missing Data<a class="anchor" aria-label="anchor" href="#missing-data"></a>
 </h2>
-<p>Missing data is a common issue in psychometric datasets, and how it is handled can significantly impact the results of item dropping procedures. <code><a href="../reference/dropit.html">dropit()</a></code> never deletes respondents on your behalf. Instead, it hands the missing values straight to the ranking engine and lets you steer the treatment through that engine’s own arguments: <code>alpha_args</code> for <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code> and <code>cfa_args</code> for <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>. The choice therefore stays visible in the call rather than hidden behind a wrapper option—and, because the two engines are configured through their own native arguments, it is plain to any reader that the alpha path and the lambda path handle missingness by different mechanisms.</p>
+<p>Missing data are a common problem in most empirical datasets, and how they are handled can substantially affect the results of any procedure or analysis. <code><a href="../reference/dropit.html">dropit()</a></code> does not have its own approach to missing data handling; instead, it hands these values straight to the ranking engine via two arguments: <code>alpha_args</code> for <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code> and <code>cfa_args</code> for <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>. The choice should stay visible to the user rather than hidden behind a wrapper option—and, because the two engines are configured through their own native arguments, it is plain to any reader that the alpha path and the lambda path handle missingness in different ways.</p>
 <section class="level3"><h3 id="alpha-dropping-with-missing-data">Alpha Dropping with Missing Data<a class="anchor" aria-label="anchor" href="#alpha-dropping-with-missing-data"></a>
 </h3>
 <p>When using <code>criterion = "alpha"</code>, the internal rankings are calculated via <code><a href="https://rdrr.io/pkg/psych/man/alpha.html" class="external-link">psych::alpha()</a></code>. By default, this function handles missing values by using pairwise deletion (<code>use = "pairwise"</code>) to construct the underlying correlation matrix. However, if you want to enforce complete cases (listwise deletion), you can pass the <code>use</code> argument directly into the <code>alpha_args</code> list:</p>
@@ -320,10 +320,10 @@
 </div>
 </section><section class="level3"><h3 id="lambda-dropping-with-missing-data">Lambda Dropping with Missing Data<a class="anchor" aria-label="anchor" href="#lambda-dropping-with-missing-data"></a>
 </h3>
-<p>With <code>criterion = "lambda"</code>, the internal CFA models are fitted using <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>, which defaults to <strong>listwise deletion</strong>. If your dataset contains scattered missing values, you might want to leverage Full Information Maximum Likelihood (FIML). Because <code>dropit</code> acts as a seamless wrapper, you can pass <code>missing = "fiml"</code> directly into <code>cfa_args</code>:</p>
+<p>With <code>criterion = "lambda"</code>, the internal CFA models are fitted using <code><a href="https://rdrr.io/pkg/lavaan/man/cfa.html" class="external-link">lavaan::cfa()</a></code>, which defaults to <strong>listwise deletion</strong>. If your dataset contains scattered missing values, you might want to use Full Information Maximum Likelihood (FIML) instead. Because <code>dropit</code> acts as a seamless wrapper, you can pass <code>missing = "fiml"</code> directly into <code>cfa_args</code>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">drop2_fiml</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">drop2_fiml</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">extra</span>,</span>
 <span>  n_drop <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  criterion <span class="op">=</span> <span class="st">"lambda"</span>,</span>
@@ -337,7 +337,7 @@
 </div>
 </section><section class="level3"><h3 id="greedy-dropping-and-sample-stability">Greedy Dropping and Sample Stability<a class="anchor" aria-label="anchor" href="#greedy-dropping-and-sample-stability"></a>
 </h3>
-<p>There is one combination worth pausing on: greedy dropping on data that still contains missing values. Recall that the greedy approach refits the model after every removal. Each of those refits runs on a smaller set of items, so the engine re-derives its working sample each round from whichever rows are usable for the items that remain. With scattered missingness, that sample can quietly grow or shift from one round to the next, and the ranking in round two is then computed on a slightly different set of respondents than the ranking in round one. Because this happens inside the loop, it leaves no trace in the returned object.</p>
+<p>There is one combination worth pausing on: greedy dropping on data that still contains missing values. Recall that the greedy approach refits the model after every removal. Each of those refits runs on a smaller set of items, so the engine re-derives its working sample each round from whichever rows are usable for the items that remain. With scattered missingness, that sample can quietly shift from one round to the next. Because this happens inside the loop, it leaves no trace in the returned object.</p>
 <p><code><a href="../reference/dropit.html">dropit()</a></code> therefore raises a warning whenever <code>approach = "greedy"</code> meets a dataset with missing values, so the drift is stated rather than silent. As with every warning <code><a href="../reference/dropit.html">dropit()</a></code> collects, it is retained on the returned object and reachable through <code>$log</code>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
@@ -358,7 +358,7 @@
 <span><span class="co">#&gt; [1] "The value of 'extra_na' was coerced to a data.frame."                                                                                                                                                                                                                                                    </span></span>
 <span><span class="co">#&gt; [2] "Greedy dropping and missing data: each round refits on a smaller item set, so the sample the ranking uses can change from round to round as the engine re-derives it. Resolve the missing values before calling (for instance by restricting `data` to complete cases) for a fixed sample across rounds."</span></span></code></pre></div>
 </div>
-<p>If a fixed sample across rounds matters—and for a comparison against a baseline it usually does—resolve the missingness <em>before</em> the call, most simply by restricting to complete cases. <code><a href="../reference/dropit.html">dropit()</a></code> then has nothing to warn about, and every round ranks the same respondents:</p>
+<p>If a fixed sample across rounds matters—and for a comparison against a baseline it usually does—treat the missingness <em>before</em> the call. In the simplest case, you can just restrict the dataset to complete cases.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">drop2_stable</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dropit.html">dropit</a></span><span class="op">(</span></span>
