@@ -100,21 +100,21 @@ test_that("oneshotdrop_lambda() errors on a multi-factor solution without target
 # Greedy progress reporting
 # ------------------------------------------------------------------------------
 
-test_that("greedydrop_lambda() reports each round when verbose = TRUE", {
+test_that("greedydrop_lambda() reports each round when trace = TRUE", {
   expect_message(
     greedydrop_lambda(toy_scale(k = 5), anc = NULL, n_drp = 1, dir = "tail",
                       mmt_mdl = NULL, tgt_fct = NULL, lam_mtr = "std.all",
-                      cfa_args = list(std.lv = TRUE), verbose = TRUE),
+                      cfa_args = list(std.lv = TRUE), trace = TRUE),
     "Model \\(1/1\\)"
   )
 })
 
-test_that("greedydrop_alpha() reports each round when verbose = TRUE", {
+test_that("greedydrop_alpha() reports each round when trace = TRUE", {
   # Symmetry with greedydrop_lambda: both greedy paths announce their rounds.
   expect_message(
     suppressWarnings(greedydrop_alpha(
       toy_scale(k = 5), anc = NULL, n_drp = 1, dir = "tail",
-      alp_mtr = "raw_alpha", alp_args = list(check.keys = TRUE), verbose = TRUE
+      alp_mtr = "raw_alpha", alp_args = list(check.keys = TRUE), trace = TRUE
     )),
     "Scale \\(1/1\\)"
   )
