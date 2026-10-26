@@ -12,6 +12,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Tools for Reproducible Psychometric Experimentation">
 <meta name="description" content="A toolbox for conducting reproducible psychometric experiments to explore how structural modifications of an item-based measurement instrument or scale affect different outcome metrics. The core function dropit() scores items by coefficient alpha (via psych) or by factor loadings (via lavaan) and drops the weakest or strongest. Dropping can be done in a single pass or greedily, refitting the model after each round. Items can be organized into subscales and dropped independently within each of them. Either way, important items can be anchored so they are never dropped.">
 <meta property="og:description" content="A toolbox for conducting reproducible psychometric experiments to explore how structural modifications of an item-based measurement instrument or scale affect different outcome metrics. The core function dropit() scores items by coefficient alpha (via psych) or by factor loadings (via lavaan) and drops the weakest or strongest. Dropping can be done in a single pass or greedily, refitting the model after each round. Items can be organized into subscales and dropped independently within each of them. Either way, important items can be anchored so they are never dropped.">
+<meta property="og:image" content="https://sbissantz.github.io/dropit/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -21,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dropit</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,8 +47,11 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="dropit--r-tools-for-reproducible-psychometric-experimentation-">dropit – R Tools for Reproducible Psychometric Experimentation <img src="reference/figures/sticker.png" align="right" width="120"><a class="anchor" aria-label="anchor" href="#dropit--r-tools-for-reproducible-psychometric-experimentation-"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="dropit--r-tools-for-reproducible-psychometric-experimentation-">dropit – R Tools for Reproducible Psychometric Experimentation 
+<a class="anchor" aria-label="anchor" href="#dropit--r-tools-for-reproducible-psychometric-experimentation-"></a>
+</h1>
+</div>
 <!-- badges: start -->
 
 <div class="section level2">

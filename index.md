@@ -1,4 +1,4 @@
-# dropit – R Tools for Reproducible Psychometric Experimentation ![](reference/figures/sticker.png)
+# dropit – R Tools for Reproducible Psychometric Experimentation
 
 ## Description
 

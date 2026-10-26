@@ -14,13 +14,13 @@ Source:
 [`DESCRIPTION`](https://github.com/sbissantz/dropit/blob/master/DESCRIPTION)
 
 Bißantz S (2026). *dropit: Tools for Reproducible Psychometric
-Experimentation*. R package version 0.0.0.9000,
+Experimentation*. R package version 0.1.0,
 <https://sbissantz.github.io/dropit/>.
 
     @Manual{,
       title = {dropit: Tools for Reproducible Psychometric Experimentation},
       author = {Steven Bißantz},
       year = {2026},
-      note = {R package version 0.0.0.9000},
+      note = {R package version 0.1.0},
       url = {https://sbissantz.github.io/dropit/},
     }
