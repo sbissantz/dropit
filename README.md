@@ -1,4 +1,4 @@
-# dropit – R Tools for Reproducible Psychometric Experimentation <img src="man/figures/sticker.png" align="right" width="120"/>
+# dropit – R Tools for Reproducible Psychometric Experimentation <a href="https://sbissantz.github.io/dropit/"><img src="man/figures/logo.png" align="right" height="138" alt="dropit website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)

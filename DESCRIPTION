@@ -1,6 +1,6 @@
 Package: dropit
 Title: Tools for Reproducible Psychometric Experimentation
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     c(person(given = "Steven", family = "Bißantz", 
              email = "steven.bissantz@gmail.com", 
